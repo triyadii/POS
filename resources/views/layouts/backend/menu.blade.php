@@ -19,7 +19,123 @@
             </a>
         </div>
         <!--end:Menu item-->
-        @canany(['supplier-list','brand-list','kategori-list'])
+
+        @canany(['supplier-list','brand-list','kategori-list','tipe-list'])
+            <!--begin:Menu item-->
+            <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
+                class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
+                <!--begin:Menu link-->
+                <span class="menu-link py-3 ">
+                    <span class="menu-title">Apps</span>
+                    <span class="menu-arrow d-lg-none"></span>
+                </span>
+                <!--end:Menu link-->
+                <!--begin:Menu sub-->
+                <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-250px">
+
+                    @can('supplier-list')
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="#">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-parcel fs-2"></i>
+                                </span>
+                                <span class="menu-title">Item Barang</span>
+                                <span class="badge badge-warning">progress</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
+
+                    @can('kategori-list')
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="#">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-delivery-2 fs-2"></i>
+                                </span>
+                                <span class="menu-title">Barang Masuk</span>
+                                <span class="badge badge-danger">soon</span>
+
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
+
+                    @can('kategori-list')
+                    <div class="menu-item">
+                        <!--begin:Menu link-->
+                        <a class="menu-link py-3" href="#">
+                            <span class="menu-icon">
+                                <i class="ki-outline ki-truck fs-2"></i>
+                            </span>
+                            <span class="menu-title">Barang Keluar</span>
+                            <span class="badge badge-danger">soon</span>
+
+                        </a>
+                        <!--end:Menu link-->
+                    </div>
+                @endcan
+
+
+                    @can('kategori-list')
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="#">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-notepad-edit fs-2"></i>
+                                </span>
+                                <span class="menu-title">Daftar Penjualan</span>
+                                <span class="badge badge-danger">soon</span>
+
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
+
+                    @can('brand-list')
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="#">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-cube-3 fs-2"></i>
+                                </span>
+                                <span class="menu-title">Stok</span>
+                                <span class="badge badge-danger">soon</span>
+
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
+
+
+                    @can('tipe-list')
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="#">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-tablet-book fs-2"></i>
+                                </span>
+                                <span class="menu-title">Laporan</span>
+                                <span class="badge badge-danger">soon</span>
+
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
+
+
+                    
+
+                </div>
+                <!--end:Menu sub-->
+            </div>
+            <!--end:Menu item-->
+        @endcanany
+
+
+
+        @canany(['supplier-list','brand-list','kategori-list','tipe-list'])
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
                 class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
@@ -28,6 +144,7 @@
                         'supplier.index',
                         'brand.index',
                         'kategori.index',
+                        'tipe.index',
                     )
                         ? 'active '
                         : '' }}">
@@ -43,9 +160,21 @@
                             <!--begin:Menu link-->
                             <a class="menu-link py-3" href="{{ route('supplier.index') }}">
                                 <span class="menu-icon">
-                                    <i class="ki-outline ki-bank fs-2"></i>
+                                    <i class="ki-outline ki-people fs-2"></i>
                                 </span>
                                 <span class="menu-title">Supplier</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
+                    @can('kategori-list')
+                        <div class="menu-item {{ request()->routeIs('kategori.index') ? 'here show ' : '' }}">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="{{ route('kategori.index') }}">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-element-equal fs-2"></i>
+                                </span>
+                                <span class="menu-title">Kategori Item</span>
                             </a>
                             <!--end:Menu link-->
                         </div>
@@ -56,7 +185,7 @@
                             <!--begin:Menu link-->
                             <a class="menu-link py-3" href="{{ route('brand.index') }}">
                                 <span class="menu-icon">
-                                    <i class="ki-outline ki-bank fs-2"></i>
+                                    <i class="ki-outline ki-element-10 fs-2"></i>
                                 </span>
                                 <span class="menu-title">Brand</span>
                             </a>
@@ -65,18 +194,21 @@
                     @endcan
 
 
-                    @can('kategori-list')
-                        <div class="menu-item {{ request()->routeIs('kategori.index') ? 'here show ' : '' }}">
+                    @can('tipe-list')
+                        <div class="menu-item {{ request()->routeIs('tipe.index') ? 'here show ' : '' }}">
                             <!--begin:Menu link-->
-                            <a class="menu-link py-3" href="{{ route('kategori.index') }}">
+                            <a class="menu-link py-3" href="{{ route('tipe.index') }}">
                                 <span class="menu-icon">
-                                    <i class="ki-outline ki-bank fs-2"></i>
+                                    <i class="ki-outline ki-element-7 fs-2"></i>
                                 </span>
-                                <span class="menu-title">Kategori</span>
+                                <span class="menu-title">Tipe Brand</span>
                             </a>
                             <!--end:Menu link-->
                         </div>
                     @endcan
+
+
+                    
 
                 </div>
                 <!--end:Menu sub-->
