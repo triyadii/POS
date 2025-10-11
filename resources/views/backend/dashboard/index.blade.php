@@ -40,6 +40,58 @@
         </div>
 
         <div class="row g-5 g-xl-8">
+            <!-- Card 1 -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card card-stretch mb-xl-8">
+                    <div class="card-body d-flex flex-column">
+                        <span class="text-muted fw-bold fs-7">Total Penjualan Hari ini</span>
+                        <span class="fw-bold fs-2x text-success"><span class="fs-7 text-gray-600 mb-3">Rp. </span>358.750.000 </span>
+                        <span class="fs-7 text-gray-600 mb-3">Tanggal 01 September 2025</span>
+                      
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Card 2 -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card card-stretch mb-xl-8">
+                    <div class="card-body d-flex flex-column">
+                        <span class="text-muted fw-bold fs-7">Total Pengeluaran Hari ini</span>
+                        <span class="fw-bold fs-2x text-danger"><span class="fs-7 text-gray-600 mb-3">Rp. </span>127.750.000 </span>
+                        <span class="fs-7 text-gray-600 mb-3">Tanggal 01 September 2025</span>
+                      
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card card-stretch mb-xl-8">
+                    <div class="card-body d-flex flex-column">
+                        <span class="text-muted fw-bold fs-7">Produk Terjual</span>
+                        <span class="fw-bold fs-2x text-dark">3.741</span>
+                        <span class="fs-7 text-gray-600 mb-3">Tanggal 01 September 2025</span>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card card-stretch mb-xl-8">
+                    <div class="card-body d-flex flex-column">
+                        <span class="text-muted fw-bold fs-7">Bersih</span>
+                        <span class="fw-bold fs-2x text-dark"><span class="fs-7 text-gray-600 mb-3">Rp. </span>231.000.000 </span>
+                        <span class="fs-7 text-gray-600 mb-3">Tanggal 01 September 2025</span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5 g-xl-8">
             <div class="col-xl-4">
                 <!--begin::List Widget 4-->
                 <div class="card card-xl-stretch mb-xl-8">
