@@ -44,13 +44,10 @@
             <div class="col-xl-3 col-md-6">
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
-                        <span class="text-muted fw-bold fs-7">Total Penyaluran Beras SPHP</span>
-                        <span class="fw-bold fs-2x text-dark">297,5 <span class="fs-7 text-gray-600 mb-3">Ton</span></span>
-                        <span class="fs-7 text-gray-600 mb-3">01 - 04 September 2025</span>
-                        <button class="btn btn-sm btn-light-primary mt-auto" data-bs-toggle="modal"
-                            data-bs-target="#penyaluran_sphp">
-                            Lihat Detail
-                        </button>
+                        <span class="text-muted fw-bold fs-7">Total Penjualan Hari ini</span>
+                        <span class="fw-bold fs-2x text-dark"><span class="fs-7 text-gray-600 mb-3">Rp. </span>350.000.000 </span>
+                        <span class="fs-7 text-gray-600 mb-3">Tanggal 01 September 2025</span>
+                      
                     </div>
                 </div>
             </div>
@@ -64,10 +61,7 @@
                         <span class="text-muted fw-bold fs-7">Inflasi Month-to-Month</span>
                         <span class="fw-bold fs-2x text-success">1,67 %</span>
                         <span class="fs-7 text-gray-600 mb-3">Agustus 2025</span>
-                        <button class="btn btn-sm btn-light-primary mt-auto" data-bs-toggle="modal"
-                            data-bs-target="#inflasi">
-                            Lihat Detail
-                        </button>
+                      
                     </div>
                 </div>
             </div>
@@ -79,10 +73,7 @@
                         <span class="text-muted fw-bold fs-7">Total Pembangunan</span>
                         <span class="fw-bold fs-2x text-dark">3.741</span>
                         <span class="fs-7 text-gray-600 mb-3">Unit (Jan–Agu 2025)</span>
-                        <button class="btn btn-sm btn-light-primary mt-auto" data-bs-toggle="modal"
-                            data-bs-target="#stat_3_juta_rumah">
-                            Lihat Detail
-                        </button>
+                        
                     </div>
                 </div>
             </div>
@@ -94,9 +85,7 @@
                         <span class="text-muted fw-bold fs-7">Total Pengguna CKG</span>
                         <span class="fw-bold fs-2x text-success">295.199</span>
                         <span class="fs-7 text-gray-600 mb-3">Februari – Agustus 2025</span>
-                        <button class="btn btn-sm btn-light-primary mt-auto" data-bs-toggle="modal" data-bs-target="#ckg">
-                            Lihat Detail
-                        </button>
+                        
                     </div>
                 </div>
             </div>
