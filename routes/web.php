@@ -23,7 +23,7 @@ use App\Http\Controllers\Backend\Help\LogActivityController;
 
 //CRUD
 use App\Http\Controllers\Backend\CRUD\GeneratorController;
-use App\Http\Controllers\Backend\Apps\PenujualanController;
+use App\Http\Controllers\Backend\Apps\PenjualanController;
 
 
 //MASTER
