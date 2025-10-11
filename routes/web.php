@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 
 
 use App\Http\Controllers\Auth\LoginController;
-
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\RoleController;
@@ -31,6 +30,10 @@ use App\Http\Controllers\Backend\Master\SupplierController;
 use App\Http\Controllers\Backend\Master\BrandController;
 use App\Http\Controllers\Backend\Master\KategoriController;
 use App\Http\Controllers\Backend\Master\TipeController;
+use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
+use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
+
+
 
 
 
@@ -97,7 +100,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('supplier', SupplierController::class);
-    Route::get('get-supplier', [SupplierController::class, 'getData'])->name('get-supplier');
+    Route::get('get-supplier', [SupplierController::class, 'getDataRoles'])->name('get-supplier');
     Route::post('/supplier/mass-delete', [SupplierController::class, 'massDelete'])->name('supplier.mass-delete');
     Route::get('/select/supplier', [SupplierController::class, 'select'])->name('supplier.select');
 
@@ -116,6 +119,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('get-tipe', [TipeController::class, 'getData'])->name('get-tipe');
     Route::post('/tipe/mass-delete', [TipeController::class, 'massDelete'])->name('tipe.mass-delete');
     Route::get('/select/tipe', [TipeController::class, 'select'])->name('tipe.select');
+    Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
+    Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
+    Route::get('/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('laporan.penjualan.export');
+    Route::resource('laporan-penjualan', LaporanPenjualanController::class);
+
+    Route::get('laporan-laba-rugi/chart', [LaporanLabaRugiController::class, 'getProfitLossData'])->name('laporan.laba-rugi.chart');
+    Route::get('/laporan/laba-rugi/export-pdf', [LaporanLabaRugiController::class, 'exportLabaRugiPdf'])->name('laporan.laba-rugi.export-pdf');
+    Route::resource('laporan-laba-rugi', LaporanLabaRugiController::class);
 });
 
 

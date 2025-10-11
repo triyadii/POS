@@ -1,8 +1,8 @@
 <div class="app-navbar flex-shrink-0">
     <!--begin::Notifications-->
     <div class="app-navbar-item">
-        <a href="{{ route('penjualan.index') }}" class="btn btn-icon-primary btn-sm btn-secondary">
-            <i class="ki-duotone ki-finance-calculator fs-1"><span class="path1"></span><span class="path2"></span></i>
+        <a href="{{ route('penjualan.index') }}" class="btn btn-icon-primary btn-sm ">
+            <i class="ki-outline ki-finance-calculator fs-1"></i>
             KASIR
         </a>
         <!--begin::Menu- wrapper-->

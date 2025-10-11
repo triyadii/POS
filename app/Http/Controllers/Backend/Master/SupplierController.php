@@ -11,7 +11,6 @@ use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use DataTables;
 use Auth;
-
 use Validator;
 
 class SupplierController extends Controller
@@ -57,27 +56,31 @@ class SupplierController extends Controller
         return \DataTables::of($data) 
          ->addIndexColumn()
 
-         
+         ->addColumn('action', function($row) {
+            $x='';
+            if (auth()->user()->can('supplier-show') || auth()->user()->can('supplier-edit') || auth()->user()->can('supplier-delete')) {
 
+                $x.='<div class="dropdown text-end">
+                <button class="btn btn-sm btn-secondary " type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                    Actions
+                                                    <i class="ki-outline ki-down fs-5 ms-1"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">';
+                if (auth()->user()->can('supplier-show')) {
+                    $x.=' <li><a class="dropdown-item btn px-3" href="'.route('supplier.show', $row->id).'" >Detail</a></li>';
+                }
+                if (auth()->user()->can('supplier-edit')) {
+                    $x.=' <li><a class="dropdown-item btn px-3" id="getEditRowData" data-id="'.$row->id.'" >Edit</a></li>';
+                }
+                if (auth()->user()->can('supplier-delete')) {
+                    $x.=' <li><a class="dropdown-item btn px-3" data-id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#Modal_Hapus_Data" id="getDeleteId">Hapus</a></li>';
+                }
+                $x .= '</ul></div>';
 
-        ->addColumn('action', function($data) {
+            }
             return '
-            <div class="text-end">
-                <a href="#" 
-                    class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-show-supplier" 
-                    data-id="'.$data->id.'" >
-                    <i class="ki-outline ki-eye fs-2"></i>
-                </a>
-        
-                <a href="#" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" 
-                    id="getEditRowData" data-id="'.$data->id.'">
-                    <i class="ki-outline ki-pencil fs-2"></i>
-                </a>
-                <a href="#" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" 
-                   data-id="'.$data->id.'" data-bs-toggle="modal" data-bs-target="#Modal_Hapus_Data" id="getDeleteId">
-                    <i class="ki-outline ki-trash fs-2"></i>
-                </a>
-            </div>';
+            '.$x.'
+            ';  
         })
 
         
@@ -92,14 +95,6 @@ class SupplierController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-
-
-     public function show($id)
-{
-    $data = Supplier::findOrFail($id);
-    return view('backend.master.supplier.show', compact('data'));
-}
-
 
 
      public function store(Request $request)
