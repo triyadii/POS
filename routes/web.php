@@ -29,6 +29,7 @@ use App\Http\Controllers\Backend\CRUD\GeneratorController;
 use App\Http\Controllers\Backend\Master\SupplierController;
 use App\Http\Controllers\Backend\Master\BrandController;
 use App\Http\Controllers\Backend\Master\KategoriController;
+use App\Http\Controllers\Backend\Master\TipeController;
 
 
 
@@ -108,6 +109,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('get-kategori', [KategoriController::class, 'getData'])->name('get-kategori');
     Route::post('/kategori/mass-delete', [KategoriController::class, 'massDelete'])->name('kategori.mass-delete');
     Route::get('/select/kategori', [KategoriController::class, 'select'])->name('kategori.select');
+
+    Route::resource('tipe', TipeController::class);
+    Route::get('get-tipe', [TipeController::class, 'getData'])->name('get-tipe');
+    Route::post('/tipe/mass-delete', [TipeController::class, 'massDelete'])->name('tipe.mass-delete');
+    Route::get('/select/tipe', [TipeController::class, 'select'])->name('tipe.select');
 
 
    
