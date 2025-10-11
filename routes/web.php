@@ -27,7 +27,8 @@ use App\Http\Controllers\Backend\CRUD\GeneratorController;
 
 //MASTER
 use App\Http\Controllers\Backend\Master\SupplierController;
-
+use App\Http\Controllers\Backend\Master\BrandController;
+use App\Http\Controllers\Backend\Master\KategoriController;
 
 
 
@@ -94,9 +95,20 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('supplier', SupplierController::class);
-    Route::get('get-supplier', [SupplierController::class, 'getDataRoles'])->name('get-supplier');
+    Route::get('get-supplier', [SupplierController::class, 'getData'])->name('get-supplier');
     Route::post('/supplier/mass-delete', [SupplierController::class, 'massDelete'])->name('supplier.mass-delete');
     Route::get('/select/supplier', [SupplierController::class, 'select'])->name('supplier.select');
+
+    Route::resource('brand', BrandController::class);
+    Route::get('get-brand', [BrandController::class, 'getData'])->name('get-brand');
+    Route::post('/brand/mass-delete', [BrandController::class, 'massDelete'])->name('brand.mass-delete');
+    Route::get('/select/brand', [BrandController::class, 'select'])->name('brand.select');
+
+    Route::resource('kategori', KategoriController::class);
+    Route::get('get-kategori', [KategoriController::class, 'getData'])->name('get-kategori');
+    Route::post('/kategori/mass-delete', [KategoriController::class, 'massDelete'])->name('kategori.mass-delete');
+    Route::get('/select/kategori', [KategoriController::class, 'select'])->name('kategori.select');
+
 
    
 
