@@ -120,8 +120,18 @@
                 <div class="card-toolbar">
                     <!--begin::Toolbar-->
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                         <!--begin::Group actions-->
+                    <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
+                        <div class="fw-bold me-5">
+                            <span class="me-2" data-kt-user-table-select="selected_count"></span>Selected
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger me-2" data-kt-user-table-select="delete_selected"> <i
+                                class="ki-outline ki-trash  me-2"></i>Delete
+                            Selected</button>
+                    </div>
+                    <!--end::Group actions-->
                         <!--begin::Reload Data-->
-                        <button type="button" class="btn btn-sm btn-primary me-3" id="refresh-table-btn">
+                        <button type="button" class="btn btn-sm btn-primary " id="refresh-table-btn">
                             <span class="indicator-label">
                                 <i class="ki-outline ki-arrows-loop  me-2"></i> Refresh Table
                             </span>
@@ -132,16 +142,7 @@
                         <!--end::Reload Data-->
                     </div>
                     <!--end::Toolbar-->
-                    <!--begin::Group actions-->
-                    <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
-                        <div class="fw-bold me-5">
-                            <span class="me-2" data-kt-user-table-select="selected_count"></span>Selected
-                        </div>
-                        <button type="button" class="btn btn-sm btn-danger" data-kt-user-table-select="delete_selected"> <i
-                                class="ki-outline ki-trash  me-2"></i>Delete
-                            Selected</button>
-                    </div>
-                    <!--end::Group actions-->
+                   
 
 
                 </div>
@@ -163,10 +164,9 @@
                                 </th>
                             @endcan
                             <th class="min-w-125px">Nama Supplier</th>
-                            <th class="min-w-125px">Jumlah Resource</th>
-                            <th class="min-w-100px">Dibuat Oleh</th>
-                            <th class="min-w-100px">Created At</th>
-                            <th class="min-w-100px">Updated At</th>
+                            <th class="min-w-125px">Kontak</th>
+                            <th class="min-w-100px">Alamat</th>
+                            <th class="min-w-100px">Keterangan</th>
                             @canany(['supplier-show', 'supplier-edit', 'supplier-delete'])
                                 <th class="text-end min-w-100px">Action</th>
                             @endcanany
@@ -218,12 +218,53 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Nama Istansi</label>
+                                <label class="required fw-semibold fs-6 mb-2">Nama Supplier</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="nama" id="nama"
-                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Nama Supplier" />
+                                    class="form-control mb-3 mb-lg-0" placeholder="Nama Supplier" />
                                 <span class="text-danger error-text nama_error_add"></span>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fw-semibold fs-6 mb-2">Kontak</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" name="no_telp" id="no_telp"
+                                    class="form-control mb-3 mb-lg-0" placeholder="kontak supplier" />
+                                <span class="text-danger error-text no_telp_error_add"></span>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+
+                          
+
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fw-semibold fs-6 mb-2">Alamat</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" name="alamat" id="alamat"
+                                    class="form-control mb-3 mb-lg-0" placeholder="alamat supplier" />
+                                <span class="text-danger error-text alamat_error_add"></span>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fw-semibold fs-6 mb-2">Keterangan</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" name="keterangan" id="keterangan"
+                                    class="form-control mb-3 mb-lg-0" placeholder="keterangan supplier" />
+                                <span class="text-danger error-text keterangan_error_add"></span>
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -405,29 +446,24 @@
                             searchable: false
                         },
                         {
-                            data: 'jumlah_program',
-                            name: 'jumlah_program',
+                            data: 'no_telp',
+                            name: 'no_telp',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'user_id',
-                            name: 'user_id',
+                            data: 'alamat',
+                            name: 'alamat',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'created_at',
-                            name: 'created_at',
+                            data: 'keterangan',
+                            name: 'keterangan',
                             orderable: false,
                             searchable: false
                         },
-                        {
-                            data: 'updated_at',
-                            name: 'updated_at',
-                            orderable: false,
-                            searchable: false
-                        },
+                       
                         // Kondisi untuk menampilkan kolom Action
                         (canShow || canEdit || canDelete) ? {
                             data: 'action',

@@ -94,7 +94,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('supplier', SupplierController::class);
-    Route::get('get-supplier', [SupplierController::class, 'getDataRoles'])->name('get-supplier');
+    Route::get('get-supplier', [SupplierController::class, 'getData'])->name('get-supplier');
     Route::post('/supplier/mass-delete', [SupplierController::class, 'massDelete'])->name('supplier.mass-delete');
     Route::get('/select/supplier', [SupplierController::class, 'select'])->name('supplier.select');
 
