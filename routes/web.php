@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 
 
 use App\Http\Controllers\Auth\LoginController;
-
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\RoleController;
@@ -23,6 +22,7 @@ use App\Http\Controllers\Backend\Help\LogActivityController;
 
 //CRUD
 use App\Http\Controllers\Backend\CRUD\GeneratorController;
+use App\Http\Controllers\Backend\Apps\PenujualanController;
 
 
 //MASTER
@@ -30,6 +30,11 @@ use App\Http\Controllers\Backend\Master\SupplierController;
 use App\Http\Controllers\Backend\Master\BrandController;
 use App\Http\Controllers\Backend\Master\KategoriController;
 use App\Http\Controllers\Backend\Master\TipeController;
+use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
+use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
+//MASTER
+use App\Http\Controllers\Backend\Master\SupplierController;
+
 
 
 
@@ -59,24 +64,24 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('get-datarole', [RoleController::class, 'getDataRoles'])->name('get-datarole');
     Route::post('/roles/mass-delete', [RoleController::class, 'massDelete'])->name('roles.mass-delete');
     Route::get('/select/role', [RoleController::class, 'select'])->name('role.select');
-    
+
     Route::resource('users', UserController::class);
     Route::get('get-users', [UserController::class, 'getUsers'])->name('get-users');
     Route::post('/users/mass-delete', [UserController::class, 'massDelete'])->name('users.mass-delete');
     Route::get('get-user-show-log/{id}', [UserController::class, 'getUserShowLog'])->name('get-usershowlog');
     Route::get('get-user-show-log-activity/{id}', [UserController::class, 'getUserShowLogActivity'])->name('get-usershowlogactivity');
 
-        Route::resource('account', AccountController::class)->names('account');
-        Route::get('account/{id}/avatar', [AccountController::class,'editAvatar'])->name('avatar-edit');
-        Route::post('updateavatar/{id}', [AccountController::class,'updateAvatar'])->name('avatar-update');
-        Route::resource('profile', ProfileController::class);
-        Route::resource('security', SecurityController::class);
-        Route::post('security', [SecurityController::class, 'store'])->name('change.password');
-        Route::resource('users-log', UserLogController::class);
-        Route::get('get-datauserslog', [UserLogController::class, 'getDataUserLog'])->name('get-datauserslog');
-        Route::get('get-datauserslogactivity', [UserLogController::class, 'getDataUserLogActivity'])->name('get-datauserslogactivity');
+    Route::resource('account', AccountController::class)->names('account');
+    Route::get('account/{id}/avatar', [AccountController::class, 'editAvatar'])->name('avatar-edit');
+    Route::post('updateavatar/{id}', [AccountController::class, 'updateAvatar'])->name('avatar-update');
+    Route::resource('profile', ProfileController::class);
+    Route::resource('security', SecurityController::class);
+    Route::post('security', [SecurityController::class, 'store'])->name('change.password');
+    Route::resource('users-log', UserLogController::class);
+    Route::get('get-datauserslog', [UserLogController::class, 'getDataUserLog'])->name('get-datauserslog');
+    Route::get('get-datauserslogactivity', [UserLogController::class, 'getDataUserLogActivity'])->name('get-datauserslogactivity');
 
-        
+
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     //CHANGELOG ROUTE
@@ -96,7 +101,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('supplier', SupplierController::class);
-    Route::get('get-supplier', [SupplierController::class, 'getData'])->name('get-supplier');
+    Route::get('get-supplier', [SupplierController::class, 'getDataRoles'])->name('get-supplier');
     Route::post('/supplier/mass-delete', [SupplierController::class, 'massDelete'])->name('supplier.mass-delete');
     Route::get('/select/supplier', [SupplierController::class, 'select'])->name('supplier.select');
 
@@ -110,32 +115,37 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/kategori/mass-delete', [KategoriController::class, 'massDelete'])->name('kategori.mass-delete');
     Route::get('/select/kategori', [KategoriController::class, 'select'])->name('kategori.select');
 
+    Route::resource('penjualan', PenjualanController::class);
     Route::resource('tipe', TipeController::class);
     Route::get('get-tipe', [TipeController::class, 'getData'])->name('get-tipe');
     Route::post('/tipe/mass-delete', [TipeController::class, 'massDelete'])->name('tipe.mass-delete');
     Route::get('/select/tipe', [TipeController::class, 'select'])->name('tipe.select');
+    Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
+    Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
+    Route::get('/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('laporan.penjualan.export');
+    Route::resource('laporan-penjualan', LaporanPenjualanController::class);
 
-
-   
-
+    Route::get('laporan-laba-rugi/chart', [LaporanLabaRugiController::class, 'getProfitLossData'])->name('laporan.laba-rugi.chart');
+    Route::get('/laporan/laba-rugi/export-pdf', [LaporanLabaRugiController::class, 'exportLabaRugiPdf'])->name('laporan.laba-rugi.export-pdf');
+    Route::resource('laporan-laba-rugi', LaporanLabaRugiController::class);
 });
 
 
 
-Route::get('/clear-cache', function() {
+Route::get('/clear-cache', function () {
     $exitCode = Artisan::call('cache:clear');
     $exitCode = Artisan::call('config:cache');
     $exitCode = Artisan::call('route:cache');
     $exitCode = Artisan::call('route:clear');
     //$exitCode = Artisan::call('logs:clear');
     $exitCode = Artisan::call('optimize:clear');
-     $exitCode = Artisan::call('storage:link');
+    $exitCode = Artisan::call('storage:link');
     return 'KAMU LUAR BIASA RIZKYCHIMO !'; //Return anything
 });
 
 Route::get('/chimox', function () {
     $exitCode = Artisan::call('storage:link');
-     return 'storage KAMU LUAR BIASA RIZKYCHIMO !'; //Return anything
+    return 'storage KAMU LUAR BIASA RIZKYCHIMO !'; //Return anything
 });
 
 
