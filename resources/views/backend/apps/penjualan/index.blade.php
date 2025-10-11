@@ -16,7 +16,7 @@ $kasirTutup = null;
             <div class="card card-flush h-lg-100 ">
                 <div class="card-header align-items-center py-5 bg-primary ">
                     <div class="card-title flex-column">
-                        <h3 class="fw-bold mb-1 text-white">Simulasi Penjualan</h3>
+                        <h3 class="fw-bold mb-1 text-white">Kasir Penjualan</h3>
                     </div>
                     <div class="card-toolbar d-flex gap-2">
                         <a href="#" class="btn btn-light-info btn-sm">History Penjualan</a>
@@ -81,8 +81,8 @@ $kasirTutup = null;
                                 <label class="mt-3">Pembayaran</label>
                                 <select class="form-select" id="pembayaran-penjualan">
                                     <option value="cash">Cash</option>
-                                    <option value="transfer">Transfer</option>
-                                    <option value="hutang">Hutang</option>
+                                    <option value="mandiri">Bank Mandiri</option>
+                                    <option value="bca">Bank BCA</option>
                                 </select>
                             </div>
                         </div>

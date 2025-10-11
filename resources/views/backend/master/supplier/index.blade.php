@@ -43,50 +43,7 @@
             <!--end::Page title-->
             <!--begin::Actions-->
             <div class="d-flex align-items-center pt-4 pb-7 pt-lg-1 pb-lg-2">
-                <!--begin::Wrapper-->
-                <div class="me-3">
-                    <!--begin::Menu-->
-                    <a href="#" class="btn btn-sm btn-flex btn-dark fw-bold" data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end">
-                        <i class="ki-outline ki-filter fs-2  me-1"></i>Filter</a>
-                    <!--begin::Menu 1-->
-                    <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true"
-                        id="kt_menu_66b9aa0df2f28">
-                        <!--begin::Header-->
-                        <div class="px-7 py-5">
-                            <div class="fs-5 text-gray-900 fw-bold">Filter Options</div>
-                        </div>
-                        <!--end::Header-->
-                        <!--begin::Menu separator-->
-                        <div class="separator border-gray-200"></div>
-                        <!--end::Menu separator-->
-                        <!--begin::Form-->
-                        <div class="px-7 py-5">
-                            <!--begin::Input group-->
-                            <div class="mb-10">
-                                <div class="form-label fs-6 fw-semibold">Role:</div>
-
-                            </div>
-                            <!--end::Input group-->
-
-
-                            <!--begin::Actions-->
-                            <div class="d-flex justify-content-end">
-                                <button type="reset" id="btnResetSearch"
-                                    class="btn btn-sm btn-secondary fw-semibold me-2 px-6" data-kt-menu-dismiss="true"
-                                    data-kt-user-table-filter="reset">Reset</button>
-                                <button type="submit" id="btnFiterSubmitSearch"
-                                    class="btn btn-sm btn-primary fw-semibold px-6" data-kt-menu-dismiss="true"
-                                    data-kt-user-table-filter="filter">Apply</button>
-                            </div>
-                            <!--end::Actions-->
-                        </div>
-                        <!--end::Form-->
-                    </div>
-                    <!--end::Menu 1-->
-                    <!--end::Menu-->
-                </div>
-                <!--end::Wrapper-->
+                
                 <!--begin::Button-->
                 @can('supplier-create')
                     <button type="button" id="btn_tambah_data" class="btn btn-sm btn-primary">
@@ -163,10 +120,9 @@
                                 </th>
                             @endcan
                             <th class="min-w-125px">Nama Supplier</th>
-                            <th class="min-w-125px">Jumlah Resource</th>
-                            <th class="min-w-100px">Dibuat Oleh</th>
-                            <th class="min-w-100px">Created At</th>
-                            <th class="min-w-100px">Updated At</th>
+                            <th class="min-w-125px">Kontak</th>
+                            <th class="min-w-100px">Alamat</th>
+                            <th class="min-w-100px">Keterangan</th>
                             @canany(['supplier-show', 'supplier-edit', 'supplier-delete'])
                                 <th class="text-end min-w-100px">Action</th>
                             @endcanany
@@ -218,12 +174,54 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Nama Istansi</label>
+                                <label class="required fw-semibold fs-6 mb-2">Nama Supplier</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="nama" id="nama"
                                     class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Nama Supplier" />
                                 <span class="text-danger error-text nama_error_add"></span>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+
+
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fw-semibold fs-6 mb-2">Kontak</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" name="no_telp" id="no_telp"
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Kontak Supplier" />
+                                <span class="text-danger error-text no_telp_error_add"></span>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+
+
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fw-semibold fs-6 mb-2">Alamat</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" name="alamat" id="alamat"
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Alamat Supplier" />
+                                <span class="text-danger error-text alamat_error_add"></span>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+
+
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fw-semibold fs-6 mb-2">Keterangan</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" name="keterangan" id="keterangan"
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Keterangan Supplier" />
+                                <span class="text-danger error-text keterangan_error_add"></span>
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -405,29 +403,24 @@
                             searchable: false
                         },
                         {
-                            data: 'jumlah_program',
-                            name: 'jumlah_program',
+                            data: 'no_telp',
+                            name: 'no_telp',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'user_id',
-                            name: 'user_id',
+                            data: 'alamat',
+                            name: 'alamat',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'created_at',
-                            name: 'created_at',
+                            data: 'keterangan',
+                            name: 'keterangan',
                             orderable: false,
                             searchable: false
                         },
-                        {
-                            data: 'updated_at',
-                            name: 'updated_at',
-                            orderable: false,
-                            searchable: false
-                        },
+                     
                         // Kondisi untuk menampilkan kolom Action
                         (canShow || canEdit || canDelete) ? {
                             data: 'action',

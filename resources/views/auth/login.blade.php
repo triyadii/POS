@@ -94,7 +94,7 @@
             <div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
                 <div></div>
                 <!--begin::Link-->
-                <a href="{{ route('password.request') }}" class="link-primary">Forgot Password?</a>
+                {{-- <a href="{{ route('password.request') }}" class="link-primary">Forgot Password?</a> --}}
 
                 <!--end::Link-->
             </div>
@@ -113,10 +113,10 @@
             </div>
             <!--end::Submit button-->
             <!--begin::Sign up-->
-            <div class="text-gray-500 text-center fw-semibold fs-6">Not a Member yet?
+            {{-- <div class="text-gray-500 text-center fw-semibold fs-6">Not a Member yet?
                 <a href="{{ route('register') }}" class="link-primary">Sign
                     up</a>
-            </div>
+            </div> --}}
             <!--end::Sign up-->
         </form>
         <!--end::Form-->

@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use DataTables;
 use Auth;
+use Validator;
 
 class SupplierController extends Controller
 {
