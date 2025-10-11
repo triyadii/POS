@@ -20,7 +20,7 @@ use App\Http\Controllers\Backend\Profile\UserLogController;
 use App\Http\Controllers\Backend\Help\ChangelogController;
 use App\Http\Controllers\Backend\Help\LogActivityController;
 
-//CRUD
+//CRUD 
 use App\Http\Controllers\Backend\CRUD\GeneratorController;
 use App\Http\Controllers\Backend\Apps\PenjualanController;
 
