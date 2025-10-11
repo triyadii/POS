@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 11, 2025 at 05:47 AM
+-- Generation Time: Oct 11, 2025 at 10:40 AM
 -- Server version: 12.0.2-MariaDB-ubu2404
 -- PHP Version: 8.4.13
 
@@ -144,7 +144,87 @@ INSERT INTO `activity_log` (`id`, `log_name`, `description`, `subject_type`, `ev
 (603, 'hapus role', 'Menghapus role User', 'Spatie\\Permission\\Models\\Role', NULL, '12', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":12,\"name\":\"User\",\"guard_name\":\"web\",\"created_at\":\"2024-11-26T15:25:37.000000Z\",\"updated_at\":\"2024-11-26T15:25:37.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 03:08:23', '2025-10-10 03:08:23'),
 (604, 'edit changelog', 'Mengubah changelog dengan nama v1.2.0', 'App\\Models\\Changelog', NULL, 'd98808d5-3ce5-42ec-86c9-19368b893363', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":\"d98808d5-3ce5-42ec-86c9-19368b893363\",\"nama\":\"v1.2.0\",\"deskripsi\":\"simply dummy text of the printing and typesetting industry.\",\"logs\":\"{\\\"New\\\":[{\\\"nama\\\":\\\"12345678\\\",\\\"deskripsi\\\":\\\"aaaaaaaaa\\\"}],\\\"Update\\\":[{\\\"nama\\\":\\\"123\\\",\\\"deskripsi\\\":\\\"aaaaaaa\\\"}],\\\"Fix\\\":[{\\\"nama\\\":\\\"456\\\",\\\"deskripsi\\\":\\\"aaaaaaaaa\\\"}]}\",\"created_at\":\"2024-10-23T21:16:54.000000Z\",\"updated_at\":\"2025-10-10T10:08:42.000000Z\"},\"old\":{\"id\":\"d98808d5-3ce5-42ec-86c9-19368b893363\",\"nama\":\"Tumek v1.2.0\",\"deskripsi\":\"simply dummy text of the printing and typesetting industry.\",\"logs\":\"{\\\"New\\\":[{\\\"nama\\\":\\\"12345678\\\",\\\"deskripsi\\\":\\\"aaaaaaaaa\\\"}],\\\"Update\\\":[{\\\"nama\\\":\\\"123\\\",\\\"deskripsi\\\":\\\"aaaaaaa\\\"}],\\\"Fix\\\":[{\\\"nama\\\":\\\"456\\\",\\\"deskripsi\\\":\\\"aaaaaaaaa\\\"}]}\",\"created_at\":\"2024-10-23T21:16:54.000000Z\",\"updated_at\":\"2024-10-23T22:55:39.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 03:08:42', '2025-10-10 03:08:42'),
 (605, 'login', ' berhasil Login', NULL, NULL, NULL, 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 21:01:47', '2025-10-10 21:01:47'),
-(606, 'edit role', 'Mengubah role Admin', 'Spatie\\Permission\\Models\\Role', NULL, '3', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":3,\"name\":\"Admin\",\"guard_name\":\"web\",\"created_at\":\"2024-10-18T02:14:42.000000Z\",\"updated_at\":\"2024-10-18T02:14:42.000000Z\"},\"old\":{\"id\":3,\"name\":\"Admin\",\"guard_name\":\"web\",\"created_at\":\"2024-10-18T02:14:42.000000Z\",\"updated_at\":\"2024-10-18T02:14:42.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 22:24:26', '2025-10-10 22:24:26');
+(606, 'edit role', 'Mengubah role Admin', 'Spatie\\Permission\\Models\\Role', NULL, '3', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":3,\"name\":\"Admin\",\"guard_name\":\"web\",\"created_at\":\"2024-10-18T02:14:42.000000Z\",\"updated_at\":\"2024-10-18T02:14:42.000000Z\"},\"old\":{\"id\":3,\"name\":\"Admin\",\"guard_name\":\"web\",\"created_at\":\"2024-10-18T02:14:42.000000Z\",\"updated_at\":\"2024-10-18T02:14:42.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 22:24:26', '2025-10-10 22:24:26'),
+(607, 'tambah supplier', 'Menambahkan Supplier: gfbgfb', 'App\\Models\\Supplier', NULL, '0199d1df-6c6b-7358-b61b-9fb796b73555', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"nama\":\"gfbgfb\",\"no_telp\":\"gbg\",\"alamat\":\"bgbgf\",\"keterangan\":\"bgfbg\",\"id\":\"0199d1df-6c6b-7358-b61b-9fb796b73555\",\"updated_at\":\"2025-10-11T06:05:04.000000Z\",\"created_at\":\"2025-10-11T06:05:04.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 23:05:04', '2025-10-10 23:05:04'),
+(608, 'hapus supplier', 'Menghapus Supplier: gfbgfb', 'App\\Models\\Supplier', NULL, '0199d1df-6c6b-7358-b61b-9fb796b73555', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":\"0199d1df-6c6b-7358-b61b-9fb796b73555\",\"nama\":\"gfbgfb\",\"no_telp\":\"gbg\",\"alamat\":\"bgbgf\",\"keterangan\":\"bgfbg\",\"created_at\":\"2025-10-11T06:05:04.000000Z\",\"updated_at\":\"2025-10-11T06:05:04.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 23:25:49', '2025-10-10 23:25:49'),
+(609, 'tambah supplier', 'Menambahkan Supplier: sds', 'App\\Models\\Supplier', NULL, '0199d1f2-8dd5-70cf-bc1b-740dce0cfb88', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"nama\":\"sds\",\"no_telp\":\"sdds\",\"alamat\":\"sdsd\",\"keterangan\":\"sdsdds\",\"id\":\"0199d1f2-8dd5-70cf-bc1b-740dce0cfb88\",\"updated_at\":\"2025-10-11T06:25:58.000000Z\",\"created_at\":\"2025-10-11T06:25:58.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 23:25:58', '2025-10-10 23:25:58'),
+(610, 'mass delete supplier', 'Menghapus Supplier: sds', 'App\\Models\\Supplier', NULL, '0199d1f2-8dd5-70cf-bc1b-740dce0cfb88', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":\"0199d1f2-8dd5-70cf-bc1b-740dce0cfb88\",\"nama\":\"sds\",\"no_telp\":\"sdds\",\"alamat\":\"sdsd\",\"keterangan\":\"sdsdds\",\"created_at\":\"2025-10-11T06:25:58.000000Z\",\"updated_at\":\"2025-10-11T06:25:58.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 23:26:46', '2025-10-10 23:26:46'),
+(611, 'login', ' berhasil Login', NULL, NULL, NULL, 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 23:58:02', '2025-10-10 23:58:02'),
+(612, 'tambah supplier', 'Menambahkan Supplier: dscsdc', 'App\\Models\\Supplier', NULL, '0199d210-283e-7058-bc83-7df173c66b37', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"nama\":\"dscsdc\",\"no_telp\":\"dscds\",\"alamat\":\"cdsc\",\"keterangan\":\"dscdsc\",\"id\":\"0199d210-283e-7058-bc83-7df173c66b37\",\"updated_at\":\"2025-10-11T06:58:18.000000Z\",\"created_at\":\"2025-10-11T06:58:18.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-10 23:58:18', '2025-10-10 23:58:18'),
+(613, 'tambah supplier', 'Menambahkan Supplier: gg', 'App\\Models\\Supplier', NULL, '0199d246-1d96-7210-8ab5-3116ead1921a', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"nama\":\"gg\",\"no_telp\":\"fggh\",\"alamat\":\"ghgh\",\"keterangan\":\"hghgf\",\"id\":\"0199d246-1d96-7210-8ab5-3116ead1921a\",\"updated_at\":\"2025-10-11T07:57:14.000000Z\",\"created_at\":\"2025-10-11T07:57:14.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 00:57:14', '2025-10-11 00:57:14'),
+(614, 'edit role', 'Mengubah role Admin', 'Spatie\\Permission\\Models\\Role', NULL, '3', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":3,\"name\":\"Admin\",\"guard_name\":\"web\",\"created_at\":\"2024-10-18T02:14:42.000000Z\",\"updated_at\":\"2024-10-18T02:14:42.000000Z\"},\"old\":{\"id\":3,\"name\":\"Admin\",\"guard_name\":\"web\",\"created_at\":\"2024-10-18T02:14:42.000000Z\",\"updated_at\":\"2024-10-18T02:14:42.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 01:11:01', '2025-10-11 01:11:01'),
+(615, 'tambah brand', 'Menambahkan Brand: sdsdv', 'App\\Models\\Brand', NULL, '0199d257-3f15-72cd-9ed3-7a19790e1c41', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"nama\":\"sdsdv\",\"deskripsi\":null,\"id\":\"0199d257-3f15-72cd-9ed3-7a19790e1c41\",\"updated_at\":\"2025-10-11T08:15:57.000000Z\",\"created_at\":\"2025-10-11T08:15:57.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 01:15:57', '2025-10-11 01:15:57'),
+(616, 'tambah brand', 'Menambahkan Brand: sdsdvdsfdf', 'App\\Models\\Brand', NULL, '0199d257-6610-7299-8aad-6de6aa3d805b', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"nama\":\"sdsdvdsfdf\",\"deskripsi\":null,\"id\":\"0199d257-6610-7299-8aad-6de6aa3d805b\",\"updated_at\":\"2025-10-11T08:16:07.000000Z\",\"created_at\":\"2025-10-11T08:16:07.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 01:16:07', '2025-10-11 01:16:07'),
+(617, 'hapus brand', 'Menghapus Brand: sdsdvdsfdf', 'App\\Models\\Brand', NULL, '0199d257-6610-7299-8aad-6de6aa3d805b', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":\"0199d257-6610-7299-8aad-6de6aa3d805b\",\"nama\":\"sdsdvdsfdf\",\"deskripsi\":null,\"created_at\":\"2025-10-11T08:16:07.000000Z\",\"updated_at\":\"2025-10-11T08:16:07.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 01:16:11', '2025-10-11 01:16:11'),
+(618, 'tambah brand', 'Menambahkan Brand: cbcbvb', 'App\\Models\\Brand', NULL, '0199d25b-0b23-71b8-aa45-94b923a41a5b', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"nama\":\"cbcbvb\",\"deskripsi\":null,\"id\":\"0199d25b-0b23-71b8-aa45-94b923a41a5b\",\"updated_at\":\"2025-10-11T08:20:06.000000Z\",\"created_at\":\"2025-10-11T08:20:06.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 01:20:06', '2025-10-11 01:20:06');
+INSERT INTO `activity_log` (`id`, `log_name`, `description`, `subject_type`, `event`, `subject_id`, `causer_type`, `causer_id`, `properties`, `batch_uuid`, `created_at`, `updated_at`) VALUES
+(619, 'tambah brand', 'Menambahkan Brand: fdgfgg', 'App\\Models\\Brand', NULL, '0199d25c-81d0-7173-8dda-dfab29539ca7', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"nama\":\"fdgfgg\",\"deskripsi\":\"dfgdfg\",\"id\":\"0199d25c-81d0-7173-8dda-dfab29539ca7\",\"updated_at\":\"2025-10-11T08:21:41.000000Z\",\"created_at\":\"2025-10-11T08:21:41.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 01:21:42', '2025-10-11 01:21:42'),
+(620, 'edit brand', 'Mengubah data Brand: cbcbvb', 'App\\Models\\Brand', NULL, '0199d25b-0b23-71b8-aa45-94b923a41a5b', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":\"0199d25b-0b23-71b8-aa45-94b923a41a5b\",\"nama\":\"cbcbvb\",\"deskripsi\":\"fddfgdfg\",\"created_at\":\"2025-10-11T08:20:06.000000Z\",\"updated_at\":\"2025-10-11T08:24:27.000000Z\"},\"old\":{\"id\":\"0199d25b-0b23-71b8-aa45-94b923a41a5b\",\"nama\":\"cbcbvb\",\"deskripsi\":null,\"created_at\":\"2025-10-11T08:20:06.000000Z\",\"updated_at\":\"2025-10-11T08:20:06.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 01:24:27', '2025-10-11 01:24:27'),
+(621, 'edit role', 'Mengubah role Admin', 'Spatie\\Permission\\Models\\Role', NULL, '3', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":3,\"name\":\"Admin\",\"guard_name\":\"web\",\"created_at\":\"2024-10-18T02:14:42.000000Z\",\"updated_at\":\"2024-10-18T02:14:42.000000Z\"},\"old\":{\"id\":3,\"name\":\"Admin\",\"guard_name\":\"web\",\"created_at\":\"2024-10-18T02:14:42.000000Z\",\"updated_at\":\"2024-10-18T02:14:42.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 02:26:56', '2025-10-11 02:26:56'),
+(622, 'tambah kategori', 'Menambahkan Kategori: esdrtfgjk', 'App\\Models\\Kategori', NULL, '0199d29f-eaaf-715e-a4d8-d122bdbf36db', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"nama\":\"esdrtfgjk\",\"keterangan\":\"wdfcgvhbjn\",\"id\":\"0199d29f-eaaf-715e-a4d8-d122bdbf36db\",\"updated_at\":\"2025-10-11T09:35:19.000000Z\",\"created_at\":\"2025-10-11T09:35:19.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 02:35:19', '2025-10-11 02:35:19'),
+(623, 'tambah kategori', 'Menambahkan Kategori: esdrtfgjkcdffcd', 'App\\Models\\Kategori', NULL, '0199d2a0-0942-7098-90ae-7f24f72011d0', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"nama\":\"esdrtfgjkcdffcd\",\"keterangan\":\"wdfcgvhbjndcf\",\"id\":\"0199d2a0-0942-7098-90ae-7f24f72011d0\",\"updated_at\":\"2025-10-11T09:35:27.000000Z\",\"created_at\":\"2025-10-11T09:35:27.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 02:35:27', '2025-10-11 02:35:27'),
+(624, 'edit kategori', 'Mengubah data Kategori: 123er', 'App\\Models\\Kategori', NULL, '0199d2a0-0942-7098-90ae-7f24f72011d0', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":\"0199d2a0-0942-7098-90ae-7f24f72011d0\",\"nama\":\"123er\",\"keterangan\":\"wdfcgvhbjndcf\",\"created_at\":\"2025-10-11T09:35:27.000000Z\",\"updated_at\":\"2025-10-11T09:35:39.000000Z\"},\"old\":{\"id\":\"0199d2a0-0942-7098-90ae-7f24f72011d0\",\"nama\":\"esdrtfgjkcdffcd\",\"keterangan\":\"wdfcgvhbjndcf\",\"created_at\":\"2025-10-11T09:35:27.000000Z\",\"updated_at\":\"2025-10-11T09:35:27.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 02:35:39', '2025-10-11 02:35:39'),
+(625, 'hapus kategori', 'Menghapus Kategori: 123er', 'App\\Models\\Kategori', NULL, '0199d2a0-0942-7098-90ae-7f24f72011d0', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":\"0199d2a0-0942-7098-90ae-7f24f72011d0\",\"nama\":\"123er\",\"keterangan\":\"wdfcgvhbjndcf\",\"created_at\":\"2025-10-11T09:35:27.000000Z\",\"updated_at\":\"2025-10-11T09:35:39.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 02:35:47', '2025-10-11 02:35:47'),
+(626, 'mass delete kategori', 'Menghapus Kategori: esdrtfgjk', 'App\\Models\\Kategori', NULL, '0199d29f-eaaf-715e-a4d8-d122bdbf36db', 'App\\Models\\User', '6a57a643-965c-4834-9869-df9dae41edc6', '{\"attributes\":{\"id\":\"0199d29f-eaaf-715e-a4d8-d122bdbf36db\",\"nama\":\"esdrtfgjk\",\"keterangan\":\"wdfcgvhbjn\",\"created_at\":\"2025-10-11T09:35:19.000000Z\",\"updated_at\":\"2025-10-11T09:35:19.000000Z\"},\"agent\":{\"ip\":\"127.0.0.1\",\"browser\":\"Chrome\",\"os\":\"Linux\",\"device\":\"Desktop\",\"robot\":false}}', NULL, '2025-10-11 02:35:53', '2025-10-11 02:35:53');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `barang`
+--
+
+CREATE TABLE `barang` (
+  `id` char(36) NOT NULL,
+  `kode_barang` varchar(50) NOT NULL,
+  `nama` varchar(150) NOT NULL,
+  `kategori_id` char(36) NOT NULL,
+  `brand_id` char(36) NOT NULL,
+  `tipe_id` char(36) DEFAULT NULL,
+  `satuan` varchar(50) NOT NULL DEFAULT 'pcs',
+  `stok` int(11) NOT NULL DEFAULT 0,
+  `harga_beli` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `harga_jual` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `barang_masuk`
+--
+
+CREATE TABLE `barang_masuk` (
+  `id` char(36) NOT NULL DEFAULT uuid(),
+  `kode_transaksi` varchar(50) NOT NULL,
+  `tanggal_masuk` date NOT NULL,
+  `supplier_id` char(36) DEFAULT NULL,
+  `user_id` char(36) NOT NULL,
+  `total_item` int(11) NOT NULL DEFAULT 0,
+  `total_harga` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `catatan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `barang_masuk_detail`
+--
+
+CREATE TABLE `barang_masuk_detail` (
+  `id` char(36) NOT NULL DEFAULT uuid(),
+  `barang_masuk_id` char(36) NOT NULL,
+  `barang_id` char(36) NOT NULL,
+  `qty` int(11) NOT NULL DEFAULT 0,
+  `harga_beli` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `subtotal` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -160,6 +240,15 @@ CREATE TABLE `brands` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `brands`
+--
+
+INSERT INTO `brands` (`id`, `nama`, `deskripsi`, `created_at`, `updated_at`) VALUES
+('0199d257-3f15-72cd-9ed3-7a19790e1c41', 'sdsdv', NULL, '2025-10-11 01:15:57', '2025-10-11 01:15:57'),
+('0199d25b-0b23-71b8-aa45-94b923a41a5b', 'cbcbvb', 'fddfgdfg', '2025-10-11 01:20:06', '2025-10-11 01:24:27'),
+('0199d25c-81d0-7173-8dda-dfab29539ca7', 'fdgfgg', 'dfgdfg', '2025-10-11 01:21:41', '2025-10-11 01:21:41');
+
 -- --------------------------------------------------------
 
 --
@@ -171,13 +260,6 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `cache`
---
-
-INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:5:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:8:\"category\";s:1:\"d\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:26:{i:0;a:5:{s:1:\"a\";i:1;s:1:\"b\";s:9:\"role-list\";s:1:\"c\";s:15:\"Role Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:1;a:5:{s:1:\"a\";i:2;s:1:\"b\";s:11:\"role-create\";s:1:\"c\";s:15:\"Role Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:2;a:5:{s:1:\"a\";i:3;s:1:\"b\";s:9:\"role-edit\";s:1:\"c\";s:15:\"Role Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:3;a:5:{s:1:\"a\";i:4;s:1:\"b\";s:11:\"role-delete\";s:1:\"c\";s:15:\"Role Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:4;a:5:{s:1:\"a\";i:5;s:1:\"b\";s:15:\"role-massdelete\";s:1:\"c\";s:15:\"Role Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:5;a:5:{s:1:\"a\";i:9;s:1:\"b\";s:9:\"user-list\";s:1:\"c\";s:15:\"User Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:6;a:5:{s:1:\"a\";i:10;s:1:\"b\";s:11:\"user-create\";s:1:\"c\";s:15:\"User Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:7;a:5:{s:1:\"a\";i:11;s:1:\"b\";s:9:\"user-edit\";s:1:\"c\";s:15:\"User Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:8;a:5:{s:1:\"a\";i:12;s:1:\"b\";s:11:\"user-delete\";s:1:\"c\";s:15:\"User Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:9;a:5:{s:1:\"a\";i:13;s:1:\"b\";s:9:\"user-show\";s:1:\"c\";s:15:\"User Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:10;a:5:{s:1:\"a\";i:14;s:1:\"b\";s:15:\"user-massdelete\";s:1:\"c\";s:15:\"User Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:11;a:5:{s:1:\"a\";i:15;s:1:\"b\";s:16:\"logactivity-list\";s:1:\"c\";s:12:\"Log Activity\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:12;a:5:{s:1:\"a\";i:16;s:1:\"b\";s:16:\"logactivity-show\";s:1:\"c\";s:12:\"Log Activity\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:13;a:5:{s:1:\"a\";i:17;s:1:\"b\";s:9:\"role-show\";s:1:\"c\";s:15:\"Role Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:14;a:5:{s:1:\"a\";i:18;s:1:\"b\";s:14:\"changelog-list\";s:1:\"c\";s:9:\"Changelog\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:15;a:5:{s:1:\"a\";i:19;s:1:\"b\";s:16:\"changelog-create\";s:1:\"c\";s:9:\"Changelog\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:16;a:5:{s:1:\"a\";i:20;s:1:\"b\";s:14:\"changelog-edit\";s:1:\"c\";s:9:\"Changelog\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:17;a:5:{s:1:\"a\";i:21;s:1:\"b\";s:16:\"changelog-delete\";s:1:\"c\";s:9:\"Changelog\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:18;a:5:{s:1:\"a\";i:22;s:1:\"b\";s:14:\"changelog-show\";s:1:\"c\";s:9:\"Changelog\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:19;a:5:{s:1:\"a\";i:23;s:1:\"b\";s:20:\"changelog-massdelete\";s:1:\"c\";s:9:\"Changelog\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:20;a:5:{s:1:\"a\";i:112;s:1:\"b\";s:13:\"supplier-list\";s:1:\"c\";s:19:\"Supplier Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:21;a:5:{s:1:\"a\";i:113;s:1:\"b\";s:15:\"supplier-create\";s:1:\"c\";s:19:\"Supplier Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:22;a:5:{s:1:\"a\";i:114;s:1:\"b\";s:13:\"supplier-edit\";s:1:\"c\";s:19:\"Supplier Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:23;a:5:{s:1:\"a\";i:115;s:1:\"b\";s:15:\"supplier-delete\";s:1:\"c\";s:19:\"Supplier Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:24;a:5:{s:1:\"a\";i:116;s:1:\"b\";s:13:\"supplier-show\";s:1:\"c\";s:19:\"Supplier Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}i:25;a:5:{s:1:\"a\";i:117;s:1:\"b\";s:19:\"supplier-massdelete\";s:1:\"c\";s:19:\"Supplier Management\";s:1:\"d\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:3;}}}s:5:\"roles\";a:1:{i:0;a:3:{s:1:\"a\";i:3;s:1:\"b\";s:5:\"Admin\";s:1:\"d\";s:3:\"web\";}}}', 1760246668);
 
 -- --------------------------------------------------------
 
@@ -268,6 +350,20 @@ CREATE TABLE `job_batches` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `kategori`
+--
+
+CREATE TABLE `kategori` (
+  `id` char(36) NOT NULL DEFAULT uuid(),
+  `nama` varchar(100) NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `migrations`
 --
 
@@ -305,7 +401,14 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (21, '2025_08_28_152253_create_user_admin_table', 11),
 (22, '2025_08_28_152253_create_user_dev_table', 11),
 (23, '2025_10_11_044604_create_suppliers_table', 12),
-(24, '2025_10_11_044605_create_brands_table', 12);
+(24, '2025_10_11_044605_create_brands_table', 12),
+(25, '2025_10_11_082730_create_kategori_table', 13),
+(26, '2025_10_11_094412_create_tipe_table', 14),
+(27, '2025_10_11_094652_create_barang_table', 14),
+(28, '2025_10_11_095349_create_barang_masuk_table', 15),
+(29, '2025_10_11_095350_create_barang_masuk_detail_table', 15),
+(30, '2025_10_11_095712_create_penjualan_table', 15),
+(31, '2025_10_11_095713_create_penjualan_detail_table', 15);
 
 -- --------------------------------------------------------
 
@@ -366,6 +469,43 @@ INSERT INTO `password_reset_tokens` (`email`, `token`, `created_at`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `penjualan`
+--
+
+CREATE TABLE `penjualan` (
+  `id` char(36) NOT NULL DEFAULT uuid(),
+  `kode_transaksi` varchar(50) NOT NULL,
+  `tanggal_penjualan` date NOT NULL,
+  `customer_nama` varchar(150) DEFAULT NULL,
+  `user_id` char(36) NOT NULL,
+  `total_item` int(11) NOT NULL DEFAULT 0,
+  `total_harga` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `catatan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `penjualan_detail`
+--
+
+CREATE TABLE `penjualan_detail` (
+  `id` char(36) NOT NULL DEFAULT uuid(),
+  `penjualan_id` char(36) NOT NULL,
+  `barang_id` char(36) NOT NULL,
+  `qty` int(11) NOT NULL DEFAULT 0,
+  `harga_jual` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `subtotal` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `permissions`
 --
 
@@ -408,7 +548,19 @@ INSERT INTO `permissions` (`id`, `name`, `category`, `guard_name`, `created_at`,
 (114, 'supplier-edit', 'Supplier Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
 (115, 'supplier-delete', 'Supplier Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
 (116, 'supplier-show', 'Supplier Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
-(117, 'supplier-massdelete', 'Supplier Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29');
+(117, 'supplier-massdelete', 'Supplier Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(118, 'brand-list', 'Brand Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(119, 'brand-create', 'Brand Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(120, 'brand-edit', 'Brand Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(121, 'brand-delete', 'Brand Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(122, 'brand-show', 'Brand Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(123, 'brand-massdelete', 'Brand Management', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(124, 'kategori-list', 'kategori Barang', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(125, 'kategori-create', 'kategori Barang', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(126, 'kategori-edit', 'kategori Barang', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(127, 'kategori-delete', 'kategori Barang', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(128, 'kategori-show', 'kategori Barang', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29'),
+(129, 'kategori-massdelete', 'kategori Barang', 'web', '2024-10-09 20:13:29', '2024-10-09 20:13:29');
 
 -- --------------------------------------------------------
 
@@ -491,7 +643,19 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (114, 3),
 (115, 3),
 (116, 3),
-(117, 3);
+(117, 3),
+(118, 3),
+(119, 3),
+(120, 3),
+(121, 3),
+(122, 3),
+(123, 3),
+(124, 3),
+(125, 3),
+(126, 3),
+(127, 3),
+(128, 3),
+(129, 3);
 
 -- --------------------------------------------------------
 
@@ -538,7 +702,7 @@ CREATE TABLE `setting_app` (
 --
 
 INSERT INTO `setting_app` (`id`, `logo_black`, `logo_white`, `logo_mobile`, `favicon`, `footer`, `created_at`, `updated_at`) VALUES
-(1, 'settings/logo_black_1760093272.svg', 'settings/logo_white_1760093286.svg', 'settings/logo_mobile_1760093286.svg', 'settings/favicon_1760093377.png', 'DIskon Besar 22', NULL, '2025-10-10 03:49:37');
+(1, 'settings/logo_black_1760169598.svg', 'settings/logo_white_1760169598.svg', 'settings/logo_mobile_1760169598.svg', 'settings/favicon_1760169598.ico', 'DIskon Besar 22', NULL, '2025-10-11 00:59:58');
 
 -- --------------------------------------------------------
 
@@ -552,6 +716,28 @@ CREATE TABLE `suppliers` (
   `no_telp` varchar(20) DEFAULT NULL,
   `alamat` text DEFAULT NULL,
   `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `suppliers`
+--
+
+INSERT INTO `suppliers` (`id`, `nama`, `no_telp`, `alamat`, `keterangan`, `created_at`, `updated_at`) VALUES
+('0199d210-283e-7058-bc83-7df173c66b37', 'dscsdc', 'dscds', 'cdsc', 'dscdsc', '2025-10-10 23:58:18', '2025-10-10 23:58:18'),
+('0199d246-1d96-7210-8ab5-3116ead1921a', 'gg', 'fggh', 'ghgh', 'hghgf', '2025-10-11 00:57:14', '2025-10-11 00:57:14');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tipe`
+--
+
+CREATE TABLE `tipe` (
+  `id` char(36) NOT NULL,
+  `brand_id` char(36) NOT NULL,
+  `nama` varchar(100) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -583,7 +769,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `last_login_at`, `last_login_ip`, `avatar`, `provider`, `google_id`) VALUES
-('6a57a643-965c-4834-9869-df9dae41edc6', 'Admin', 'admin@gmail.com', NULL, '$2y$12$ayeff/uw.I1sHB9s/DV2purod3zExlxpcK7L83dCSgls5D2Rmvx1a', NULL, '2024-10-17 19:14:42', '2025-10-10 21:01:47', '2025-10-11 04:01:47', '127.0.0.1', '20241023174705dd68d663d3d7224c1e758c67d694e8f9.jpg', NULL, NULL);
+('6a57a643-965c-4834-9869-df9dae41edc6', 'Admin', 'admin@gmail.com', NULL, '$2y$12$ayeff/uw.I1sHB9s/DV2purod3zExlxpcK7L83dCSgls5D2Rmvx1a', NULL, '2024-10-17 19:14:42', '2025-10-10 23:58:02', '2025-10-11 06:58:02', '127.0.0.1', '20241023174705dd68d663d3d7224c1e758c67d694e8f9.jpg', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -597,6 +783,26 @@ ALTER TABLE `activity_log`
   ADD KEY `subject` (`subject_type`,`subject_id`),
   ADD KEY `causer` (`causer_type`,`causer_id`),
   ADD KEY `activity_log_log_name_index` (`log_name`);
+
+--
+-- Indexes for table `barang`
+--
+ALTER TABLE `barang`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `barang_kode_barang_unique` (`kode_barang`);
+
+--
+-- Indexes for table `barang_masuk`
+--
+ALTER TABLE `barang_masuk`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `barang_masuk_kode_transaksi_unique` (`kode_transaksi`);
+
+--
+-- Indexes for table `barang_masuk_detail`
+--
+ALTER TABLE `barang_masuk_detail`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `brands`
@@ -643,6 +849,12 @@ ALTER TABLE `job_batches`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `kategori`
+--
+ALTER TABLE `kategori`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `migrations`
 --
 ALTER TABLE `migrations`
@@ -667,6 +879,19 @@ ALTER TABLE `model_has_roles`
 --
 ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
+
+--
+-- Indexes for table `penjualan`
+--
+ALTER TABLE `penjualan`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `penjualan_kode_transaksi_unique` (`kode_transaksi`);
+
+--
+-- Indexes for table `penjualan_detail`
+--
+ALTER TABLE `penjualan_detail`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `permissions`
@@ -719,6 +944,12 @@ ALTER TABLE `suppliers`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `tipe`
+--
+ALTER TABLE `tipe`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -734,7 +965,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=607;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=627;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -752,13 +983,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
