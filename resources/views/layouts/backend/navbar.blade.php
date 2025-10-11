@@ -1,6 +1,10 @@
 <div class="app-navbar flex-shrink-0">
     <!--begin::Notifications-->
     <div class="app-navbar-item">
+        <a href="#" class="btn btn-icon-primary btn-sm btn-secondary">
+            <i class="ki-duotone ki-finance-calculator fs-1"><span class="path1"></span><span class="path2"></span></i>
+            KASIR
+        </a>
         <!--begin::Menu- wrapper-->
         <div class="btn btn-icon btn-icon-gray-600 btn-active-color-primary"
             data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
@@ -83,31 +87,31 @@
                     <div class="scroll-y mh-325px my-5 px-8">
 
                         @forelse($userActivities as $activity)
-                            <!--begin::Item-->
-                            <div class="d-flex flex-stack py-4">
-                                <!--begin::Section-->
-                                <div class="d-flex align-items-center me-2">
+                        <!--begin::Item-->
+                        <div class="d-flex flex-stack py-4">
+                            <!--begin::Section-->
+                            <div class="d-flex align-items-center me-2">
 
 
-                                    <!--end::Code-->
-                                    <!--begin::Title-->
-                                    <a class="text-gray-800 fs-8 text-hover-primary fw-semibold">
-                                        {{ $activity->description }}
-                                    </a>
-                                    <!--end::Title-->
-                                </div>
-                                <!--end::Section-->
-                                <!--begin::Label-->
-                                <span class="badge badge-secondary fs-9">
-                                    {{ $activity->created_at->diffForHumans() }}
-                                </span>
-                                <!--end::Label-->
+                                <!--end::Code-->
+                                <!--begin::Title-->
+                                <a class="text-gray-800 fs-8 text-hover-primary fw-semibold">
+                                    {{ $activity->description }}
+                                </a>
+                                <!--end::Title-->
                             </div>
-                            <!--end::Item-->
+                            <!--end::Section-->
+                            <!--begin::Label-->
+                            <span class="badge badge-secondary fs-9">
+                                {{ $activity->created_at->diffForHumans() }}
+                            </span>
+                            <!--end::Label-->
+                        </div>
+                        <!--end::Item-->
                         @empty
-                            <div class="text-center text-gray-500 py-10">
-                                Tidak ada aktivitas terbaru.
-                            </div>
+                        <div class="text-center text-gray-500 py-10">
+                            Tidak ada aktivitas terbaru.
+                        </div>
                         @endforelse
 
                     </div>
@@ -151,27 +155,27 @@
             <div class="cursor-pointer symbol symbol-circle symbol-35px symbol-md-40px">
                 {{-- @if (Auth::user()->avatar)
                     <img class="" src="{{ asset('uploads/user/avatar/' . Auth::user()->avatar) }}"
-                        alt="{{ Auth::user()->name }}" />
+                alt="{{ Auth::user()->name }}" />
                 @else
-                    <div class="symbol-label fs-3 bg-light-primary text-primary">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                    </div>
+                <div class="symbol-label fs-3 bg-light-primary text-primary">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </div>
                 @endif --}}
 
                 @if (Auth::user()->avatar)
-                    @if (Auth::user()->provider == 'google')
-                        <!-- Jika provider adalah Google, tampilkan avatar dari URL Google -->
-                        <img class="" src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" />
-                    @else
-                        <!-- Jika provider bukan Google (misalnya aplikasi Laravel), tampilkan avatar lokal -->
-                        <img class="" src="{{ asset('uploads/user/avatar/' . Auth::user()->avatar) }}"
-                            alt="{{ Auth::user()->name }}" />
-                    @endif
+                @if (Auth::user()->provider == 'google')
+                <!-- Jika provider adalah Google, tampilkan avatar dari URL Google -->
+                <img class="" src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" />
                 @else
-                    <!-- Jika tidak ada avatar, tampilkan inisial nama pengguna -->
-                    <div class="symbol-label fs-3 bg-light-primary text-primary">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                    </div>
+                <!-- Jika provider bukan Google (misalnya aplikasi Laravel), tampilkan avatar lokal -->
+                <img class="" src="{{ asset('uploads/user/avatar/' . Auth::user()->avatar) }}"
+                    alt="{{ Auth::user()->name }}" />
+                @endif
+                @else
+                <!-- Jika tidak ada avatar, tampilkan inisial nama pengguna -->
+                <div class="symbol-label fs-3 bg-light-primary text-primary">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </div>
                 @endif
 
                 <div
@@ -192,19 +196,19 @@
 
 
                         @if (Auth::user()->avatar)
-                            @if (Auth::user()->provider == 'google')
-                                <!-- Jika provider adalah Google, tampilkan avatar dari URL Google -->
-                                <img class="" src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" />
-                            @else
-                                <!-- Jika provider bukan Google (misalnya aplikasi Laravel), tampilkan avatar lokal -->
-                                <img class="" src="{{ asset('uploads/user/avatar/' . Auth::user()->avatar) }}"
-                                    alt="{{ Auth::user()->name }}" />
-                            @endif
+                        @if (Auth::user()->provider == 'google')
+                        <!-- Jika provider adalah Google, tampilkan avatar dari URL Google -->
+                        <img class="" src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" />
                         @else
-                            <!-- Jika tidak ada avatar, tampilkan inisial nama pengguna -->
-                            <div class="symbol-label fs-3 bg-light-primary text-primary">
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                            </div>
+                        <!-- Jika provider bukan Google (misalnya aplikasi Laravel), tampilkan avatar lokal -->
+                        <img class="" src="{{ asset('uploads/user/avatar/' . Auth::user()->avatar) }}"
+                            alt="{{ Auth::user()->name }}" />
+                        @endif
+                        @else
+                        <!-- Jika tidak ada avatar, tampilkan inisial nama pengguna -->
+                        <div class="symbol-label fs-3 bg-light-primary text-primary">
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        </div>
                         @endif
                     </div>
                     <!--end::Avatar-->
@@ -297,8 +301,8 @@
                 @csrf
             </form>
             <div class="menu-item px-5">
-                <a href="#" onclick="event.preventDefault(); showLogoutConfirmation();"
-                    class="menu-link px-5">Sign Out</a>
+                <a href="#" onclick="event.preventDefault(); showLogoutConfirmation();" class="menu-link px-5">Sign
+                    Out</a>
             </div>
 
 
@@ -316,30 +320,30 @@
 </div>
 
 @push('stylesheets')
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
+<meta name="csrf-token" content="{{ csrf_token() }}" />
 @endpush
 
 @push('scripts')
-    <script type="text/javascript">
-        function showLogoutConfirmation() {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You will be logged out!",
-                icon: 'warning',
-                showCancelButton: true,
-                //confirmButtonColor: '#3085d6',
-                //cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, log me out!',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    confirmButton: "btn btn-sm btn-primary",
-                    cancelButton: "btn btn-sm btn-danger"
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        }
-    </script>
+<script type="text/javascript">
+    function showLogoutConfirmation() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You will be logged out!",
+            icon: 'warning',
+            showCancelButton: true,
+            //confirmButtonColor: '#3085d6',
+            //cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, log me out!',
+            cancelButtonText: 'Cancel',
+            customClass: {
+                confirmButton: "btn btn-sm btn-primary",
+                cancelButton: "btn btn-sm btn-danger"
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logout-form').submit();
+            }
+        });
+    }
+</script>
 @endpush
