@@ -27,6 +27,13 @@ class Barang extends Model
         'keterangan',
     ];
 
+    // Tambahkan properti ini di file Barang.php
+    protected $casts = [
+        'stok' => 'integer',
+        'harga_beli' => 'float', // atau 'integer' jika tidak ada desimal
+        'harga_jual' => 'float', // atau 'integer'
+    ];
+
     // ==========================
     // 🔗 RELASI MODEL
     // ==========================
