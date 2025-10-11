@@ -1,8 +1,29 @@
+# [12.6.0](https://github.com/yajra/laravel-datatables/compare/v12.5.1...v12.6.0) (2025-10-08)
+
+
+### Bug Fixes
+
+* replace unsafe eval() with Blade::render() in compileBlade ([7f46d58](https://github.com/yajra/laravel-datatables/commit/7f46d5872b0324493c28ecc8d848c182e88f30e0))
+
+
+### Features
+
+* add __isset() method to Request for attribute existence check ([33f44d4](https://github.com/yajra/laravel-datatables/commit/33f44d42d284d6ea0a054de81ad5a57c3050867d))
+
 # Laravel DataTables 
 
 ## CHANGELOG
 
 ### [Unreleased]
+
+### v12.5.1 - 2025-10-02
+
+- fix: ambiguous column in columnControlSearch() method #3252
+
+### v12.5.0 - 2025-10-01
+
+- feat: server-side column control #3251
+- fix: https://github.com/yajra/laravel-datatables/issues/3250
 
 ### v12.4.2 - 2025-09-09
 
