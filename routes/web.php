@@ -30,8 +30,9 @@ use App\Http\Controllers\Backend\Master\SupplierController;
 use App\Http\Controllers\Backend\Master\BrandController;
 use App\Http\Controllers\Backend\Master\KategoriController;
 use App\Http\Controllers\Backend\Master\TipeController;
-use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
+use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
+
 
 
 
