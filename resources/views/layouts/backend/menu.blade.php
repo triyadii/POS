@@ -19,60 +19,27 @@
             </a>
         </div>
         <!--end:Menu item-->
-        @canany(['supplier-list','brand-list','kategori-list'])
+        @canany(['dealer-list'])
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
                 class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
                 <!--begin:Menu link-->
-                <span class="menu-link py-3 {{ request()->routeIs(
-                        'supplier.index',
-                        'brand.index',
-                        'kategori.index',
-                    )
-                        ? 'active '
-                        : '' }}">
-                    <span class="menu-title">Master</span>
+                <span class="menu-link py-3">
+                    <span class="menu-title">Apps</span>
                     <span class="menu-arrow d-lg-none"></span>
                 </span>
                 <!--end:Menu link-->
                 <!--begin:Menu sub-->
                 <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-250px">
 
-                    @can('supplier-list')
-                        <div class="menu-item {{ request()->routeIs('supplier.index') ? 'here show ' : '' }}">
+                    @can('dealer-list')
+                        <div class="menu-item ">
                             <!--begin:Menu link-->
-                            <a class="menu-link py-3" href="{{ route('supplier.index') }}">
+                            <a class="menu-link py-3" href="">
                                 <span class="menu-icon">
                                     <i class="ki-outline ki-bank fs-2"></i>
                                 </span>
-                                <span class="menu-title">Supplier</span>
-                            </a>
-                            <!--end:Menu link-->
-                        </div>
-                    @endcan
-
-                    @can('brand-list')
-                        <div class="menu-item {{ request()->routeIs('brand.index') ? 'here show ' : '' }}">
-                            <!--begin:Menu link-->
-                            <a class="menu-link py-3" href="{{ route('brand.index') }}">
-                                <span class="menu-icon">
-                                    <i class="ki-outline ki-bank fs-2"></i>
-                                </span>
-                                <span class="menu-title">Brand</span>
-                            </a>
-                            <!--end:Menu link-->
-                        </div>
-                    @endcan
-
-
-                    @can('kategori-list')
-                        <div class="menu-item {{ request()->routeIs('kategori.index') ? 'here show ' : '' }}">
-                            <!--begin:Menu link-->
-                            <a class="menu-link py-3" href="{{ route('kategori.index') }}">
-                                <span class="menu-icon">
-                                    <i class="ki-outline ki-bank fs-2"></i>
-                                </span>
-                                <span class="menu-title">Kategori</span>
+                                <span class="menu-title">Dealer</span>
                             </a>
                             <!--end:Menu link-->
                         </div>
