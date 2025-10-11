@@ -25,11 +25,7 @@ return new class extends Migration
             $table->decimal('harga_jual', 15, 2)->default(0);
             $table->text('keterangan')->nullable();
             $table->timestamps();
-
-           
         });
-
-       
     }
 
     /**
