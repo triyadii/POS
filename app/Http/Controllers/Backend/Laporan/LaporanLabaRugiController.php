@@ -47,7 +47,7 @@ class LaporanLabaRugiController extends Controller
 
         // Anda perlu membuat view blade baru untuk tampilan PDF
         // contoh: resources/views/backend/laporan/laporan-laba-rugi/laba_rugi_pdf.blade.php
-        $pdf = Pdf::loadView('backend.laporan.laporan-laba-rugi.laba_rugi_pdf', [
+        $pdf = Pdf::loadView('backend.laporan.laporan_laba_rugi.laba_rugi_pdf', [
             'periode' => $periode,
             'start' => $start->format('d-m-Y'),
             'end' => $end->format('d-m-Y')

@@ -73,7 +73,7 @@
         <div class="header">
             <h1>Laporan Laba Rugi</h1>
             {{-- Ganti dengan nama usaha Anda --}}
-            <p><strong>Nama Usaha Anda</strong></p>
+            <p><strong>DISKON BESAR 22</strong></p>
             <p>Periode: {{ \Carbon\Carbon::parse($start)->format('d F Y') }} -
                 {{ \Carbon\Carbon::parse($end)->format('d F Y') }}</p>
         </div>
