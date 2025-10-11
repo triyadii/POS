@@ -30,6 +30,7 @@ use App\Http\Controllers\Backend\Apps\PenjualanController;
 use App\Http\Controllers\Backend\Master\SupplierController;
 use App\Http\Controllers\Backend\Master\BrandController;
 use App\Http\Controllers\Backend\Master\KategoriController;
+use App\Http\Controllers\Backend\Master\TipeController;
 
 
 
@@ -111,6 +112,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/select/kategori', [KategoriController::class, 'select'])->name('kategori.select');
 
     Route::resource('penjualan', PenjualanController::class);
+    Route::resource('tipe', TipeController::class);
+    Route::get('get-tipe', [TipeController::class, 'getData'])->name('get-tipe');
+    Route::post('/tipe/mass-delete', [TipeController::class, 'massDelete'])->name('tipe.mass-delete');
+    Route::get('/select/tipe', [TipeController::class, 'select'])->name('tipe.select');
 });
 
 
