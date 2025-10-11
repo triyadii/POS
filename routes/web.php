@@ -22,6 +22,14 @@ use App\Http\Controllers\Backend\Help\LogActivityController;
 
 //CRUD
 use App\Http\Controllers\Backend\CRUD\GeneratorController;
+use App\Http\Controllers\Backend\Apps\PenujualanController;
+
+
+//MASTER
+use App\Http\Controllers\Backend\Master\SupplierController;
+use App\Http\Controllers\Backend\Master\BrandController;
+use App\Http\Controllers\Backend\Master\KategoriController;
+use App\Http\Controllers\Backend\Master\TipeController;
 use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
 //MASTER
@@ -97,6 +105,21 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/supplier/mass-delete', [SupplierController::class, 'massDelete'])->name('supplier.mass-delete');
     Route::get('/select/supplier', [SupplierController::class, 'select'])->name('supplier.select');
 
+    Route::resource('brand', BrandController::class);
+    Route::get('get-brand', [BrandController::class, 'getData'])->name('get-brand');
+    Route::post('/brand/mass-delete', [BrandController::class, 'massDelete'])->name('brand.mass-delete');
+    Route::get('/select/brand', [BrandController::class, 'select'])->name('brand.select');
+
+    Route::resource('kategori', KategoriController::class);
+    Route::get('get-kategori', [KategoriController::class, 'getData'])->name('get-kategori');
+    Route::post('/kategori/mass-delete', [KategoriController::class, 'massDelete'])->name('kategori.mass-delete');
+    Route::get('/select/kategori', [KategoriController::class, 'select'])->name('kategori.select');
+
+    Route::resource('penjualan', PenjualanController::class);
+    Route::resource('tipe', TipeController::class);
+    Route::get('get-tipe', [TipeController::class, 'getData'])->name('get-tipe');
+    Route::post('/tipe/mass-delete', [TipeController::class, 'massDelete'])->name('tipe.mass-delete');
+    Route::get('/select/tipe', [TipeController::class, 'select'])->name('tipe.select');
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
     Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
     Route::get('/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('laporan.penjualan.export');
