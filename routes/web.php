@@ -30,8 +30,8 @@ use App\Http\Controllers\Backend\Master\SupplierController;
 use App\Http\Controllers\Backend\Master\BrandController;
 use App\Http\Controllers\Backend\Master\KategoriController;
 use App\Http\Controllers\Backend\Master\TipeController;
-use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
+use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
 
 
 
@@ -100,7 +100,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('supplier', SupplierController::class);
-    Route::get('get-supplier', [SupplierController::class, 'getData'])->name('get-supplier');
+    Route::get('get-supplier', [SupplierController::class, 'getDataRoles'])->name('get-supplier');
     Route::post('/supplier/mass-delete', [SupplierController::class, 'massDelete'])->name('supplier.mass-delete');
     Route::get('/select/supplier', [SupplierController::class, 'select'])->name('supplier.select');
 
