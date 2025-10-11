@@ -5,132 +5,100 @@ namespace App\Http\Controllers\Backend\Laporan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Ramsey\Uuid\Uuid;
-use Auth;
+use App\Models\Penjualan;
+use App\Models\PenjualanDetail;
 use DB;
-
-
 use Barryvdh\DomPDF\Facade\Pdf;
-
-
-
 
 class LaporanLabaRugiController extends Controller
 {
-
     public function index(Request $request)
     {
+        // Ganti path view jika berbeda, sesuaikan dengan error sebelumnya
         return view('backend.laporan.laporan_laba_rugi.index');
     }
 
-
+    /**
+     * Method utama untuk mengambil data dan dikirim sebagai JSON untuk chart
+     */
     public function getProfitLossData(Request $request)
     {
-        // $start = Carbon::parse($request->filter_tanggal_start);
-        // $end = Carbon::parse($request->filter_tanggal_end);
+        $start = Carbon::parse($request->filter_tanggal_start)->startOfDay();
+        $end = Carbon::parse($request->filter_tanggal_end)->endOfDay();
 
-        // // Ambil pendapatan dari penjualan_detail
-        // $penjualan = PenjualanDetail::selectRaw('penjualan.tanggal, SUM(penjualan_detail.subtotal) as total')
-        //     ->join('penjualan', 'penjualan.id', '=', 'penjualan_detail.penjualan_id')
-        //     ->whereBetween('penjualan.tanggal', [$start, $end])
-        //     ->groupBy('penjualan.tanggal')
-        //     ->pluck('total', 'penjualan.tanggal');
+        $data = $this->_calculateProfitLossData($start, $end);
 
-        // // Ambil pendapatan dari tiket masuk
-        // $tiket = DB::table('tiket_masuk')
-        //     ->selectRaw('tanggal, SUM(harga) as total')
-        //     ->whereBetween('tanggal', [$start, $end])
-        //     ->groupBy('tanggal')
-        //     ->pluck('total', 'tanggal');
-
-        // // Ambil pengeluaran
-        // $pengeluaran = DB::table('pengeluaran')
-        //     ->selectRaw('tanggal, SUM(harga) as total')
-        //     ->whereBetween('tanggal', [$start, $end])
-        //     ->groupBy('tanggal')
-        //     ->pluck('total', 'tanggal');
-
-        // // Siapkan array tanggal
-        // $periode = [];
-        // for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
-        //     $tanggalStr = $date->format('Y-m-d');
-
-        //     $pendapatanPenjualan = $penjualan[$tanggalStr] ?? 0;
-        //     $pendapatanTiket = $tiket[$tanggalStr] ?? 0;
-        //     $totalPendapatan = $pendapatanPenjualan + $pendapatanTiket;
-
-        //     $totalPengeluaran = $pengeluaran[$tanggalStr] ?? 0;
-
-        //     $periode[] = [
-        //         'tanggal' => $tanggalStr,
-        //         'pendapatan_penjualan' => $pendapatanPenjualan,
-        //         'pendapatan_tiket' => $pendapatanTiket,
-        //         'total_pendapatan' => $totalPendapatan,
-        //         'pengeluaran' => $totalPengeluaran,
-        //         'laba_bersih' => $totalPendapatan - $totalPengeluaran
-        //     ];
-        // }
-
-        // return response()->json($periode);
+        return response()->json($data);
     }
 
-
-
+    /**
+     * Method untuk export data ke PDF
+     */
     public function exportLabaRugiPdf(Request $request)
     {
-        // $start = Carbon::parse($request->filter_tanggal_start);
-        // $end = Carbon::parse($request->filter_tanggal_end);
+        $start = Carbon::parse($request->filter_tanggal_start)->startOfDay();
+        $end = Carbon::parse($request->filter_tanggal_end)->endOfDay();
 
-        // // Pendapatan dari penjualan_detail
-        // $penjualan = PenjualanDetail::selectRaw('penjualan.tanggal, SUM(penjualan_detail.subtotal) as total')
-        //     ->join('penjualan', 'penjualan.id', '=', 'penjualan_detail.penjualan_id')
-        //     ->whereBetween('penjualan.tanggal', [$start, $end])
-        //     ->groupBy('penjualan.tanggal')
-        //     ->pluck('total', 'penjualan.tanggal');
+        $periode = $this->_calculateProfitLossData($start, $end);
 
-        // // Pendapatan dari tiket masuk
-        // $tiket = DB::table('tiket_masuk')
-        //     ->selectRaw('tanggal, SUM(harga) as total')
-        //     ->whereBetween('tanggal', [$start, $end])
-        //     ->groupBy('tanggal')
-        //     ->pluck('total', 'tanggal');
+        // Ukuran dan orientasi
+        $paperSize = $request->ukuran_kertas ?? 'A4';
+        $orientation = $request->orientasi_kertas ?? 'portrait';
 
-        // // Pengeluaran
-        // $pengeluaran = DB::table('pengeluaran')
-        //     ->selectRaw('tanggal, SUM(harga) as total')
-        //     ->whereBetween('tanggal', [$start, $end])
-        //     ->groupBy('tanggal')
-        //     ->pluck('total', 'tanggal');
+        // Anda perlu membuat view blade baru untuk tampilan PDF
+        // contoh: resources/views/backend/laporan/laporan-laba-rugi/laba_rugi_pdf.blade.php
+        $pdf = Pdf::loadView('backend.laporan.laporan-laba-rugi.laba_rugi_pdf', [
+            'periode' => $periode,
+            'start' => $start->format('d-m-Y'),
+            'end' => $end->format('d-m-Y')
+        ])->setPaper($paperSize, $orientation);
 
-        // // Rangkuman data per hari
-        // $periode = [];
-        // for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
-        //     $tanggalStr = $date->format('Y-m-d');
+        return $pdf->stream('laporan-laba-rugi.pdf');
+    }
 
-        //     $pendapatanPenjualan = $penjualan[$tanggalStr] ?? 0;
-        //     $pendapatanTiket = $tiket[$tanggalStr] ?? 0;
-        //     $totalPendapatan = $pendapatanPenjualan + $pendapatanTiket;
-        //     $totalPengeluaran = $pengeluaran[$tanggalStr] ?? 0;
+    /**
+     * Private method untuk kalkulasi data agar tidak duplikasi kode (DRY Principle)
+     */
+    private function _calculateProfitLossData(Carbon $start, Carbon $end)
+    {
+        // 1. Ambil total PENDAPATAN dari tabel penjualan
+        $pendapatan = Penjualan::select(
+            DB::raw('DATE(tanggal_penjualan) as tanggal'),
+            DB::raw('SUM(total_harga) as total')
+        )
+            ->whereBetween('tanggal_penjualan', [$start, $end])
+            ->groupBy('tanggal')
+            ->pluck('total', 'tanggal');
 
-        //     $periode[] = [
-        //         'tanggal' => $tanggalStr,
-        //         'pendapatan_penjualan' => $pendapatanPenjualan,
-        //         'pendapatan_tiket' => $pendapatanTiket,
-        //         'pengeluaran' => $totalPengeluaran,
-        //         'laba_bersih' => $totalPendapatan - $totalPengeluaran,
-        //     ];
-        // }
+        // 2. Ambil total PENGELUARAN (HPP/COGS)
+        // SUM dari (qty * harga_beli_barang) pada setiap item penjualan
+        $pengeluaran = PenjualanDetail::select(
+            DB::raw('DATE(penjualan.tanggal_penjualan) as tanggal'),
+            DB::raw('SUM(penjualan_detail.qty * barang.harga_beli) as total')
+        )
+            ->join('penjualan', 'penjualan.id', '=', 'penjualan_detail.penjualan_id')
+            ->join('barang', 'barang.id', '=', 'penjualan_detail.barang_id')
+            ->whereBetween('penjualan.tanggal_penjualan', [$start, $end])
+            ->groupBy('tanggal')
+            ->pluck('total', 'tanggal');
 
-        // // Ukuran dan orientasi
-        // $paperSize = $request->ukuran_kertas ?? 'A4';
-        // $orientation = $request->orientasi_kertas ?? 'portrait';
 
-        // $pdf = Pdf::loadView('backend.apps.laporan.laporan_laba_rugi.laba_rugi_pdf', [
-        //     'periode' => $periode,
-        //     'start' => $start->format('d-m-Y'),
-        //     'end' => $end->format('d-m-Y')
-        // ])->setPaper($paperSize, $orientation);
+        // 3. Gabungkan data dalam satu periode rentang tanggal
+        $periode = [];
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+            $tanggalStr = $date->format('Y-m-d');
 
-        // return $pdf->stream('laporan-laba-rugi.pdf');
+            $totalPendapatan = $pendapatan[$tanggalStr] ?? 0;
+            $totalPengeluaran = $pengeluaran[$tanggalStr] ?? 0;
+
+            $periode[] = [
+                'tanggal' => $tanggalStr,
+                'total_pendapatan' => $totalPendapatan,
+                'pengeluaran' => $totalPengeluaran,
+                'laba_bersih' => $totalPendapatan - $totalPengeluaran
+            ];
+        }
+
+        return $periode;
     }
 }

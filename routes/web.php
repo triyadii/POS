@@ -32,8 +32,6 @@ use App\Http\Controllers\Backend\Master\KategoriController;
 use App\Http\Controllers\Backend\Master\TipeController;
 use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
-//MASTER
-use App\Http\Controllers\Backend\Master\SupplierController;
 
 
 
