@@ -65,8 +65,7 @@ class SupplierController extends Controller
             <div class="text-end">
                 <a href="#" 
                     class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-tarik-data" 
-                    data-id="'.$data->id.'" 
-                    data-instansi-id="'.$data->instansi_id.'">
+                    data-id="'.$data->id.'" >
                     <i class="ki-outline ki-eye fs-2"></i>
                 </a>
         

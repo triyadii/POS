@@ -45,45 +45,7 @@
             <div class="d-flex align-items-center pt-4 pb-7 pt-lg-1 pb-lg-2">
                 <!--begin::Wrapper-->
                 <div class="me-3">
-                    <!--begin::Menu-->
-                    <a href="#" class="btn btn-sm btn-flex btn-dark fw-bold" data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end">
-                        <i class="ki-outline ki-filter fs-2  me-1"></i>Filter</a>
-                    <!--begin::Menu 1-->
-                    <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true"
-                        id="kt_menu_66b9aa0df2f28">
-                        <!--begin::Header-->
-                        <div class="px-7 py-5">
-                            <div class="fs-5 text-gray-900 fw-bold">Filter Options</div>
-                        </div>
-                        <!--end::Header-->
-                        <!--begin::Menu separator-->
-                        <div class="separator border-gray-200"></div>
-                        <!--end::Menu separator-->
-                        <!--begin::Form-->
-                        <div class="px-7 py-5">
-                            <!--begin::Input group-->
-                            <div class="mb-10">
-                                <div class="form-label fs-6 fw-semibold">Role:</div>
-
-                            </div>
-                            <!--end::Input group-->
-
-
-                            <!--begin::Actions-->
-                            <div class="d-flex justify-content-end">
-                                <button type="reset" id="btnResetSearch"
-                                    class="btn btn-sm btn-secondary fw-semibold me-2 px-6" data-kt-menu-dismiss="true"
-                                    data-kt-user-table-filter="reset">Reset</button>
-                                <button type="submit" id="btnFiterSubmitSearch"
-                                    class="btn btn-sm btn-primary fw-semibold px-6" data-kt-menu-dismiss="true"
-                                    data-kt-user-table-filter="filter">Apply</button>
-                            </div>
-                            <!--end::Actions-->
-                        </div>
-                        <!--end::Form-->
-                    </div>
-                    <!--end::Menu 1-->
+                    
                     <!--end::Menu-->
                 </div>
                 <!--end::Wrapper-->
