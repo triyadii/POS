@@ -27,7 +27,7 @@ use App\Http\Controllers\Backend\CRUD\GeneratorController;
 
 //MASTER
 use App\Http\Controllers\Backend\Master\SupplierController;
-
+use App\Http\Controllers\Backend\Master\BrandController;
 
 
 
@@ -97,6 +97,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('get-supplier', [SupplierController::class, 'getData'])->name('get-supplier');
     Route::post('/supplier/mass-delete', [SupplierController::class, 'massDelete'])->name('supplier.mass-delete');
     Route::get('/select/supplier', [SupplierController::class, 'select'])->name('supplier.select');
+
+    Route::resource('brand', BrandController::class);
+    Route::get('get-brand', [BrandController::class, 'getData'])->name('get-brand');
+    Route::post('/brand/mass-delete', [BrandController::class, 'massDelete'])->name('brand.mass-delete');
+    Route::get('/select/brand', [BrandController::class, 'select'])->name('brand.select');
+
 
    
 

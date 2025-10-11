@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Backend\Master;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Supplier;
+use App\Models\Brand;
 use Illuminate\Support\Arr;
 use DB;
 use Carbon\Carbon;
@@ -14,7 +14,7 @@ use Auth;
 
 use Validator;
 
-class SupplierController extends Controller
+class BrandController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -24,11 +24,11 @@ class SupplierController extends Controller
     function __construct()
     {
         $this->middleware(['auth']);
-        $this->middleware('permission:supplier-list', ['only' => ['index','getData']]);
-        $this->middleware('permission:supplier-create', ['only' => ['store']]);
-        $this->middleware('permission:supplier-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:supplier-delete', ['only' => ['destroy']]);
-        $this->middleware('permission:supplier-massdelete', ['only' => ['massDelete']]);
+        $this->middleware('permission:brand-list', ['only' => ['index','getData']]);
+        $this->middleware('permission:brand-create', ['only' => ['store']]);
+        $this->middleware('permission:brand-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:brand-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:brand-massdelete', ['only' => ['massDelete']]);
     }
     
     /**
@@ -40,12 +40,12 @@ class SupplierController extends Controller
     {
      
 
-        return view('backend.master.supplier.index');
+        return view('backend.master.brand.index');
     }
 
     public function getData(Request $request)
     {
-        $postsQuery = Supplier::orderBy('created_at', 'desc');
+        $postsQuery = Brand::orderBy('created_at', 'desc');
         if (!empty($request->search['value'])) {
             $searchValue = $request->search['value'];
             $postsQuery->where(function ($query) use ($searchValue) {
@@ -64,7 +64,7 @@ class SupplierController extends Controller
             return '
             <div class="text-end">
                 <a href="#" 
-                    class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-show-supplier" 
+                    class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-show-brand" 
                     data-id="'.$data->id.'" >
                     <i class="ki-outline ki-eye fs-2"></i>
                 </a>
@@ -96,8 +96,8 @@ class SupplierController extends Controller
 
      public function show($id)
 {
-    $data = Supplier::findOrFail($id);
-    return view('backend.master.supplier.show', compact('data'));
+    $data = Brand::findOrFail($id);
+    return view('backend.master.brand.show', compact('data'));
 }
 
 
@@ -108,13 +108,11 @@ class SupplierController extends Controller
  
          // 🧩 Validasi input
          $validator = Validator::make($request->all(), [
-            'nama'       => 'required|string|max:150|unique:suppliers,nama',
-             'no_telp'   => 'nullable|string|max:20',
-             'alamat'    => 'nullable|string',
-             'keterangan'=> 'nullable|string',
+            'nama'       => 'required|string|max:150|unique:brands,nama',
+             'deskripsi'=> 'nullable|string',
          ], [
-             'nama.required' => 'Nama Supplier wajib diisi',
-             'nama.unique'   => 'Nama Supplier sudah terdaftar',
+             'nama.required' => 'Nama Brand wajib diisi',
+             'nama.unique'   => 'Nama Brand sudah terdaftar',
          ]);
  
          if ($validator->fails()) {
@@ -124,22 +122,20 @@ class SupplierController extends Controller
          try {
              DB::beginTransaction();
  
-             // ✅ Simpan data supplier (UUID otomatis dari model)
-             $data = Supplier::create([
+             // ✅ Simpan data brand (UUID otomatis dari model)
+             $data = Brand::create([
                  'nama'        => $request->input('nama'),
-                 'no_telp'     => $request->input('no_telp'),
-                 'alamat'      => $request->input('alamat'),
-                 'keterangan'  => $request->input('keterangan'),
+                 'deskripsi'  => $request->input('deskripsi'),
              ]);
  
              // 🧠 Catat log aktivitas (jika kamu pakai spatie/activitylog)
              $changes = ['attributes' => $data];
  
-             activity('tambah supplier')
+             activity('tambah brand')
                  ->causedBy(Auth::user() ?? null)
                  ->performedOn($data)
                  ->withProperties($changes)
-                 ->log('Menambahkan Supplier: ' . $data->nama);
+                 ->log('Menambahkan Brand: ' . $data->nama);
  
              DB::commit();
  
@@ -170,8 +166,8 @@ class SupplierController extends Controller
      */
     public function edit($id)
     {
-        $data = Supplier::findOrFail($id);
-        $html = view('backend.master.supplier.edit', [
+        $data = Brand::findOrFail($id);
+        $html = view('backend.master.brand.edit', [
             'data' => $data 
         ])->render();
 
@@ -192,13 +188,11 @@ class SupplierController extends Controller
 
     // 🧩 Validasi input
     $validator = \Validator::make($request->all(), [
-        'nama'       => 'required|string|max:150|unique:suppliers,nama,' . $id . ',id',
-        'no_telp'    => 'nullable|string|max:20',
-        'alamat'     => 'nullable|string',
-        'keterangan' => 'nullable|string',
+        'nama'       => 'required|string|max:150|unique:brands,nama,' . $id . ',id',
+        'deskripsi' => 'nullable|string',
     ], [
-        'nama.required' => 'Nama Supplier wajib diisi',
-        'nama.unique'   => 'Nama Supplier sudah digunakan oleh supplier lain',
+        'nama.required' => 'Nama Brand wajib diisi',
+        'nama.unique'   => 'Nama Brand sudah digunakan oleh brand lain',
     ]);
     
 
@@ -210,15 +204,13 @@ class SupplierController extends Controller
         \DB::beginTransaction();
 
         // 🔍 Ambil data lama
-        $data = \App\Models\Supplier::findOrFail($id);
+        $data = \App\Models\Brand::findOrFail($id);
         $oldData = $data->getOriginal();
 
-        // 🔁 Update data supplier
+        // 🔁 Update data brand
         $data->update([
             'nama'        => $request->input('nama'),
-            'no_telp'     => $request->input('no_telp'),
-            'alamat'      => $request->input('alamat'),
-            'keterangan'  => $request->input('keterangan'),
+            'deskripsi'  => $request->input('deskripsi'),
         ]);
 
         // 🧠 Catat perubahan
@@ -227,11 +219,11 @@ class SupplierController extends Controller
             'old'        => $oldData,
         ];
 
-        activity('edit supplier')
+        activity('edit brand')
             ->causedBy(\Auth::user() ?? null)
             ->performedOn($data)
             ->withProperties($changes)
-            ->log('Mengubah data Supplier: ' . $data->nama);
+            ->log('Mengubah data Brand: ' . $data->nama);
 
         \DB::commit();
 
@@ -266,15 +258,15 @@ class SupplierController extends Controller
     try {
         \DB::beginTransaction();
 
-        $data = Supplier::findOrFail($id);
+        $data = Brand::findOrFail($id);
         $data->delete();
 
         // 🧠 Log aktivitas
-        activity('hapus supplier')
+        activity('hapus brand')
             ->causedBy(Auth::user() ?? null)
             ->performedOn($data)
             ->withProperties(['attributes' => $data])
-            ->log('Menghapus Supplier: ' . $data->nama);
+            ->log('Menghapus Brand: ' . $data->nama);
 
         \DB::commit();
 
@@ -314,26 +306,26 @@ public function massDelete(Request $request)
         }
 
         // Ambil semua data sebelum dihapus (untuk log)
-        $records = Supplier::whereIn('id', $ids)->get();
+        $records = Brand::whereIn('id', $ids)->get();
 
         // Hapus sekaligus
-        Supplier::whereIn('id', $ids)->delete();
+        Brand::whereIn('id', $ids)->delete();
 
         // Commit dulu sebelum log (supaya pasti sudah terhapus)
         \DB::commit();
 
         // Log setiap data di luar transaksi (aman & non-blocking)
         foreach ($records as $record) {
-            activity('mass delete supplier')
+            activity('mass delete brand')
                 ->causedBy(Auth::user() ?? null)
                 ->performedOn($record)
                 ->withProperties(['attributes' => $record->toArray()])
-                ->log('Menghapus Supplier: ' . $record->nama);
+                ->log('Menghapus Brand: ' . $record->nama);
         }
 
         return response()->json([
             'status'  => 'success',
-            'message' => count($ids) . ' data supplier berhasil dihapus.',
+            'message' => count($ids) . ' data brand berhasil dihapus.',
             'time'    => $formattedTime,
             'judul'   => 'Berhasil',
         ]);
@@ -354,17 +346,17 @@ public function massDelete(Request $request)
 
     public function select(Request $request)
         {
-            $supplier = [];
+            $brand = [];
     
             if ($request->has('q')) {
                 $search = $request->q;
-                $supplier = Supplier::select("id", "nama")
+                $brand = Brand::select("id", "nama")
                     ->Where('nama', 'LIKE', "%$search%")
                     ->get();
             } else {
-                $supplier = Supplier::limit(30)->get();
+                $brand = Brand::limit(30)->get();
             }
-            return response()->json($supplier);
+            return response()->json($brand);
         }
 
 

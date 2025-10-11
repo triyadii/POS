@@ -9,7 +9,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="nama" id="Editnama"
-                                    class="form-control mb-3 mb-lg-0" placeholder="Nama Supplier" value="{{$data->nama}}" />
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Nama Supplier" value="{{$data->nama}}" readonly/>
                                 <span class="text-danger error-text nama_error_edit"></span>
                                 <!--end::Input-->
                             </div>
@@ -22,7 +22,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="no_telp" id="Editno_telp"
-                                    class="form-control mb-3 mb-lg-0" placeholder="kontak supplier" value="{{$data->no_telp}}"/>
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="kontak supplier" value="{{$data->no_telp}}" readonly/>
                                 <span class="text-danger error-text no_telp_error_edit"></span>
                                 <!--end::Input-->
                             </div>
@@ -37,7 +37,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="alamat" id="Editalamat"
-                                    class="form-control mb-3 mb-lg-0" placeholder="alamat supplier" value="{{$data->alamat}}"/>
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="alamat supplier" value="{{$data->alamat}}" readonly/>
                                 <span class="text-danger error-text alamat_error_edit"></span>
                                 <!--end::Input-->
                             </div>
@@ -50,7 +50,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="keterangan" id="Editketerangan"
-                                    class="form-control mb-3 mb-lg-0" placeholder="keterangan supplier" value="{{$data->keterangan}}"/>
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="keterangan supplier" value="{{$data->keterangan}}" readonly/>
                                 <span class="text-danger error-text keterangan_error_edit"></span>
                                 <!--end::Input-->
                             </div>

@@ -1,5 +1,5 @@
 @extends('layouts.backend.index')
-@section('title', 'Supplier')
+@section('title', 'Brand')
 @section('content')
 
 
@@ -10,7 +10,7 @@
             <!--begin::Page title-->
             <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                 <!--begin::Title-->
-                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Supplier
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Brand
                     List</h1>
                 <!--end::Title-->
                 <!--begin::Breadcrumb-->
@@ -35,7 +35,7 @@
                     <!--end::Item-->
 
                     <!--begin::Item-->
-                    <li class="breadcrumb-item text-gray-900">Supplier List</li>
+                    <li class="breadcrumb-item text-gray-900">Brand List</li>
                     <!--end::Item-->
                 </ul>
                 <!--end::Breadcrumb-->
@@ -50,7 +50,7 @@
                 </div>
                 <!--end::Wrapper-->
                 <!--begin::Button-->
-                @can('supplier-create')
+                @can('brand-create')
                     <button type="button" id="btn_tambah_data" class="btn btn-sm btn-primary">
                         <i class="ki-outline ki-plus fs-2"></i>Add</button>
                 @endcan
@@ -117,7 +117,7 @@
                 <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4 w-100 chimox" id="chimox">
                     <thead>
                         <tr class="fw-bold text-muted fs-7 text-uppercase gs-0">                            
-                            @can('supplier-massdelete')
+                            @can('brand-massdelete')
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox" data-kt-check="true"
@@ -125,11 +125,10 @@
                                     </div>
                                 </th>
                             @endcan
-                            <th class="min-w-125px">Nama Supplier</th>
-                            <th class="min-w-125px">Kontak</th>
-                            <th class="min-w-100px">Alamat</th>
-                            <th class="min-w-100px">Keterangan</th>
-                            @canany(['supplier-show', 'supplier-edit', 'supplier-delete'])
+                            <th class="min-w-125px">Nama Brand</th>
+                           
+                            <th class="min-w-100px">Deskripsi</th>
+                            @canany(['brand-show', 'brand-edit', 'brand-delete'])
                                 <th class="text-end min-w-100px">Action</th>
                             @endcanany
                         </tr>
@@ -180,53 +179,27 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Nama Supplier</label>
+                                <label class="required fw-semibold fs-6 mb-2">Nama Brand</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="nama" id="nama"
-                                    class="form-control mb-3 mb-lg-0" placeholder="Nama Supplier" />
+                                    class="form-control mb-3 mb-lg-0" placeholder="Nama Brand" />
                                 <span class="text-danger error-text nama_error_add"></span>
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
 
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Kontak</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" name="no_telp" id="no_telp"
-                                    class="form-control mb-3 mb-lg-0" placeholder="kontak supplier" />
-                                <span class="text-danger error-text no_telp_error_add"></span>
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-
-                          
+                            
 
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Alamat</label>
+                                <label class="required fw-semibold fs-6 mb-2">Deskripsi</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" name="alamat" id="alamat"
-                                    class="form-control mb-3 mb-lg-0" placeholder="alamat supplier" />
-                                <span class="text-danger error-text alamat_error_add"></span>
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Keterangan</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" name="keterangan" id="keterangan"
-                                    class="form-control mb-3 mb-lg-0" placeholder="keterangan supplier" />
-                                <span class="text-danger error-text keterangan_error_add"></span>
+                                <input type="text" name="deskripsi" id="deskripsi"
+                                    class="form-control mb-3 mb-lg-0" placeholder="deskripsi brand" />
+                                <span class="text-danger error-text deskripsi_error_add"></span>
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -338,20 +311,20 @@
     <!--end modal hapus-->
 
 
-    <!-- Modal Detail Supplier -->
-<div class="modal fade" id="modalShowSupplier" tabindex="-1" aria-hidden="true">
+    <!-- Modal Detail Brand -->
+<div class="modal fade" id="modalShowBrand" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content rounded-3 shadow">
         <div class="modal-header bg-light">
-          <h5 class="modal-title fw-bold">Detail Supplier</h5>
+          <h5 class="modal-title fw-bold">Detail Brand</h5>
           <button type="button" class="btn btn-sm btn-icon btn-light" data-bs-dismiss="modal">
             <i class="ki-outline ki-cross fs-2"></i>
           </button>
         </div>
-        <div class="modal-body" id="modalShowSupplierBody">
+        <div class="modal-body" id="modalShowBrandBody">
           <div class="text-center py-10 text-muted">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-3">Memuat data supplier...</p>
+            <p class="mt-3">Memuat data brand...</p>
           </div>
         </div>
       </div>
@@ -397,25 +370,25 @@
         </script>
 <script>
     $(document).ready(function() {
-        $(document).on('click', '.btn-show-supplier', function(e) {
+        $(document).on('click', '.btn-show-brand', function(e) {
             e.preventDefault();
     
             let id = $(this).data('id');
-            let modal = new bootstrap.Modal(document.getElementById('modalShowSupplier'));
-            let body = $('#modalShowSupplierBody');
+            let modal = new bootstrap.Modal(document.getElementById('modalShowBrand'));
+            let body = $('#modalShowBrandBody');
     
             // tampilkan modal + loading
             body.html(`
                 <div class="text-center py-10 text-muted">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-3">Memuat data supplier...</p>
+                    <p class="mt-3">Memuat data brand...</p>
                 </div>
             `);
             modal.show();
     
             // load konten dari route show
             $.ajax({
-                url: `/supplier/${id}`,
+                url: `/brand/${id}`,
                 type: 'GET',
                 success: function(res) {
                     body.html(res);
@@ -442,10 +415,10 @@
                 };
             }
             $(document).ready(function() {
-                var canShow = @json(auth()->user()->can('supplier-show'));
-                var canEdit = @json(auth()->user()->can('supplier-edit'));
-                var canDelete = @json(auth()->user()->can('supplier-delete'));
-                var canMassDelete = @json(auth()->user()->can('supplier-massdelete'));
+                var canShow = @json(auth()->user()->can('brand-show'));
+                var canEdit = @json(auth()->user()->can('brand-edit'));
+                var canDelete = @json(auth()->user()->can('brand-delete'));
+                var canMassDelete = @json(auth()->user()->can('brand-massdelete'));
 
                 var table = $('.chimox').DataTable({
                     processing: true,
@@ -459,7 +432,7 @@
                     serverSide: true,
                     order: false,
                     ajax: {
-                        url: "{{ route('get-supplier') }}",
+                        url: "{{ route('get-brand') }}",
                         type: 'GET',
                         data: function(d) {}
                     },
@@ -484,23 +457,12 @@
                             searchable: false
                         },
                         {
-                            data: 'no_telp',
-                            name: 'no_telp',
+                            data: 'deskripsi',
+                            name: 'deskripsi',
                             orderable: false,
                             searchable: false
                         },
-                        {
-                            data: 'alamat',
-                            name: 'alamat',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'keterangan',
-                            name: 'keterangan',
-                            orderable: false,
-                            searchable: false
-                        },
+                        
                        
                         // Kondisi untuk menampilkan kolom Action
                         (canShow || canEdit || canDelete) ? {
@@ -574,7 +536,7 @@
                         }
                     });
                     $.ajax({
-                        url: "{{ route('supplier.store') }}",
+                        url: "{{ route('brand.store') }}",
                         method: 'post',
                         data: new FormData(this),
                         contentType: false,
@@ -668,7 +630,7 @@
 
                     id = $(this).data('id');
                     $.ajax({
-                        url: "supplier/" + id + "/edit",
+                        url: "brand/" + id + "/edit",
                         dataType: "json",
                         success: function(result) {
                             console.log(result);
@@ -692,7 +654,7 @@
                         }
                     });
                     $.ajax({
-                        url: "supplier/" + id,
+                        url: "brand/" + id,
                         method: "POST",
                         data: new FormData(this),
                         contentType: false,
@@ -802,7 +764,7 @@
                         }
                     });
                     $.ajax({
-                        url: "supplier/" + id,
+                        url: "brand/" + id,
                         method: 'DELETE',
                         success: function(result) {
                             if (result.error) {
@@ -940,7 +902,7 @@
                             if (result.isConfirmed) {
                                 // Make an AJAX call to mass delete the users
                                 $.ajax({
-                                    url: "{{ route('supplier.mass-delete') }}", // Pastikan route ini ada
+                                    url: "{{ route('brand.mass-delete') }}", // Pastikan route ini ada
                                     type: 'POST',
                                     data: {
                                         ids: selectedIds,
