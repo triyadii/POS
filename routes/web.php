@@ -25,21 +25,26 @@ use App\Http\Controllers\Backend\CRUD\GeneratorController;
 use App\Http\Controllers\Backend\Apps\PenjualanController;
 
 
+
+//BEGIN CHIMOX
 //MASTER
 use App\Http\Controllers\Backend\Master\SupplierController;
 use App\Http\Controllers\Backend\Master\BrandController;
 use App\Http\Controllers\Backend\Master\KategoriController;
 use App\Http\Controllers\Backend\Master\TipeController;
-use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
-use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
-
-
+use App\Http\Controllers\Backend\Master\SatuanController;
+use App\Http\Controllers\Backend\Master\JenisPembayaranController;
+//APPS
+use App\Http\Controllers\Backend\Apps\BarangController;
+//END CHIMOX
 
 
 
 use App\Http\Controllers\SettingAppController;
 
 
+use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
+use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
 
 
 Route::get('/', function () {
@@ -95,10 +100,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 
-    Route::resource('crud-generator', GeneratorController::class);
 
 
-
+    // BEGIN CHIMOX
     Route::resource('supplier', SupplierController::class);
     Route::get('get-supplier', [SupplierController::class, 'getData'])->name('get-supplier');
     Route::post('/supplier/mass-delete', [SupplierController::class, 'massDelete'])->name('supplier.mass-delete');
@@ -114,11 +118,32 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/kategori/mass-delete', [KategoriController::class, 'massDelete'])->name('kategori.mass-delete');
     Route::get('/select/kategori', [KategoriController::class, 'select'])->name('kategori.select');
 
-    Route::resource('penjualan', PenjualanController::class);
     Route::resource('tipe', TipeController::class);
     Route::get('get-tipe', [TipeController::class, 'getData'])->name('get-tipe');
     Route::post('/tipe/mass-delete', [TipeController::class, 'massDelete'])->name('tipe.mass-delete');
     Route::get('/select/tipe', [TipeController::class, 'select'])->name('tipe.select');
+
+    Route::resource('satuan', SatuanController::class);
+    Route::get('get-satuan', [SatuanController::class, 'getData'])->name('get-satuan');
+    Route::post('/satuan/mass-delete', [SatuanController::class, 'massDelete'])->name('satuan.mass-delete');
+    Route::get('/select/satuan', [SatuanController::class, 'select'])->name('satuan.select');
+
+    Route::resource('jenis-pembayaran', JenisPembayaranController::class);
+    Route::get('get-jenis-pembayaran', [JenisPembayaranController::class, 'getData'])->name('get-jenis-pembayaran');
+    Route::post('/jenis-pembayaran/mass-delete', [JenisPembayaranController::class, 'massDelete'])->name('jenis-pembayaran.mass-delete');
+    Route::get('/select/jenis-pembayaran', [JenisPembayaranController::class, 'select'])->name('jenis-pembayaran.select');
+
+    Route::resource('barang', BarangController::class);
+    Route::get('get-barang', [BarangController::class, 'getData'])->name('get-barang');
+    Route::post('/barang/mass-delete', [BarangController::class, 'massDelete'])->name('barang.mass-delete');
+    Route::get('/select/barang', [BarangController::class, 'select'])->name('barang.select');
+
+
+    //END CHIMOX
+
+
+    Route::resource('penjualan', PenjualanController::class);
+    
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
     Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
     Route::get('/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('laporan.penjualan.export');
@@ -145,56 +170,4 @@ Route::get('/clear-cache', function () {
 Route::get('/chimox', function () {
     $exitCode = Artisan::call('storage:link');
     return 'storage KAMU LUAR BIASA RIZKYCHIMO !'; //Return anything
-});
-
-
-
-
-
-
-// AUTO GENERATED ROUTES FOR Divisi
-Route::middleware(['auth'])->group(function () {
-    Route::resource('divisi', DivisiController::class);
-    Route::get('get-divisi', [DivisiController::class, 'getData'])->name('get-divisi');
-    Route::post('divisi/mass-delete', [DivisiController::class, 'massDelete'])->name('divisi.mass-delete');
-});
-
-
-// AUTO GENERATED ROUTES FOR Picolo
-Route::middleware(['auth'])->group(function () {
-    Route::resource('picolo', PicoloController::class);
-    Route::get('get-picolo', [PicoloController::class, 'getData'])->name('get-picolo');
-    Route::post('picolo/mass-delete', [PicoloController::class, 'massDelete'])->name('picolo.mass-delete');
-});
-
-
-// AUTO GENERATED ROUTES FOR Coba1
-Route::middleware(['auth'])->group(function () {
-    Route::resource('coba1', Coba1Controller::class);
-    Route::get('get-coba1', [Coba1Controller::class, 'getData'])->name('get-coba1');
-    Route::post('coba1/mass-delete', [Coba1Controller::class, 'massDelete'])->name('coba1.mass-delete');
-});
-
-
-// AUTO GENERATED ROUTES FOR Tito
-Route::middleware(['auth'])->group(function () {
-    Route::resource('tito', TitoController::class);
-    Route::get('get-tito', [TitoController::class, 'getData'])->name('get-tito');
-    Route::post('tito/mass-delete', [TitoController::class, 'massDelete'])->name('tito.mass-delete');
-});
-
-
-// AUTO GENERATED ROUTES FOR Kiki
-Route::middleware(['auth'])->group(function () {
-    Route::resource('kiki', KikiController::class);
-    Route::get('get-kiki', [KikiController::class, 'getData'])->name('get-kiki');
-    Route::post('kiki/mass-delete', [KikiController::class, 'massDelete'])->name('kiki.mass-delete');
-});
-
-
-// AUTO GENERATED ROUTES FOR Surat
-Route::middleware(['auth'])->group(function () {
-    Route::resource('surat', SuratController::class);
-    Route::get('get-surat', [SuratController::class, 'getData'])->name('get-surat');
-    Route::post('surat/mass-delete', [SuratController::class, 'massDelete'])->name('surat.mass-delete');
 });

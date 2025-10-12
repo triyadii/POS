@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Barang extends Model
 {
@@ -20,16 +21,33 @@ class Barang extends Model
         'kategori_id',
         'brand_id',
         'tipe_id',
-        'satuan',
+        'satuan_id',
         'stok',
         'harga_beli',
         'harga_jual',
-        'keterangan',
     ];
+    
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->id) {
+                $model->id = (string) Str::uuid();
+            }
+        });
+    }
+    
 
     // ==========================
     // 🔗 RELASI MODEL
     // ==========================
+
+    public function satuan()
+    {
+        return $this->belongsTo(Satuan::class, 'satuan_id');
+    }
 
     public function kategori()
     {

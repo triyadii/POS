@@ -1,5 +1,5 @@
 @extends('layouts.backend.index')
-@section('title', 'Tipe')
+@section('title', 'Satuan')
 @section('content')
 
 
@@ -10,7 +10,7 @@
             <!--begin::Page title-->
             <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                 <!--begin::Title-->
-                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Tipe
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Satuan
                     List</h1>
                 <!--end::Title-->
                 <!--begin::Breadcrumb-->
@@ -35,7 +35,7 @@
                     <!--end::Item-->
 
                     <!--begin::Item-->
-                    <li class="breadcrumb-item text-gray-900">Tipe List</li>
+                    <li class="breadcrumb-item text-gray-900">Satuan List</li>
                     <!--end::Item-->
                 </ul>
                 <!--end::Breadcrumb-->
@@ -50,7 +50,7 @@
                 </div>
                 <!--end::Wrapper-->
                 <!--begin::Button-->
-                @can('tipe-create')
+                @can('satuan-create')
                     <button type="button" id="btn_tambah_data" class="btn btn-sm btn-primary">
                         <i class="ki-outline ki-plus fs-2"></i>Add</button>
                 @endcan
@@ -73,7 +73,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
                         <input type="text" data-kt-user-table-filter="search" id="search"
-                            class="form-control w-250px ps-13" placeholder="Search data" />
+                            class="form-control w-450px ps-13" placeholder="Search data" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -117,7 +117,7 @@
                 <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4 w-100 chimox" id="chimox">
                     <thead>
                         <tr class="fw-bold text-muted fs-7 text-uppercase gs-0">                            
-                            @can('tipe-massdelete')
+                            @can('satuan-massdelete')
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox" data-kt-check="true"
@@ -125,10 +125,10 @@
                                     </div>
                                 </th>
                             @endcan
-                            <th class="min-w-125px">Nama Tipe</th>
+                            <th class="min-w-125px">Nama Satuan</th>
                            
-                            <th class="min-w-100px">Nama Brand</th>
-                            @canany(['tipe-show', 'tipe-edit', 'tipe-delete'])
+                            <th class="min-w-100px">Singkatan</th>
+                            @canany(['satuan-show', 'satuan-edit', 'satuan-delete'])
                                 <th class="text-end min-w-100px">Action</th>
                             @endcanany
                         </tr>
@@ -176,28 +176,14 @@
                             data-kt-scroll-dependencies="#kt_modal_add_user_header"
                             data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
 
-
-
-                            <div class="fv-row mb-7">
-                                <label class="required fw-semibold fs-6 mb-2">Brand</label>
-
-
-                                <select id="brand_id" name="brand_id"
-                                    class="form-select b-3 mb-lg-0" data-control="select2"
-                                    data-placeholder="pilih brand" data-dropdown-parent="#Modal_Tambah_Data">
-                                </select>
-                                <span class="text-danger error-text brand_id_error_add"></span>
-                            </div>
-
-
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Nama Tipe</label>
+                                <label class="required fw-semibold fs-6 mb-2">Nama Satuan</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="nama" id="nama"
-                                    class="form-control mb-3 mb-lg-0" placeholder="Nama Tipe" />
+                                    class="form-control mb-3 mb-lg-0" placeholder="Nama Satuan" />
                                 <span class="text-danger error-text nama_error_add"></span>
                                 <!--end::Input-->
                             </div>
@@ -205,7 +191,19 @@
 
                             
 
-                             
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fw-semibold fs-6 mb-2">Singkatan</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" name="singkatan" id="singkatan"
+                                    class="form-control mb-3 mb-lg-0" placeholder="singkatan satuan" />
+                                <span class="text-danger error-text singkatan_error_add"></span>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+
 
 
 
@@ -313,20 +311,20 @@
     <!--end modal hapus-->
 
 
-    <!-- Modal Detail Tipe -->
-<div class="modal fade" id="modalShowTipe" tabindex="-1" aria-hidden="true">
+    <!-- Modal Detail Satuan -->
+<div class="modal fade" id="modalShowSatuan" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content rounded-3 shadow">
         <div class="modal-header bg-light">
-          <h5 class="modal-title fw-bold">Detail Tipe</h5>
+          <h5 class="modal-title fw-bold">Detail Satuan</h5>
           <button type="button" class="btn btn-sm btn-icon btn-light" data-bs-dismiss="modal">
             <i class="ki-outline ki-cross fs-2"></i>
           </button>
         </div>
-        <div class="modal-body" id="modalShowTipeBody">
+        <div class="modal-body" id="modalShowSatuanBody">
           <div class="text-center py-10 text-muted">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-3">Memuat data tipe...</p>
+            <p class="mt-3">Memuat data satuan...</p>
           </div>
         </div>
       </div>
@@ -372,25 +370,25 @@
         </script>
 <script>
     $(document).ready(function() {
-        $(document).on('click', '.btn-show-tipe', function(e) {
+        $(document).on('click', '.btn-show-satuan', function(e) {
             e.preventDefault();
     
             let id = $(this).data('id');
-            let modal = new bootstrap.Modal(document.getElementById('modalShowTipe'));
-            let body = $('#modalShowTipeBody');
+            let modal = new bootstrap.Modal(document.getElementById('modalShowSatuan'));
+            let body = $('#modalShowSatuanBody');
     
             // tampilkan modal + loading
             body.html(`
                 <div class="text-center py-10 text-muted">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-3">Memuat data tipe...</p>
+                    <p class="mt-3">Memuat data satuan...</p>
                 </div>
             `);
             modal.show();
     
             // load konten dari route show
             $.ajax({
-                url: `/tipe/${id}`,
+                url: `/satuan/${id}`,
                 type: 'GET',
                 success: function(res) {
                     body.html(res);
@@ -417,10 +415,10 @@
                 };
             }
             $(document).ready(function() {
-                var canShow = @json(auth()->user()->can('tipe-show'));
-                var canEdit = @json(auth()->user()->can('tipe-edit'));
-                var canDelete = @json(auth()->user()->can('tipe-delete'));
-                var canMassDelete = @json(auth()->user()->can('tipe-massdelete'));
+                var canShow = @json(auth()->user()->can('satuan-show'));
+                var canEdit = @json(auth()->user()->can('satuan-edit'));
+                var canDelete = @json(auth()->user()->can('satuan-delete'));
+                var canMassDelete = @json(auth()->user()->can('satuan-massdelete'));
 
                 var table = $('.chimox').DataTable({
                     processing: true,
@@ -434,7 +432,7 @@
                     serverSide: true,
                     order: false,
                     ajax: {
-                        url: "{{ route('get-tipe') }}",
+                        url: "{{ route('get-satuan') }}",
                         type: 'GET',
                         data: function(d) {}
                     },
@@ -459,8 +457,8 @@
                             searchable: false
                         },
                         {
-                            data: 'brand_id',
-                            name: 'brand_id',
+                            data: 'singkatan',
+                            name: 'singkatan',
                             orderable: false,
                             searchable: false
                         },
@@ -538,7 +536,7 @@
                         }
                     });
                     $.ajax({
-                        url: "{{ route('tipe.store') }}",
+                        url: "{{ route('satuan.store') }}",
                         method: 'post',
                         data: new FormData(this),
                         contentType: false,
@@ -632,7 +630,7 @@
 
                     id = $(this).data('id');
                     $.ajax({
-                        url: "tipe/" + id + "/edit",
+                        url: "satuan/" + id + "/edit",
                         dataType: "json",
                         success: function(result) {
                             console.log(result);
@@ -656,7 +654,7 @@
                         }
                     });
                     $.ajax({
-                        url: "tipe/" + id,
+                        url: "satuan/" + id,
                         method: "POST",
                         data: new FormData(this),
                         contentType: false,
@@ -766,7 +764,7 @@
                         }
                     });
                     $.ajax({
-                        url: "tipe/" + id,
+                        url: "satuan/" + id,
                         method: 'DELETE',
                         success: function(result) {
                             if (result.error) {
@@ -904,7 +902,7 @@
                             if (result.isConfirmed) {
                                 // Make an AJAX call to mass delete the users
                                 $.ajax({
-                                    url: "{{ route('tipe.mass-delete') }}", // Pastikan route ini ada
+                                    url: "{{ route('satuan.mass-delete') }}", // Pastikan route ini ada
                                     type: 'POST',
                                     data: {
                                         ids: selectedIds,
@@ -1004,34 +1002,5 @@
                 }
             });
         </script>
-
-
-<script>
-    $(document).ready(function() {
-
-        //  select province:start
-        $('#brand_id').select2({
-          
-            ajax: {
-                url: "{{ route('brand.select') }}",
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    return {
-                        results: $.map(data, function(item) {
-                            return {
-                                text: item.nama,
-                                id: item.id
-                            }
-                        })
-                    };
-                }
-            }
-        });
-
-
-
-    });
-</script>
     @endpush
 @endsection
