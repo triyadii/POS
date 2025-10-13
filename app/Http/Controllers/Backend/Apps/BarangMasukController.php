@@ -12,7 +12,7 @@ use DB;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use DataTables;
-use Auth;
+use Auth; 
 use Validator;
 
 class BarangMasukController extends Controller
