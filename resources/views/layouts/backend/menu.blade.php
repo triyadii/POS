@@ -59,7 +59,7 @@
                                     <i class="ki-outline ki-delivery-2 fs-2"></i>
                                 </span>
                                 <span class="menu-title">Barang Masuk</span>
-                                <span class="badge badge-danger">soon</span>
+                                <span class="badge badge-info">progres</span>
 
                             </a>
                             <!--end:Menu link-->
@@ -90,7 +90,8 @@
                                     <i class="ki-outline ki-notepad-edit fs-2"></i>
                                 </span>
                                 <span class="menu-title">Daftar Penjualan</span>
-                                <span class="badge badge-danger">soon</span>
+                                <span class="badge badge-info">progres</span>
+
 
                             </a>
                             <!--end:Menu link-->
@@ -121,7 +122,8 @@
                                     <i class="ki-outline ki-tablet-book fs-2"></i>
                                 </span>
                                 <span class="menu-title">Laporan</span>
-                                <span class="badge badge-danger">soon</span>
+                                <span class="badge badge-info">progres</span>
+
 
                             </a>
                             <!--end:Menu link-->

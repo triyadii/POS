@@ -50,7 +50,7 @@
                 </div>
                 <!--end::Wrapper-->
                 <!--begin::Button-->
-                @can('brand-create')
+                @can('barang-masuk-create')
                     <button type="button" id="btn_tambah_data" class="btn btn-sm btn-primary">
                         <i class="ki-outline ki-plus fs-2"></i>Add</button>
                 @endcan
@@ -117,7 +117,7 @@
                 <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4 w-100 chimox" id="chimox">
                     <thead>
                         <tr class="fw-bold text-muted fs-7 text-uppercase gs-0">                            
-                            @can('brand-massdelete')
+                            @can('barang-masuk-massdelete')
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox" data-kt-check="true"
@@ -128,7 +128,7 @@
                             <th class="min-w-125px">Tanggal</th>
                            
                             <th class="min-w-100px">Deskripsi</th>
-                            @canany(['brand-show', 'brand-edit', 'brand-delete'])
+                            @canany(['barang-masuk-show', 'barang-masuk-edit', 'barang-masuk-delete'])
                                 <th class="text-end min-w-100px">Action</th>
                             @endcanany
                         </tr>
@@ -198,7 +198,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="deskripsi" id="deskripsi"
-                                    class="form-control mb-3 mb-lg-0" placeholder="deskripsi brand" />
+                                    class="form-control mb-3 mb-lg-0" placeholder="deskripsi barang masuk" />
                                 <span class="text-danger error-text deskripsi_error_add"></span>
                                 <!--end::Input-->
                             </div>
@@ -312,7 +312,7 @@
 
 
     <!-- Modal Detail Barang Masuk -->
-<div class="modal fade" id="modalShowBrand" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalShowBarangMasuk" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content rounded-3 shadow">
         <div class="modal-header bg-light">
@@ -321,10 +321,10 @@
             <i class="ki-outline ki-cross fs-2"></i>
           </button>
         </div>
-        <div class="modal-body" id="modalShowBrandBody">
+        <div class="modal-body" id="modalShowBarangMasukBody">
           <div class="text-center py-10 text-muted">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-3">Memuat data brand...</p>
+            <p class="mt-3">Memuat data barang masuk...</p>
           </div>
         </div>
       </div>
@@ -370,25 +370,25 @@
         </script>
 <script>
     $(document).ready(function() {
-        $(document).on('click', '.btn-show-brand', function(e) {
+        $(document).on('click', '.btn-show-barang-masuk', function(e) {
             e.preventDefault();
     
             let id = $(this).data('id');
-            let modal = new bootstrap.Modal(document.getElementById('modalShowBrand'));
-            let body = $('#modalShowBrandBody');
+            let modal = new bootstrap.Modal(document.getElementById('modalShowBarangMasuk'));
+            let body = $('#modalShowBarangMasukBody');
     
             // tampilkan modal + loading
             body.html(`
                 <div class="text-center py-10 text-muted">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-3">Memuat data brand...</p>
+                    <p class="mt-3">Memuat data barang masuk...</p>
                 </div>
             `);
             modal.show();
     
             // load konten dari route show
             $.ajax({
-                url: `/brand/${id}`,
+                url: `/barang-masuk/${id}`,
                 type: 'GET',
                 success: function(res) {
                     body.html(res);
@@ -415,10 +415,10 @@
                 };
             }
             $(document).ready(function() {
-                var canShow = @json(auth()->user()->can('brand-show'));
-                var canEdit = @json(auth()->user()->can('brand-edit'));
-                var canDelete = @json(auth()->user()->can('brand-delete'));
-                var canMassDelete = @json(auth()->user()->can('brand-massdelete'));
+                var canShow = @json(auth()->user()->can('barang-masuk-show'));
+                var canEdit = @json(auth()->user()->can('barang-masuk-edit'));
+                var canDelete = @json(auth()->user()->can('barang-masuk-delete'));
+                var canMassDelete = @json(auth()->user()->can('barang-masuk-massdelete'));
 
                 var table = $('.chimox').DataTable({
                     processing: true,
@@ -432,7 +432,7 @@
                     serverSide: true,
                     order: false,
                     ajax: {
-                        url: "{{ route('get-brand') }}",
+                        url: "{{ route('get-barang-masuk') }}",
                         type: 'GET',
                         data: function(d) {}
                     },
@@ -536,7 +536,7 @@
                         }
                     });
                     $.ajax({
-                        url: "{{ route('brand.store') }}",
+                        url: "{{ route('barang-masuk.store') }}",
                         method: 'post',
                         data: new FormData(this),
                         contentType: false,
@@ -630,7 +630,7 @@
 
                     id = $(this).data('id');
                     $.ajax({
-                        url: "brand/" + id + "/edit",
+                        url: "barang-masuk/" + id + "/edit",
                         dataType: "json",
                         success: function(result) {
                             console.log(result);
@@ -654,7 +654,7 @@
                         }
                     });
                     $.ajax({
-                        url: "brand/" + id,
+                        url: "barang-masuk/" + id,
                         method: "POST",
                         data: new FormData(this),
                         contentType: false,
@@ -764,7 +764,7 @@
                         }
                     });
                     $.ajax({
-                        url: "brand/" + id,
+                        url: "barang-masuk/" + id,
                         method: 'DELETE',
                         success: function(result) {
                             if (result.error) {
@@ -902,7 +902,7 @@
                             if (result.isConfirmed) {
                                 // Make an AJAX call to mass delete the users
                                 $.ajax({
-                                    url: "{{ route('brand.mass-delete') }}", // Pastikan route ini ada
+                                    url: "{{ route('barang-masuk.mass-delete') }}", // Pastikan route ini ada
                                     type: 'POST',
                                     data: {
                                         ids: selectedIds,
