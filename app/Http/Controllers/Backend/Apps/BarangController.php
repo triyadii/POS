@@ -115,6 +115,14 @@ class BarangController extends Controller
             ';
             })
 
+            ->addColumn('size', function ($row) {
+                return '
+                <div class="">
+                    <span class="fw-semibold badge badge-secondary">' . e($row->size ?? '-') . '</span>
+                </div>
+            ';
+            })
+
 
             ->addColumn('stok', function ($row) {
                 $stok = $row->stok ?? 0;
@@ -150,7 +158,7 @@ class BarangController extends Controller
 
 
 
-            ->rawColumns(['action', 'nama', 'kategori_id', 'brand_id', 'stok', 'harga_jual', 'harga_beli'])
+            ->rawColumns(['action', 'nama', 'kategori_id', 'brand_id', 'stok', 'harga_jual', 'harga_beli', 'size'])
             ->make(true);
     }
 
@@ -166,7 +174,6 @@ class BarangController extends Controller
     {
         $formattedTime = Carbon::now()->diffForHumans();
 
-        // 🧩 Validasi Struktur Repeater
         $validator = Validator::make($request->all(), [
             'kelompok_barang' => 'required|array|min:1',
             'kelompok_barang.*.kategori_id' => 'required|uuid',
@@ -194,6 +201,7 @@ class BarangController extends Controller
             'kelompok_barang.*.barang.*.satuan_id' => 'required|uuid',
             'kelompok_barang.*.barang.*.harga_beli' => 'required|numeric|min:0',
             'kelompok_barang.*.barang.*.harga_jual' => 'required|numeric|min:0',
+            'kelompok_barang.*.barang.*.size' => 'nullable|string|max:50',
         ], [
             'kelompok_barang.required' => 'Minimal 1 kelompok barang harus diisi.',
             'kelompok_barang.*.kategori_id.required' => 'Kategori wajib dipilih.',
@@ -203,6 +211,8 @@ class BarangController extends Controller
             'kelompok_barang.*.barang.*.satuan_id.required' => 'Satuan wajib dipilih.',
             'kelompok_barang.*.barang.*.harga_beli.required' => 'Harga beli wajib diisi.',
             'kelompok_barang.*.barang.*.harga_jual.required' => 'Harga jual wajib diisi.',
+            'kelompok_barang.*.barang.*.size.string' => 'Ukuran harus berupa teks.',
+            'kelompok_barang.*.barang.*.size.max'    => 'Ukuran maksimal 50 karakter.',
         ]);
 
 
@@ -222,6 +232,10 @@ class BarangController extends Controller
 
                 // Loop inner barang
                 foreach ($kelompok['barang'] as $item) {
+                    // 🧹 Bersihkan format harga (hapus titik dan koma)
+                    $hargaBeli = (int) str_replace(['.', ','], '', $item['harga_beli']);
+                    $hargaJual = (int) str_replace(['.', ','], '', $item['harga_jual']);
+
                     Barang::create([
                         'id'          => (string) Str::uuid(),
                         'kode_barang' => $item['kode'],
@@ -231,8 +245,9 @@ class BarangController extends Controller
                         'tipe_id'     => $item['tipe_id'],
                         'satuan_id'   => $item['satuan_id'],
                         'stok'        => 0,
-                        'harga_beli'  => $item['harga_beli'],
-                        'harga_jual'  => $item['harga_jual'],
+                        'harga_beli'  => $hargaBeli,
+                        'harga_jual'  => $hargaJual,
+                        'size'        => $item['size'] ?? null,
                     ]);
 
                     $savedCount++;
@@ -299,6 +314,12 @@ class BarangController extends Controller
     {
         $formattedTime = Carbon::now()->diffForHumans();
 
+        // 🧹 Bersihkan titik dan koma dari harga sebelum validasi
+        $request->merge([
+            'harga_beli' => preg_replace('/[^0-9]/', '', $request->harga_beli),
+            'harga_jual' => preg_replace('/[^0-9]/', '', $request->harga_jual),
+        ]);
+
         // 🧩 Validasi input
         $validator = \Validator::make($request->all(), [
             'kode_barang' => 'required|string|max:100|unique:barang,kode_barang,' . $id . ',id',
@@ -310,6 +331,8 @@ class BarangController extends Controller
             'stok'        => 'nullable|numeric|min:0',
             'harga_beli'  => 'required|numeric|min:0',
             'harga_jual'  => 'required|numeric|min:0',
+            'size'        => 'required|string|max:150',
+
         ], [
             'kode_barang.required' => 'Kode Barang wajib diisi',
             'kode_barang.unique'   => 'Kode Barang sudah digunakan oleh barang lain',
@@ -321,6 +344,9 @@ class BarangController extends Controller
             'satuan_id.required'   => 'Satuan wajib dipilih',
             'harga_beli.required'  => 'Harga beli wajib diisi',
             'harga_jual.required'  => 'Harga jual wajib diisi',
+            'size.required'        => 'Ukuran wajib diisi.',
+            'size.string'          => 'Ukuran harus berupa teks.',
+            'size.max'             => 'Ukuran maksimal 50 karakter.',
         ]);
 
         if ($validator->fails()) {
@@ -345,6 +371,7 @@ class BarangController extends Controller
                 'stok'        => $request->input('stok') ?? 0,
                 'harga_beli'  => $request->input('harga_beli'),
                 'harga_jual'  => $request->input('harga_jual'),
+                'size'        => $request->input('size'),
             ]);
 
             // 🧠 Catat perubahan
