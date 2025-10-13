@@ -2,6 +2,23 @@
 <input type="hidden" name="hidden_id" id="hidden_id" value="{{ $data->id }}" />
 
 
+ <!-- Instansi -->
+ <div class="fv-row mb-7">
+    <label class="required fw-semibold fs-6 mb-2">Brand</label>
+
+
+    <select id="Editbrand_id" name="brand_id"
+        class="form-select b-3 mb-lg-0" data-control="select2"
+        data-placeholder="pilih brand" data-dropdown-parent="#Modal_Edit_Data">
+        @if (empty($data->brand_id))
+        @else
+            <option value="{{ $brandSelected->id }}" selected>{{ $brandSelected->nama }}</option>
+        @endif
+    </select>
+    <span class="text-danger error-text brand_id_error_edit"></span>
+</div>
+
+
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
@@ -17,21 +34,7 @@
 
                           
 
-                            <!-- Instansi -->
-                            <div class="fv-row mb-7">
-                                <label class="required fw-semibold fs-6 mb-2">Brand</label>
-
-
-                                <select id="Editbrand_id" name="brand_id"
-                                    class="form-select b-3 mb-lg-0" data-control="select2"
-                                    data-placeholder="pilih brand" data-dropdown-parent="#Modal_Edit_Data">
-                                    @if (empty($data->brand_id))
-                                    @else
-                                        <option value="{{ $brandSelected->id }}" selected>{{ $brandSelected->nama }}</option>
-                                    @endif
-                                </select>
-                                <span class="text-danger error-text brand_id_error_edit"></span>
-                            </div>
+                           
 
 
 

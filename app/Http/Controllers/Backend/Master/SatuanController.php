@@ -4,19 +4,17 @@ namespace App\Http\Controllers\Backend\Master;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Tipe;
+use App\Models\Satuan;
 use Illuminate\Support\Arr;
 use DB;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use DataTables;
 use Auth;
-use Illuminate\Validation\Rule;
-
 
 use Validator;
 
-class TipeController extends Controller
+class SatuanController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,11 +24,11 @@ class TipeController extends Controller
     function __construct()
     {
         $this->middleware(['auth']);
-        $this->middleware('permission:tipe-list', ['only' => ['index','getData']]);
-        $this->middleware('permission:tipe-create', ['only' => ['store']]);
-        $this->middleware('permission:tipe-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:tipe-delete', ['only' => ['destroy']]);
-        $this->middleware('permission:tipe-massdelete', ['only' => ['massDelete']]);
+        $this->middleware('permission:satuan-list', ['only' => ['index','getData']]);
+        $this->middleware('permission:satuan-create', ['only' => ['store']]);
+        $this->middleware('permission:satuan-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:satuan-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:satuan-massdelete', ['only' => ['massDelete']]);
     }
     
     /**
@@ -42,40 +40,31 @@ class TipeController extends Controller
     {
      
 
-        return view('backend.master.tipe.index');
+        return view('backend.master.satuan.index');
     }
 
     public function getData(Request $request)
     {
-        $postsQuery = Tipe::with('brand')->orderBy('created_at', 'desc');
-
+        $postsQuery = Satuan::orderBy('created_at', 'desc');
         if (!empty($request->search['value'])) {
             $searchValue = $request->search['value'];
-        
             $postsQuery->where(function ($query) use ($searchValue) {
-                $query->where('nama', 'LIKE', "%{$searchValue}%")
-                      ->orWhereHas('brand', function ($q) use ($searchValue) {
-                          $q->where('nama', 'LIKE', "%{$searchValue}%");
-                      });
+                $query->where('nama', 'LIKE', "%{$searchValue}%");
             });
         }
-        
         $data = $postsQuery->select('*');
 
         return \DataTables::of($data) 
          ->addIndexColumn()
 
-         ->addColumn('brand_id', function ($row) {
-            return $row->brand ? e($row->brand->nama) : '<span class="badge bg-danger">Tidak ada brand</span>';
-        })
-        
+         
 
 
         ->addColumn('action', function($data) {
             return '
             <div class="text-end">
                 <a href="#" 
-                    class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-show-tipe" 
+                    class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 btn-show-satuan" 
                     data-id="'.$data->id.'" >
                     <i class="ki-outline ki-eye fs-2"></i>
                 </a>
@@ -93,7 +82,7 @@ class TipeController extends Controller
 
         
            
-            ->rawColumns(['action','brand_id'])
+            ->rawColumns(['action'])
             ->make(true);
     }
     
@@ -107,8 +96,8 @@ class TipeController extends Controller
 
      public function show($id)
 {
-    $data = Tipe::with('brand')->findOrFail($id);
-    return view('backend.master.tipe.show', compact('data'));
+    $data = Satuan::findOrFail($id);
+    return view('backend.master.satuan.show', compact('data'));
 }
 
 
@@ -119,22 +108,12 @@ class TipeController extends Controller
  
          // 🧩 Validasi input
          $validator = Validator::make($request->all(), [
-            'nama' => [
-                'required',
-                'string',
-                'max:150',
-                Rule::unique('tipe', 'nama')->where(function ($query) use ($request) {
-                    return $query->where('brand_id', $request->brand_id);
-                }),
-            ],
-            'brand_id' => 'required|exists:brands,id',
-        ], [
-            'nama.required' => 'Nama Tipe wajib diisi.',
-            'nama.unique'   => 'Nama Tipe sudah terdaftar untuk brand ini.',
-            'brand_id.required' => 'Brand wajib dipilih.',
-            'brand_id.exists'   => 'Brand tidak ditemukan.',
-        ]);
-        
+            'nama'       => 'required|string|max:150|unique:satuan,nama',
+             'singkatan'=> 'nullable|string',
+         ], [
+             'nama.required' => 'Nama Satuan wajib diisi',
+             'nama.unique'   => 'Nama Satuan sudah terdaftar',
+         ]);
  
          if ($validator->fails()) {
              return response()->json(['errors' => $validator->errors()]);
@@ -143,20 +122,20 @@ class TipeController extends Controller
          try {
              DB::beginTransaction();
  
-             // ✅ Simpan data tipe (UUID otomatis dari model)
-             $data = Tipe::create([
+             // ✅ Simpan data satuan (UUID otomatis dari model)
+             $data = Satuan::create([
                  'nama'        => $request->input('nama'),
-                 'brand_id'  => $request->input('brand_id'),
+                 'singkatan'  => $request->input('singkatan'),
              ]);
  
              // 🧠 Catat log aktivitas (jika kamu pakai spatie/activitylog)
              $changes = ['attributes' => $data];
  
-             activity('tambah tipe')
+             activity('tambah satuan')
                  ->causedBy(Auth::user() ?? null)
                  ->performedOn($data)
                  ->withProperties($changes)
-                 ->log('Menambahkan Tipe: ' . $data->nama);
+                 ->log('Menambahkan Satuan: ' . $data->nama);
  
              DB::commit();
  
@@ -187,10 +166,9 @@ class TipeController extends Controller
      */
     public function edit($id)
     {
-        $data = Tipe::findOrFail($id);
-        $html = view('backend.master.tipe.edit', [
-            'data' => $data,
-            'brandSelected' => $data->findOrFail($id)->brand,
+        $data = Satuan::findOrFail($id);
+        $html = view('backend.master.satuan.edit', [
+            'data' => $data 
         ])->render();
 
         return response()->json(['html' => $html]);
@@ -210,11 +188,11 @@ class TipeController extends Controller
 
     // 🧩 Validasi input
     $validator = \Validator::make($request->all(), [
-        'nama'       => 'required|string|max:150|unique:tipe,nama,' . $id . ',id',
-        'keterangan' => 'nullable|string',
+        'nama'       => 'required|string|max:150|unique:satuan,nama,' . $id . ',id',
+        'singkatan' => 'nullable|string',
     ], [
-        'nama.required' => 'Nama Tipe wajib diisi',
-        'nama.unique'   => 'Nama Tipe sudah digunakan oleh tipe lain',
+        'nama.required' => 'Nama Satuan wajib diisi',
+        'nama.unique'   => 'Nama Satuan sudah digunakan oleh satuan lain',
     ]);
     
 
@@ -226,13 +204,13 @@ class TipeController extends Controller
         \DB::beginTransaction();
 
         // 🔍 Ambil data lama
-        $data = \App\Models\Tipe::findOrFail($id);
+        $data = \App\Models\Satuan::findOrFail($id);
         $oldData = $data->getOriginal();
 
-        // 🔁 Update data tipe
+        // 🔁 Update data satuan
         $data->update([
             'nama'        => $request->input('nama'),
-            'keterangan'  => $request->input('keterangan'),
+            'singkatan'  => $request->input('singkatan'),
         ]);
 
         // 🧠 Catat perubahan
@@ -241,11 +219,11 @@ class TipeController extends Controller
             'old'        => $oldData,
         ];
 
-        activity('edit tipe')
+        activity('edit satuan')
             ->causedBy(\Auth::user() ?? null)
             ->performedOn($data)
             ->withProperties($changes)
-            ->log('Mengubah data Tipe: ' . $data->nama);
+            ->log('Mengubah data Satuan: ' . $data->nama);
 
         \DB::commit();
 
@@ -280,15 +258,15 @@ class TipeController extends Controller
     try {
         \DB::beginTransaction();
 
-        $data = Tipe::findOrFail($id);
+        $data = Satuan::findOrFail($id);
         $data->delete();
 
         // 🧠 Log aktivitas
-        activity('hapus tipe')
+        activity('hapus satuan')
             ->causedBy(Auth::user() ?? null)
             ->performedOn($data)
             ->withProperties(['attributes' => $data])
-            ->log('Menghapus Tipe: ' . $data->nama);
+            ->log('Menghapus Satuan: ' . $data->nama);
 
         \DB::commit();
 
@@ -328,26 +306,26 @@ public function massDelete(Request $request)
         }
 
         // Ambil semua data sebelum dihapus (untuk log)
-        $records = Tipe::whereIn('id', $ids)->get();
+        $records = Satuan::whereIn('id', $ids)->get();
 
         // Hapus sekaligus
-        Tipe::whereIn('id', $ids)->delete();
+        Satuan::whereIn('id', $ids)->delete();
 
         // Commit dulu sebelum log (supaya pasti sudah terhapus)
         \DB::commit();
 
         // Log setiap data di luar transaksi (aman & non-blocking)
         foreach ($records as $record) {
-            activity('mass delete tipe')
+            activity('mass delete satuan')
                 ->causedBy(Auth::user() ?? null)
                 ->performedOn($record)
                 ->withProperties(['attributes' => $record->toArray()])
-                ->log('Menghapus Tipe: ' . $record->nama);
+                ->log('Menghapus Satuan: ' . $record->nama);
         }
 
         return response()->json([
             'status'  => 'success',
-            'message' => count($ids) . ' data tipe berhasil dihapus.',
+            'message' => count($ids) . ' data satuan berhasil dihapus.',
             'time'    => $formattedTime,
             'judul'   => 'Berhasil',
         ]);
@@ -368,17 +346,17 @@ public function massDelete(Request $request)
 
     public function select(Request $request)
         {
-            $tipe = [];
+            $satuan = [];
     
             if ($request->has('q')) {
                 $search = $request->q;
-                $tipe = Tipe::select("id", "nama")
+                $satuan = Satuan::select("id", "nama")
                     ->Where('nama', 'LIKE', "%$search%")
                     ->get();
             } else {
-                $tipe = Tipe::limit(30)->get();
+                $satuan = Satuan::limit(30)->get();
             }
-            return response()->json($tipe);
+            return response()->json($satuan);
         }
 
 
