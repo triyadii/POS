@@ -37,6 +37,7 @@ use App\Http\Controllers\Backend\Master\JenisPembayaranController;
 use App\Http\Controllers\Backend\Master\CustomerController;
 //APPS
 use App\Http\Controllers\Backend\Apps\BarangController;
+use App\Http\Controllers\Backend\Apps\BarangMasukController;
 //END CHIMOX
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
 use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
@@ -142,6 +143,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('get-barang', [BarangController::class, 'getData'])->name('get-barang');
     Route::post('/barang/mass-delete', [BarangController::class, 'massDelete'])->name('barang.mass-delete');
     Route::get('/select/barang', [BarangController::class, 'select'])->name('barang.select');
+
+    Route::resource('barang-masuk', BarangMasukController::class);
+    Route::get('get-barang-masuk', [BarangMasukController::class, 'getData'])->name('get-barang-masuk');
+    Route::post('/barang-masuk/mass-delete', [BarangMasukController::class, 'massDelete'])->name('barang-masuk.mass-delete');
+    Route::get('/select/barang-masuk', [BarangMasukController::class, 'select'])->name('barang-masuk.select');
 
 
     //END CHIMOX
