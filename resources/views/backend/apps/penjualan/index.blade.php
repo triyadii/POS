@@ -73,10 +73,11 @@
                                 <input type="text" class="form-control form-control-solid" id="total-penjualan"
                                     readonly>
                                 <label class="mt-3">Pembayaran</label>
-                                <select class="form-select" id="pembayaran-penjualan">
-                                    <option value="cash">Cash</option>
-                                    <option value="mandiri">Bank Mandiri</option>
-                                    <option value="bca">Bank BCA</option>
+                                <select class="form-select" id="pembayaran-penjualan" name="pembayaran">
+                                    <option value="">Pilih Metode Pembayaran</option>
+                                    @foreach($pembayaran as $p)
+                                    <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -431,6 +432,7 @@
                 total_item: items.length,
                 total_harga: parseInt($('#total-penjualan').val().replace(/[^\d]/g, '')),
                 catatan: $('#catatan').val(),
+                pembayaran: $('#pembayaran-penjualan').val(),
                 items: items
             };
 

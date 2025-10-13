@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Apps;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Barang;
+use App\Models\JenisPembayaran;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Penjualan;
@@ -22,9 +23,11 @@ class PenjualanController extends Controller
     public function index(Request $request)
     {
         $produk = Barang::all();
+        $pembayaran = JenisPembayaran::all();
         return view('backend.apps.penjualan.index', [
             'no_penjualan' => $this->generateNoPenjualan(),
             'produk' => $produk,
+            'pembayaran' => $pembayaran
         ]);
     }
     public function store(Request $request)
