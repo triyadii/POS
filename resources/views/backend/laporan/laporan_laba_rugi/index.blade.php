@@ -25,7 +25,7 @@
                     <h3 class="fw-semibold mb-1">Data Laporan</h3>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2" data-kt-user-table-toolbar="base">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
                         <button type="button" class="btn btn-sm btn-primary btn-export d-none" data-bs-toggle="modal"
                             data-bs-target="#btn-export">
                             <i class="ki-outline ki-printer fs-2 me-2"></i> Export
@@ -66,38 +66,39 @@
                     </div>
                 </div>
 
-                {{-- Chart --}}
+                {{-- Chart Container --}}
                 <div class="row mb-10 d-none" id="chart-wrapper">
-                    <div class="position-relative" style="height: 300px;">
-                        <canvas id="labaRugiChart"></canvas>
-                    </div>
+                    <div id="labaRugiChart" style="height: 350px;"></div>
                 </div>
 
                 {{-- Tabel Data --}}
                 <div class="table-responsive mt-5 d-none" id="table-wrapper">
-                    <table class="table table-bordered align-middle text-center">
-                        <thead class="bg-light fw-bold">
-                            <tr>
-                                <th class="text-nowrap">Tanggal</th>
-                                <th class="text-nowrap">Total Pendapatan</th>
-                                <th class="text-nowrap">Pengeluaran (HPP)</th>
-                                <th class="text-nowrap">Laba Bersih</th>
+                    <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4"
+                        id="laba_rugi_datatable">
+                        <thead>
+                            <tr class="fw-bold text-muted">
+                                <th>Tanggal</th>
+                                <th>Total Pendapatan</th>
+                                <th>Pengeluaran (HPP)</th>
+                                <th>Laba Bersih</th>
                             </tr>
                         </thead>
-                        <tbody id="table-laba-rugi-body">
+                        <tbody>
+                            {{-- Body akan diisi oleh DataTables --}}
                         </tbody>
-                        <tfoot class="fw-semibold bg-secondary text-white">
+                        <tfoot class="fw-semibold">
                             <tr>
-                                <td>Total</td>
-                                <td class="text-end" id="tfoot-total-pendapatan">Rp0</td>
-                                <td class="text-end" id="tfoot-total-pengeluaran">Rp0</td>
-                                <td class="text-end" id="tfoot-total-laba">Rp0</td>
+                                <th>Total</th>
+                                <th class="text-end" id="tfoot-total-pendapatan">Rp0</th>
+                                <th class="text-end" id="tfoot-total-pengeluaran">Rp0</th>
+                                <th class="text-end" id="tfoot-total-laba">Rp0</th>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </div>
         </div>
+
         <div class="modal fade" tabindex="-1" id="btn-export">
             <div class="modal-dialog modal-dialog-centered mw-650px">
                 <div class="modal-content">
@@ -135,17 +136,17 @@
         </div>
     </div>
     @push('stylesheets')
-        <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="stylesheet" href="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.css') }}">
     @endpush
 
     @push('scripts')
         <script src="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
         <script>
             $(document).ready(function() {
-                let labaRugiChart;
+                let chart;
+                let datatable;
+
+                const formatRupiah = (number) => 'Rp ' + (Number(number) || 0).toLocaleString('id-ID');
 
                 $('#filter_tanggal').daterangepicker({
                     ranges: {
@@ -164,7 +165,7 @@
                         "format": "YYYY-MM-DD",
                         "separator": " to ",
                         "applyLabel": "Terapkan",
-                        "cancelLabel": "Batal",
+                        "cancelLabel": "Batal"
                     }
                 }, function(start, end, label) {
                     $('#filter_tanggal').val(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
@@ -184,122 +185,175 @@
                             renderData(response);
                         },
                         error: function() {
-                            alert('Gagal mengambil data. Silakan coba lagi.');
+                            Swal.fire('Error', 'Gagal mengambil data.', 'error');
                         }
                     });
                 }
 
                 function renderData(data) {
-                    // Tampilkan semua wrapper
                     $('#statistik-pendapatan-wrapper, #statistik-pengeluaran-wrapper, #statistik-laba-bersih-wrapper')
                         .removeClass('d-none');
                     $('#chart-wrapper, #table-wrapper').removeClass('d-none');
 
-                    if (labaRugiChart) {
-                        labaRugiChart.destroy();
+                    let totalPendapatan = data.reduce((sum, item) => sum + Number(item.total_pendapatan), 0);
+                    let totalPengeluaran = data.reduce((sum, item) => sum + Number(item.pengeluaran), 0);
+                    let totalLaba = data.reduce((sum, item) => sum + Number(item.laba_bersih), 0);
+
+                    $('#tfoot-total-pendapatan, #stat-pendapatan').text(formatRupiah(totalPendapatan));
+                    $('#tfoot-total-pengeluaran, #stat-pengeluaran').text(formatRupiah(totalPengeluaran));
+                    $('#tfoot-total-laba, #stat-laba-bersih').text(formatRupiah(totalLaba));
+
+                    if ($.fn.DataTable.isDataTable('#laba_rugi_datatable')) {
+                        datatable.destroy();
                     }
 
-                    // =========================
-                    // Hitung Total dan Isi Tabel
-                    // =========================
-                    let tableHTML = '';
-                    let totalPendapatan = 0;
-                    let totalPengeluaran = 0;
-                    let totalLaba = 0;
-
-                    data.forEach(item => {
-                        totalPendapatan += Number(item.total_pendapatan);
-                        totalPengeluaran += Number(item.pengeluaran);
-                        totalLaba += Number(item.laba_bersih);
-
-                        tableHTML += `
-                        <tr>
-                            <td>${moment(item.tanggal).format('DD-MM-YYYY')}</td>
-                            <td class="text-end">Rp ${Number(item.total_pendapatan).toLocaleString('id-ID')}</td>
-                            <td class="text-end">Rp ${Number(item.pengeluaran).toLocaleString('id-ID')}</td>
-                            <td class="text-end fw-bold">Rp ${Number(item.laba_bersih).toLocaleString('id-ID')}</td>
-                        </tr>
-                    `;
+                    datatable = $('#laba_rugi_datatable').DataTable({
+                        data: data,
+                        columns: [{
+                                data: 'tanggal'
+                            }, {
+                                data: 'total_pendapatan'
+                            },
+                            {
+                                data: 'pengeluaran'
+                            }, {
+                                data: 'laba_bersih'
+                            }
+                        ],
+                        columnDefs: [{
+                                targets: 0,
+                                render: (data) => moment(data).format('DD-MM-YYYY')
+                            },
+                            {
+                                targets: [1, 2, 3],
+                                className: 'text-end',
+                                render: (data) => formatRupiah(data)
+                            }
+                        ],
+                        searching: false,
+                        paging: false,
+                        info: false,
+                        ordering: true,
+                        order: [
+                            [0, 'asc']
+                        ]
                     });
 
-                    $('#table-laba-rugi-body').html(tableHTML);
-                    $('#tfoot-total-pendapatan').text('Rp ' + totalPendapatan.toLocaleString('id-ID'));
-                    $('#tfoot-total-pengeluaran').text('Rp ' + totalPengeluaran.toLocaleString('id-ID'));
-                    $('#tfoot-total-laba').text('Rp ' + totalLaba.toLocaleString('id-ID'));
-
-                    // =========================
-                    // Statistik Atas
-                    // =========================
-                    $('#stat-pendapatan').text('Rp ' + totalPendapatan.toLocaleString('id-ID'));
-                    $('#stat-pengeluaran').text('Rp ' + totalPengeluaran.toLocaleString('id-ID'));
-                    $('#stat-laba-bersih').text('Rp ' + totalLaba.toLocaleString('id-ID'));
-
-                    // =========================
-                    // Render Chart
-                    // =========================
-                    const labels = data.map(item => moment(item.tanggal).format('DD MMM'));
-                    const pendapatan = data.map(item => item.total_pendapatan);
-                    const pengeluaran = data.map(item => item.pengeluaran);
-                    const laba = data.map(item => item.laba_bersih);
-
-                    const ctx = document.getElementById('labaRugiChart').getContext('2d');
-                    labaRugiChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Pendapatan',
-                                data: pendapatan,
-                                backgroundColor: '#50cd89',
-                            }, {
-                                label: 'Pengeluaran',
-                                data: pengeluaran,
-                                backgroundColor: '#f1416c',
-                            }, {
-                                label: 'Laba Bersih',
-                                data: laba,
-                                type: 'line',
-                                borderColor: '#009ef7',
-                                borderWidth: 2,
-                                fill: false,
-                                tension: 0.4,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            interaction: {
-                                mode: 'index',
-                                intersect: false
+                    const chartElement = document.getElementById('labaRugiChart');
+                    if (chart) chart.destroy();
+                    const options = {
+                        series: [{
+                                name: 'Pendapatan',
+                                type: 'column',
+                                data: data.map(item => item.total_pendapatan)
                             },
-                            plugins: {
-                                legend: {
-                                    position: 'top'
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            let val = context.raw;
-                                            return `${context.dataset.label}: Rp ${Number(val).toLocaleString('id-ID')}`;
-                                        }
-                                    }
+                            {
+                                name: 'Pengeluaran',
+                                type: 'column',
+                                data: data.map(item => item.pengeluaran)
+                            },
+                            {
+                                name: 'Laba Bersih',
+                                type: 'line',
+                                data: data.map(item => item.laba_bersih)
+                            }
+                        ],
+                        chart: {
+                            fontFamily: 'inherit',
+                            type: 'line',
+                            height: 350,
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                                columnWidth: '55%',
+                                borderRadius: 5
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        stroke: {
+                            show: true,
+                            width: [0, 0, 2],
+                            curve: 'smooth'
+                        },
+                        xaxis: {
+                            categories: data.map(item => moment(item.tanggal).format('DD MMM')),
+                            axisBorder: {
+                                show: false
+                            },
+                            axisTicks: {
+                                show: false
+                            },
+                            labels: {
+                                style: {
+                                    colors: KTUtil.getCssVariableValue('--bs-gray-500'),
+                                    fontSize: '12px'
+                                }
+                            }
+                        },
+                        yaxis: {
+                            labels: {
+                                formatter: (val) => formatRupiah(val),
+                                style: {
+                                    colors: KTUtil.getCssVariableValue('--bs-gray-500'),
+                                    fontSize: '12px'
+                                }
+                            }
+                        },
+                        fill: {
+                            opacity: 1
+                        },
+                        states: {
+                            normal: {
+                                filter: {
+                                    type: 'none',
+                                    value: 0
                                 }
                             },
-                            scales: {
-                                x: {
-                                    stacked: true
-                                },
-                                y: {
-                                    stacked: true,
-                                    ticks: {
-                                        callback: function(value) {
-                                            return 'Rp ' + value.toLocaleString('id-ID');
-                                        }
-                                    }
+                            hover: {
+                                filter: {
+                                    type: 'none',
+                                    value: 0
+                                }
+                            },
+                            active: {
+                                allowMultipleDataPointsSelection: false,
+                                filter: {
+                                    type: 'none',
+                                    value: 0
+                                }
+                            }
+                        },
+                        tooltip: {
+                            style: {
+                                fontSize: '12px'
+                            },
+                            y: {
+                                formatter: (val) => formatRupiah(val)
+                            }
+                        },
+                        colors: [KTUtil.getCssVariableValue('--bs-success'), KTUtil.getCssVariableValue(
+                            '--bs-danger'), KTUtil.getCssVariableValue('--bs-primary')],
+                        grid: {
+                            borderColor: KTUtil.getCssVariableValue('--bs-gray-200'),
+                            strokeDashArray: 4,
+                            yaxis: {
+                                lines: {
+                                    show: true
                                 }
                             }
                         }
-                    });
+                    };
+                    chart = new ApexCharts(chartElement, options);
+                    chart.render();
                 }
 
                 $('#btn-print-laporan').on('click', function() {
@@ -308,21 +362,18 @@
                     const tanggal = $('#filter_tanggal').val();
 
                     if (!tanggal) {
-                        alert('Harap pilih rentang tanggal terlebih dahulu!');
+                        Swal.fire('Perhatian', 'Harap pilih rentang tanggal terlebih dahulu!', 'warning');
                         return;
                     }
 
-                    const dateParts = tanggal.split(' to ');
-                    const start = dateParts[0];
-                    const end = dateParts[1];
-
+                    const [start, end] = tanggal.split(' to ');
                     const url = new URL("{{ route('laporan.laba-rugi.export-pdf') }}", window.location.origin);
                     url.searchParams.append('filter_tanggal_start', start);
                     url.searchParams.append('filter_tanggal_end', end);
                     url.searchParams.append('ukuran_kertas', ukuran);
                     url.searchParams.append('orientasi_kertas', orientasi);
 
-                    window.open(url, '_blank');
+                    window.open(url.toString(), '_blank');
                 });
             });
         </script>

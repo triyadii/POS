@@ -51,20 +51,15 @@
                 </div>
                 @endcan
 
-                @can('kategori-list')
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link py-3" href="#">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-delivery-2 fs-2"></i>
-                        </span>
-                        <span class="menu-title">Barang Masuk</span>
-                        <span class="badge badge-danger">soon</span>
-
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-                @endcan
+                    @can('kategori-list')
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="#">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-delivery-2 fs-2"></i>
+                                </span>
+                                <span class="menu-title">Barang Masuk</span>
+                                <span class="badge badge-info">progres</span>
 
                 @can('kategori-list')
                 <div class="menu-item">
@@ -123,10 +118,16 @@
                         <span class="menu-title">Laporan</span>
                         <span class="badge badge-danger">soon</span>
 
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-                @endcan
+                    @can('tipe-list')
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="#">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-tablet-book fs-2"></i>
+                                </span>
+                                <span class="menu-title">Laporan</span>
+                                <span class="badge badge-info">progres</span>
+
 
 
 
