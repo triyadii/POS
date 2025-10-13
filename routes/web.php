@@ -47,10 +47,6 @@ use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
 use App\Http\Controllers\SettingAppController;
 
 
-use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
-use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
-
-
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -147,7 +143,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('penjualan', PenjualanController::class);
-    
+
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
     Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
     Route::get('/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('laporan.penjualan.export');
