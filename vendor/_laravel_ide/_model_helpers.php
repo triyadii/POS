@@ -1960,6 +1960,16 @@ namespace App\Models {
     /**
      * App\Models\Customer
      *
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property string $no_wa
+     * @property string $nama
+     * @property string $id
+     * @method static \Illuminate\Database\Eloquent\Builder<Customer>|Customer whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Customer>|Customer whereNama($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Customer>|Customer whereNoWa($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Customer>|Customer whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Customer>|Customer whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Customer>|Customer newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Customer>|Customer newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Customer>|Customer query()

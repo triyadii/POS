@@ -45,7 +45,7 @@
                                     <i class="ki-outline ki-parcel fs-2"></i>
                                 </span>
                                 <span class="menu-title">Item Barang</span>
-                                <span class="badge badge-success">DOne</span>
+                                <span class="badge badge-success">Done</span>
                             </a>
                             <!--end:Menu link-->
                         </div>
