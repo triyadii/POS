@@ -369,20 +369,4 @@ public function massDelete(Request $request)
 
 
 
-    public function select(Request $request)
-        {
-            $brand = [];
-    
-            if ($request->has('q')) {
-                $search = $request->q;
-                $brand = Brand::select("id", "nama")
-                    ->Where('nama', 'LIKE', "%$search%")
-                    ->get();
-            } else {
-                $brand = Brand::limit(30)->get();
-            }
-            return response()->json($brand);
-        }
-
-
 }
