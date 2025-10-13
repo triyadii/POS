@@ -20,12 +20,16 @@
         </div>
         <!--end:Menu item-->
 
-        @canany(['supplier-list','brand-list','kategori-list','tipe-list'])
+        @canany(['barang-list'])
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
                 class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
                 <!--begin:Menu link-->
-                <span class="menu-link py-3 ">
+                <span class="menu-link py-3 {{ request()->routeIs(
+                        'barang.index',
+                    )
+                        ? 'active '
+                        : '' }}">
                     <span class="menu-title">Apps</span>
                     <span class="menu-arrow d-lg-none"></span>
                 </span>
@@ -33,15 +37,15 @@
                 <!--begin:Menu sub-->
                 <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-250px">
 
-                    @can('supplier-list')
-                        <div class="menu-item">
+                    @can('barang-list')
+                        <div class="menu-item {{ request()->routeIs('barang.index') ? 'here show ' : '' }}">
                             <!--begin:Menu link-->
-                            <a class="menu-link py-3" href="#">
+                            <a class="menu-link py-3" href="{{ route('barang.index') }}">
                                 <span class="menu-icon">
                                     <i class="ki-outline ki-parcel fs-2"></i>
                                 </span>
                                 <span class="menu-title">Item Barang</span>
-                                <span class="badge badge-warning">progress</span>
+                                <span class="badge badge-warning">progress 80%</span>
                             </a>
                             <!--end:Menu link-->
                         </div>
@@ -135,7 +139,7 @@
 
 
 
-        @canany(['supplier-list','brand-list','kategori-list','tipe-list'])
+        @canany(['supplier-list','brand-list','kategori-list','tipe-list','satuan-list','jenis-pembayaran-list'])
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
                 class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
@@ -145,6 +149,8 @@
                         'brand.index',
                         'kategori.index',
                         'tipe.index',
+                        'satuan.index',
+                        'jenis-pembayaran.index'
                     )
                         ? 'active '
                         : '' }}">
@@ -201,7 +207,38 @@
                                 <span class="menu-icon">
                                     <i class="ki-outline ki-element-7 fs-2"></i>
                                 </span>
-                                <span class="menu-title">Tipe Brand</span>
+                                <span class="menu-title">Tipe/Jenis Brand</span>
+                                <span class="badge badge-info">revisi selesai</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
+
+
+                    @can('satuan-list')
+                        <div class="menu-item {{ request()->routeIs('satuan.index') ? 'here show ' : '' }}">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="{{ route('satuan.index') }}">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-tag fs-2"></i>
+                                </span>
+                                <span class="menu-title">Satuan Item</span>
+                                <span class="badge badge-success">new</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
+
+
+                    @can('jenis-pembayaran-list')
+                        <div class="menu-item {{ request()->routeIs('jenis-pembayaran.index') ? 'here show ' : '' }}">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="{{ route('jenis-pembayaran.index') }}">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-credit-cart fs-2"></i>
+                                </span>
+                                <span class="menu-title">Jenis Pembayaran</span>
+                                <span class="badge badge-success">new</span>
                             </a>
                             <!--end:Menu link-->
                         </div>
