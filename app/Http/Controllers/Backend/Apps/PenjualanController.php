@@ -107,4 +107,32 @@ class PenjualanController extends Controller
 
         return "{$kasirId}-{$tanggal}-{$urutan}";
     }
+    public function daftarPenjualan()
+    {
+        // Menampilkan halaman daftar penjualan (list view)
+        return view('backend.apps.penjualan.daftar');
+    }
+
+    public function dataPenjualan()
+    {
+        // Ambil data penjualan dengan relasi detail & barang
+        $penjualan = Penjualan::with([
+            'detail.barang:id,nama',
+            'user:id,name'
+        ])
+            ->select(
+                'id',
+                'kode_transaksi',
+                'tanggal_penjualan',
+                'customer_nama',
+                'total_item',
+                'total_harga',
+                'catatan',
+                'user_id'
+            )
+            ->orderBy('tanggal_penjualan', 'desc')
+            ->get();
+
+        return response()->json($penjualan);
+    }
 }
