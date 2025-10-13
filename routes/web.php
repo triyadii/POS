@@ -147,7 +147,11 @@ Route::group(['middleware' => ['auth']], function () {
     //END CHIMOX
 
 
-    Route::resource('penjualan', PenjualanController::class);
+    Route::resource('penjualan', PenjualanController::class)->except(['show']);
+    Route::get('/penjualan/daftar', [PenjualanController::class, 'daftarPenjualan'])->name('penjualan.daftar');
+    Route::get('/penjualan/daftar/data', [PenjualanController::class, 'dataPenjualan'])
+        ->name('penjualan.daftar.data');
+    Route::get('penjualan/history', [PenjualanController::class, 'historyData'])->name('penjualan.history.data');
 
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
     Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
