@@ -148,6 +148,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('penjualan', PenjualanController::class);
+    Route::get('penjualan/history', [LaporanPenjualanController::class, 'getLaporanData'])->name('penjualan.history.data');
 
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
     Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
