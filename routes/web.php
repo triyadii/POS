@@ -34,21 +34,17 @@ use App\Http\Controllers\Backend\Master\KategoriController;
 use App\Http\Controllers\Backend\Master\TipeController;
 use App\Http\Controllers\Backend\Master\SatuanController;
 use App\Http\Controllers\Backend\Master\JenisPembayaranController;
+use App\Http\Controllers\Backend\Master\CustomerController;
 //APPS
 use App\Http\Controllers\Backend\Apps\BarangController;
 //END CHIMOX
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
 use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
-
-
-
-
-
+use App\Http\Controllers\Backend\Laporan\LaporanPenjualanBrandController;
+use App\Http\Controllers\Backend\Laporan\LaporanPenjualanKategoriController;
+use App\Http\Controllers\Backend\Laporan\LaporanPenjualanSupplierController;
+use App\Http\Controllers\Backend\Stok\StokController;
 use App\Http\Controllers\SettingAppController;
-
-
-use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
-use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
 
 
 Route::get('/', function () {
@@ -137,6 +133,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/jenis-pembayaran/mass-delete', [JenisPembayaranController::class, 'massDelete'])->name('jenis-pembayaran.mass-delete');
     Route::get('/select/jenis-pembayaran', [JenisPembayaranController::class, 'select'])->name('jenis-pembayaran.select');
 
+    Route::resource('customer', CustomerController::class);
+    Route::get('get-customer', [CustomerController::class, 'getData'])->name('get-customer');
+    Route::post('/customer/mass-delete', [CustomerController::class, 'massDelete'])->name('customer.mass-delete');
+    Route::get('/select/customer', [CustomerController::class, 'select'])->name('customer.select');
+
     Route::resource('barang', BarangController::class);
     Route::get('get-barang', [BarangController::class, 'getData'])->name('get-barang');
     Route::post('/barang/mass-delete', [BarangController::class, 'massDelete'])->name('barang.mass-delete');
@@ -147,15 +148,35 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('penjualan', PenjualanController::class);
-    
+
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
     Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
     Route::get('/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('laporan.penjualan.export');
     Route::resource('laporan-penjualan', LaporanPenjualanController::class);
 
+    Route::get('laporan-penjualan-brand-data', [LaporanPenjualanBrandController::class, 'getLaporanData'])->name('laporan.penjualan.brand.data');
+    Route::get('laporan-penjualan-brand/chart', [LaporanPenjualanBrandController::class, 'getChartData'])->name('laporan.penjualan.brand.chart');
+    Route::get('/laporan/penjualan/brand/export', [LaporanPenjualanBrandController::class, 'export'])->name('laporan.penjualan.brand.export');
+    Route::resource('laporan-penjualan-brand', LaporanPenjualanBrandController::class);
+
+    Route::get('laporan-penjualan-supplier-data', [LaporanPenjualanSupplierController::class, 'getLaporanData'])->name('laporan.penjualan.supplier.data');
+    Route::get('laporan-penjualan-supplier/chart', [LaporanPenjualanSupplierController::class, 'getChartData'])->name('laporan.penjualan.supplier.chart');
+    Route::get('/laporan/penjualan/supplier/export', [LaporanPenjualanSupplierController::class, 'export'])->name('laporan.penjualan.supplier.export');
+    Route::resource('laporan-penjualan-supplier', LaporanPenjualanSupplierController::class);
+
+    Route::get('laporan-penjualan-kategori-data', [LaporanPenjualanKategoriController::class, 'getLaporanData'])->name('laporan.penjualan.kategori.data');
+    Route::get('laporan-penjualan-kategori/chart', [LaporanPenjualanKategoriController::class, 'getChartData'])->name('laporan.penjualan.kategori.chart');
+    Route::get('/laporan/penjualan/kategori/export', [LaporanPenjualanKategoriController::class, 'export'])->name('laporan.penjualan.kategori.export');
+    Route::resource('laporan-penjualan-kategori', LaporanPenjualanKategoriController::class);
+
     Route::get('laporan-laba-rugi/chart', [LaporanLabaRugiController::class, 'getProfitLossData'])->name('laporan.laba-rugi.chart');
     Route::get('/laporan/laba-rugi/export-pdf', [LaporanLabaRugiController::class, 'exportLabaRugiPdf'])->name('laporan.laba-rugi.export-pdf');
     Route::resource('laporan-laba-rugi', LaporanLabaRugiController::class);
+
+    Route::get('stok-data', [StokController::class, 'getStokData'])->name('stok.data');
+    Route::get('stok/chart', [StokController::class, 'getChartData'])->name('stok.chart');
+    Route::get('/stok/export', [StokController::class, 'export'])->name('stok.export');
+    Route::resource('stok', StokController::class);
 });
 
 

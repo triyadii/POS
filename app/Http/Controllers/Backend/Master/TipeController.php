@@ -366,20 +366,37 @@ public function massDelete(Request $request)
 
 
 
-    public function select(Request $request)
-        {
-            $tipe = [];
+    // public function select(Request $request)
+    //     {
+    //         $tipe = [];
     
-            if ($request->has('q')) {
-                $search = $request->q;
-                $tipe = Tipe::select("id", "nama")
-                    ->Where('nama', 'LIKE', "%$search%")
-                    ->get();
-            } else {
-                $tipe = Tipe::limit(30)->get();
-            }
-            return response()->json($tipe);
+    //         if ($request->has('q')) {
+    //             $search = $request->q;
+    //             $tipe = Tipe::select("id", "nama")
+    //                 ->Where('nama', 'LIKE', "%$search%")
+    //                 ->get();
+    //         } else {
+    //             $tipe = Tipe::limit(30)->get();
+    //         }
+    //         return response()->json($tipe);
+    //     }
+
+
+    public function select(Request $request)
+    {
+        $brandID = $request->brandID;
+    
+        $query = \App\Models\Tipe::select('id', 'nama')
+            ->when($brandID, fn($q) => $q->where('brand_id', $brandID));
+    
+        if ($request->has('q')) {
+            $search = $request->q;
+            $query->where('nama', 'like', "%{$search}%");
         }
+    
+        return response()->json($query->limit(10)->get());
+    }
+    
 
 
 }
