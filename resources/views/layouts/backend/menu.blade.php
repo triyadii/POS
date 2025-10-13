@@ -45,7 +45,7 @@
                                     <i class="ki-outline ki-parcel fs-2"></i>
                                 </span>
                                 <span class="menu-title">Item Barang</span>
-                                <span class="badge badge-warning">progress 80%</span>
+                                <span class="badge badge-success">Done</span>
                             </a>
                             <!--end:Menu link-->
                         </div>
@@ -139,13 +139,14 @@
 
 
 
-        @canany(['supplier-list','brand-list','kategori-list','tipe-list','satuan-list','jenis-pembayaran-list'])
+        @canany(['supplier-list','brand-list','kategori-list','tipe-list','satuan-list','jenis-pembayaran-list','customer-list'])
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
                 class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
                 <!--begin:Menu link-->
                 <span class="menu-link py-3 {{ request()->routeIs(
                         'supplier.index',
+                        'customer.index',
                         'brand.index',
                         'kategori.index',
                         'tipe.index',
@@ -173,6 +174,22 @@
                             <!--end:Menu link-->
                         </div>
                     @endcan
+
+                    @can('customer-list')
+                        <div class="menu-item {{ request()->routeIs('customer.index') ? 'here show ' : '' }}">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="{{ route('customer.index') }}">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-people fs-2"></i>
+                                </span>
+                                <span class="menu-title">Customer</span>
+                                <span class="badge badge-success">new</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
+
+
                     @can('kategori-list')
                         <div class="menu-item {{ request()->routeIs('kategori.index') ? 'here show ' : '' }}">
                             <!--begin:Menu link-->
