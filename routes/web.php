@@ -34,6 +34,7 @@ use App\Http\Controllers\Backend\Master\KategoriController;
 use App\Http\Controllers\Backend\Master\TipeController;
 use App\Http\Controllers\Backend\Master\SatuanController;
 use App\Http\Controllers\Backend\Master\JenisPembayaranController;
+use App\Http\Controllers\Backend\Master\CustomerController;
 //APPS
 use App\Http\Controllers\Backend\Apps\BarangController;
 //END CHIMOX
@@ -132,6 +133,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('get-jenis-pembayaran', [JenisPembayaranController::class, 'getData'])->name('get-jenis-pembayaran');
     Route::post('/jenis-pembayaran/mass-delete', [JenisPembayaranController::class, 'massDelete'])->name('jenis-pembayaran.mass-delete');
     Route::get('/select/jenis-pembayaran', [JenisPembayaranController::class, 'select'])->name('jenis-pembayaran.select');
+
+    Route::resource('customer', CustomerController::class);
+    Route::get('get-customer', [CustomerController::class, 'getData'])->name('get-customer');
+    Route::post('/customer/mass-delete', [CustomerController::class, 'massDelete'])->name('customer.mass-delete');
+    Route::get('/select/customer', [CustomerController::class, 'select'])->name('customer.select');
 
     Route::resource('barang', BarangController::class);
     Route::get('get-barang', [BarangController::class, 'getData'])->name('get-barang');
