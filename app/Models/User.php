@@ -47,7 +47,7 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-   
+
 
     /**
      * Get the attributes that should be cast.
@@ -76,16 +76,16 @@ class User extends Authenticatable
     public function divisi()
     {
         return $this->belongsToMany(Divisi::class, 'users_divisi', 'user_id', 'divisi_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
-    
+    public function penjualan()
+    {
+        return $this->hasMany(Penjualan::class, 'user_id');
+    }
 
-    
-
-    
-    
-
-    
-    
+    public function barangMasuk()
+    {
+        return $this->hasMany(BarangMasuk::class, 'user_id');
+    }
 }

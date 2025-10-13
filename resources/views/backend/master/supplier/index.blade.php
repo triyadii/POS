@@ -120,9 +120,10 @@
                                 </th>
                             @endcan
                             <th class="min-w-125px">Nama Supplier</th>
-                            <th class="min-w-125px">Kontak</th>
-                            <th class="min-w-100px">Alamat</th>
-                            <th class="min-w-100px">Keterangan</th>
+                            <th class="min-w-125px">Jumlah Resource</th>
+                            <th class="min-w-100px">Dibuat Oleh</th>
+                            <th class="min-w-100px">Created At</th>
+                            <th class="min-w-100px">Updated At</th>
                             @canany(['supplier-show', 'supplier-edit', 'supplier-delete'])
                                 <th class="text-end min-w-100px">Action</th>
                             @endcanany
@@ -174,7 +175,7 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Nama Supplier</label>
+                                <label class="required fw-semibold fs-6 mb-2">Nama Istansi</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="nama" id="nama"
@@ -403,20 +404,26 @@
                             searchable: false
                         },
                         {
-                            data: 'no_telp',
-                            name: 'no_telp',
+                            data: 'jumlah_program',
+                            name: 'jumlah_program',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'alamat',
-                            name: 'alamat',
+                            data: 'user_id',
+                            name: 'user_id',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'keterangan',
-                            name: 'keterangan',
+                            data: 'created_at',
+                            name: 'created_at',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            data: 'updated_at',
+                            name: 'updated_at',
                             orderable: false,
                             searchable: false
                         },
