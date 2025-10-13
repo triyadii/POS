@@ -10,7 +10,7 @@ class PenjualanDetail extends Model
     use HasFactory;
 
     protected $table = 'penjualan_detail';
-    protected $primaryKey = 'id';
+    // protected $primaryKey = 'id';
     public $incrementing = false; // UUID
     protected $keyType = 'string';
 
@@ -28,11 +28,10 @@ class PenjualanDetail extends Model
     // ==========================
     public function penjualan()
     {
-        return $this->belongsTo(Penjualan::class, 'penjualan_id');
+        return $this->belongsTo(Penjualan::class, 'penjualan_id', 'id');
     }
-
     public function barang()
     {
-        return $this->belongsTo(Barang::class, 'barang_id');
+        return $this->belongsTo(\App\Models\Barang::class, 'barang_id', 'id');
     }
 }
