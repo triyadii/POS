@@ -25,11 +25,7 @@
         <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
             class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
             <!--begin:Menu link-->
-            <span class="menu-link py-3 {{ request()->routeIs(
-                        'barang.index',
-                    )
-                        ? 'active '
-                        : '' }}">
+            <span class="menu-link py-3 {{ request()->routeIs('barang.index') ? 'active ' : '' }}">
                 <span class="menu-title">Apps</span>
                 <span class="menu-arrow d-lg-none"></span>
             </span>
@@ -51,15 +47,23 @@
                 </div>
                 @endcan
 
-                    @can('kategori-list')
-                        <div class="menu-item">
-                            <!--begin:Menu link-->
-                            <a class="menu-link py-3" href="#">
-                                <span class="menu-icon">
-                                    <i class="ki-outline ki-delivery-2 fs-2"></i>
-                                </span>
-                                <span class="menu-title">Barang Masuk</span>
-                                <span class="badge badge-info">progres</span>
+                @can('barang-masuk-list')
+                <div class="menu-item {{ request()->routeIs('barang-masuk.index') ? 'here show ' : '' }}">
+                    <!--begin:Menu link-->
+                    <a class="menu-link py-3" href="{{ route('barang-masuk.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-delivery-2 fs-2"></i>
+                        </span>
+                        <span class="menu-title">Barang Masuk</span>
+                        <span class="badge badge-info">progres</span>
+
+
+
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                @endcan
+
 
                 @can('kategori-list')
                 <div class="menu-item">
@@ -69,7 +73,9 @@
                             <i class="ki-outline ki-truck fs-2"></i>
                         </span>
                         <span class="menu-title">Barang Keluar</span>
-                        <span class="badge badge-danger">soon</span>
+                        <span class="badge badge-info">progres</span>
+
+
 
                     </a>
                     <!--end:Menu link-->
@@ -85,7 +91,7 @@
                             <i class="ki-outline ki-notepad-edit fs-2"></i>
                         </span>
                         <span class="menu-title">Daftar Penjualan</span>
-                        <span class="badge badge-danger">soon</span>
+                        <span class="badge badge-info">progres</span>
 
                     </a>
                     <!--end:Menu link-->
@@ -108,6 +114,8 @@
                 @endcan
 
 
+
+
                 @can('tipe-list')
                 <div class="menu-item">
                     <!--begin:Menu link-->
@@ -116,19 +124,11 @@
                             <i class="ki-outline ki-tablet-book fs-2"></i>
                         </span>
                         <span class="menu-title">Laporan</span>
-                        <span class="badge badge-danger">soon</span>
+                        <span class="badge badge-info">progres</span>
 
-                    @can('tipe-list')
-                        <div class="menu-item">
-                            <!--begin:Menu link-->
-                            <a class="menu-link py-3" href="#">
-                                <span class="menu-icon">
-                                    <i class="ki-outline ki-tablet-book fs-2"></i>
-                                </span>
-                                <span class="menu-title">Laporan</span>
-                                <span class="badge badge-info">progres</span>
-
-
+                    </a>
+                </div>
+                @endcan
 
 
 
@@ -140,7 +140,8 @@
 
 
 
-        @canany(['supplier-list','brand-list','kategori-list','tipe-list','satuan-list','jenis-pembayaran-list','customer-list'])
+        @canany(['supplier-list', 'brand-list', 'kategori-list', 'tipe-list', 'satuan-list', 'jenis-pembayaran-list',
+        'customer-list'])
         <!--begin:Menu item-->
         <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
             class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
@@ -152,7 +153,7 @@
                         'kategori.index',
                         'tipe.index',
                         'satuan.index',
-                        'jenis-pembayaran.index'
+                        'jenis-pembayaran.index',
                     )
                         ? 'active '
                         : '' }}">

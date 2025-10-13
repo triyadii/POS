@@ -179,6 +179,7 @@
                                 <th>Kode Transaksi</th>
                                 <th>Tanggal</th>
                                 <th>Customer</th>
+                                <th>Metode Pembayaran</th>
                                 <th>Total Item</th>
                                 <th>Total Harga</th>
                                 <th>Catatan</th>
@@ -249,6 +250,7 @@
                     <td>${p.kode_transaksi}</td>
                     <td>${new Date(p.tanggal_penjualan).toLocaleDateString('id-ID')}</td>
                     <td>${p.customer_nama ?? '-'}</td>
+                    <td>${p.pembayaran ? p.pembayaran.nama : '-'}</td>
                     <td>${p.total_item}</td>
                     <td>Rp ${parseInt(p.total_harga).toLocaleString('id-ID')}</td>
                     <td>${p.catatan ?? '-'}</td>
@@ -305,24 +307,37 @@
             const container = document.querySelector('.daftar-produk');
             container.innerHTML = '';
             data.forEach(p => {
+                const stok = parseInt(p.stok ?? 0);
+                const habis = stok <= 0;
+
                 const card = document.createElement('div');
                 card.className = 'col-lg-6 mb-3';
                 card.innerHTML = `
-                <div class="card card-flush p-2 text-center produk-item" data-id="${p.id}">
-                    <div class="fw-bold">${p.nama}</div>
-                    <div class="text-muted">${p.kategori ? p.kategori.nama : '-'}</div>
-                    <div class="text-success">Rp ${parseInt(p.harga_jual).toLocaleString('id-ID')}</div>
-                </div>`;
+            <div class="card card-flush p-2 text-center produk-item ${habis ? 'bg-light-secondary' : ''}" 
+                 data-id="${p.id}" style="cursor:${habis ? 'not-allowed' : 'pointer'};opacity:${habis ? 0.5 : 1}">
+                <div class="fw-bold">${p.nama}</div>
+                <div class="text-muted">${p.kategori ? p.kategori.nama : '-'}</div>
+                <div class="text-success">Rp ${parseInt(p.harga_jual).toLocaleString('id-ID')}</div>
+                <div class="mt-1 ${habis ? 'text-danger fw-bold' : 'text-muted small'}">
+                    ${habis ? 'Stok Habis' : 'Stok: ' + stok}
+                </div>
+            </div>`;
                 container.appendChild(card);
             });
 
             document.querySelectorAll('.produk-item').forEach(item => {
                 item.addEventListener('click', function() {
                     const produk = produkData.find(p => p.id == this.dataset.id);
+                    const stok = parseInt(produk.stok ?? 0);
+                    if (stok <= 0) {
+                        Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
+                        return;
+                    }
                     tambahKeTabel(produk);
                 });
             });
         }
+
 
         // fungsi-fungsi perhitungan
         function tambahKeTabel(produk) {
@@ -360,12 +375,23 @@
 
         function updateSubtotal(input) {
             const tr = input.closest('tr');
+            const produkId = tr.id.replace('row-', '');
+            const produk = produkData.find(p => p.id == produkId);
+            const stok = parseInt(produk.stok ?? 0);
+            let qty = parseInt(input.value);
+
+            if (qty > stok) {
+                qty = stok;
+                input.value = stok;
+                Swal.fire('⚠️ Stok Tidak Cukup', `Stok ${produk.nama} hanya ${stok}`, 'warning');
+            }
+
             const harga = parseInt(tr.children[2].textContent.replace(/[^\d]/g, ''));
-            const qty = parseInt(input.value);
             const subtotal = harga * qty;
             tr.querySelector('.subtotal').textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
             updateTotal();
         }
+
 
         function updateTotal() {
             const subtotalEls = document.querySelectorAll('#purchase_cart_list .subtotal');
@@ -408,6 +434,21 @@
             const rows = $('#purchase_cart_list tr');
             if (rows.length === 0) return Swal.fire('Oops!', 'Belum ada produk yang dipilih', 'warning');
 
+            const total = parseInt($('#total-penjualan').val().replace(/[^\d]/g, '')) || 0;
+            const uangDiterima = parseInt($('#uang-diterima-penjualan').val().replace(/[^\d]/g, '')) || 0;
+            const kembalian = uangDiterima - total;
+
+            // ✅ Validasi jika uang diterima kurang dari total
+            if (kembalian < 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Uang Kurang!',
+                    text: 'Nominal uang yang diterima tidak mencukupi untuk membayar total pembelian.',
+                    confirmButtonText: 'OK'
+                });
+                return; // hentikan proses submit
+            }
+
             // Ambil semua item
             const items = [];
             rows.each(function() {
@@ -430,7 +471,7 @@
                 tanggal: $('#tanggal').val(),
                 customer_nama: $('#customer_id option:selected').text(),
                 total_item: items.length,
-                total_harga: parseInt($('#total-penjualan').val().replace(/[^\d]/g, '')),
+                total_harga: total,
                 catatan: $('#catatan').val(),
                 pembayaran: $('#pembayaran-penjualan').val(),
                 items: items
@@ -453,12 +494,22 @@
                                 .val());
                             $('#modal-kembalian').text($('#kembalian-penjualan').val());
                             new bootstrap.Modal('#modalPenjualanSelesai').show();
+
+                            // Reset form
                             $('#form-penjualan')[0].reset();
                             $('#purchase_cart_list').html('');
                             updateTotal();
+
+                            if (res.no_penjualan_baru) {
+                                $('#no_penjualan').val(res.no_penjualan_baru);
+                            }
+
+                            $.get("{{ route('penjualan.produk.data') }}", function(
+                                newProduk) {
+                                window.produkData = newProduk;
+                                renderProduk(newProduk);
+                            });
                         });
-                    } else {
-                        Swal.fire('Gagal', res.message, 'error');
                     }
                 },
                 error: function(xhr) {
@@ -467,6 +518,7 @@
                 }
             });
         });
+
 
         $('#btn-batal-penjualan').on('click', () => {
             $('#purchase_cart_list').html('');

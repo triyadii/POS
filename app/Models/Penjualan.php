@@ -22,7 +22,8 @@ class Penjualan extends Model
         'user_id',
         'total_item',
         'total_harga',
-        'catatan'
+        'catatan',
+        'jenis_pembayaran_id',
     ];
 
     protected static function boot()
@@ -54,5 +55,9 @@ class Penjualan extends Model
     public function detail()
     {
         return $this->hasMany(PenjualanDetail::class, 'penjualan_id', 'id');
+    }
+    public function pembayaran()
+    {
+        return $this->belongsTo(JenisPembayaran::class, 'jenis_pembayaran_id', 'id');
     }
 }
