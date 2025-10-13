@@ -347,6 +347,7 @@ namespace App\Models {
      *
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
+     * @property string|null $size
      * @property float $harga_jual
      * @property float $harga_beli
      * @property mixed $stok
@@ -375,6 +376,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Barang>|Barang whereStok($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Barang>|Barang whereHargaBeli($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Barang>|Barang whereHargaJual($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Barang>|Barang whereSize($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Barang>|Barang whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Barang>|Barang whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Barang>|Barang newModelQuery()

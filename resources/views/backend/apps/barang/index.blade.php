@@ -124,8 +124,9 @@
                                 </th>
                             @endcan
                             <th class="min-w-125px">Nama Item</th>
-                            <th class="min-w-125px">Kategori</th>
+                            <th class="min-w-70px">Kategori</th>
                             <th class="min-w-100px">Brand</th>
+                            <th class="min-w-50px">Size</th>
                             <th class="min-w-100px">Stok</th>
                             <th class="text-end min-w-100px">Harga Jual</th>
                             <th class="text-end min-w-100px">Harga Beli</th>
@@ -219,14 +220,17 @@
                                                 <input type="text"    name="nama"       class="form-control form-control-sm"           placeholder="Nama Item">
                                             </div>
                                             <div class="col-md-1">
+                                                <input type="text"    name="size"       class="form-control form-control-sm"           placeholder="Size">
+                                            </div>
+                                            <div class="col-md-1">
                                                 <select data-type="satuan" name="satuan_id" class="form-select form-select-sm satuan_id" data-kt-repeater="select2" data-placeholder="pilih satuan">
                                                 </select>
                                             </div>
-                                            <div class="col-md-2">
-                                                <input type="number"  name="harga_jual" class="form-control form-control-sm text-end"  placeholder="Harga Jual">
+                                            <div class="col-md-1">
+                                                <input type="text"  name="harga_jual" class="form-control form-control-sm text-end format-rupiah"  placeholder="Harga Jual">
                                             </div>
-                                            <div class="col-md-2">
-                                                <input type="number"  name="harga_beli" class="form-control form-control-sm text-end"  placeholder="Harga Beli">
+                                            <div class="col-md-1">
+                                                <input type="text"  name="harga_beli" class="form-control form-control-sm text-end format-rupiah"  placeholder="Harga Beli">
                                             </div>
                                           <div class="col-md-1 text-center">
                                             <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger"><i class="ki-outline ki-trash fs-2"></i></button>
@@ -401,6 +405,8 @@
                 let type = el.data('type');
                 initSelect2(el, type);
             });
+
+            initFormatRupiah($(this)); 
         },
     
         hide: function (del) {
@@ -414,6 +420,8 @@
                 let type = el.data('type');
                 initSelect2(el, type);
             });
+
+            initFormatRupiah($('#repeater-barang'));
         },
     
         repeaters: [{
@@ -428,6 +436,7 @@
                     let type = el.data('type');
                     initSelect2(el, type);
                 });
+                initFormatRupiah($(this));
             },
             hide: function (del) { $(this).slideUp(del); }
         }]
@@ -435,47 +444,111 @@
     
     // === Helper untuk inisialisasi Select2 ===
     function initSelect2(el, type) {
-        let config = {
-            dropdownParent: $('#Modal_Tambah_Data'),
-            ajax: {
-                dataType: 'json',
-                delay: 250,
-                processResults: data => ({
-                    results: data.map(i => ({ id: i.id, text: i.nama }))
-                })
-            }
-        };
-    
-        switch (type) {
-            case 'kategori':
-                el.select2($.extend({}, config, {
-                    placeholder: 'Pilih kategori',
-                    ajax: $.extend(config.ajax, { url: "{{ route('kategori.select') }}" })
-                }));
-                break;
-    
-            case 'brand':
-                el.select2($.extend({}, config, {
-                    placeholder: 'Pilih brand',
-                    ajax: $.extend(config.ajax, { url: "{{ route('brand.select') }}" })
-                }));
-                break;
-    
-            case 'tipe':
-                el.select2($.extend({}, config, {
-                    placeholder: 'Pilih tipe',
-                    ajax: $.extend(config.ajax, { url: "{{ route('tipe.select') }}" })
-                }));
-                break;
+    let config = {
+        dropdownParent: $('#Modal_Tambah_Data'),
+        ajax: {
+            dataType: 'json',
+            delay: 250,
+            processResults: data => ({
+                results: data.map(i => ({ id: i.id, text: i.nama }))
+            })
+        },
+        allowClear: true
+    };
 
-            case 'satuan':
-                el.select2($.extend({}, config, {
-                    placeholder: 'Pilih satuan',
-                    ajax: $.extend(config.ajax, { url: "{{ route('satuan.select') }}" })
-                }));
-                break;
-        }
+    switch (type) {
+        case 'kategori':
+            el.select2($.extend({}, config, {
+                placeholder: 'Pilih kategori',
+                ajax: $.extend({}, config.ajax, { url: "{{ route('kategori.select') }}" })
+            }));
+            break;
+
+        case 'brand':
+            el.select2($.extend({}, config, {
+                placeholder: 'Pilih brand',
+                ajax: $.extend({}, config.ajax, { url: "{{ route('brand.select') }}" })
+            }));
+
+            // Saat brand berubah ⇒ reset SEMUA select tipe di outer item ini
+            el.off('change.brand-reset').on('change.brand-reset', function () {
+                const outerItem = el.closest('[data-repeater-item]'); // brand ada di OUTER item
+                outerItem.find('select[data-type="tipe"]').each(function () {
+                    $(this).val(null).trigger('change');
+                });
+            });
+            break;
+
+        case 'tipe':
+            el.select2($.extend({}, config, {
+                placeholder: 'Pilih tipe',
+                ajax: $.extend({}, config.ajax, {
+                    url: "{{ route('tipe.select') }}",
+                    data: function (params) {
+                        // Ambil brand_id dari OUTER repeater item terdekat
+                        const outerItem = el.closest('[data-repeater-item]').parents('[data-repeater-item]').first();
+                        const brandID = outerItem.find('select[data-type="brand"]').val();
+
+                        return {
+                            q: params.term || '',
+                            brandID: brandID || '' // backend akan filter by brandID
+                        };
+                    }
+                })
+            }));
+
+            // Cegah buka dropdown tipe kalau brand belum dipilih
+            el.off('select2:opening.guard').on('select2:opening.guard', function (evt) {
+                const outerItem = el.closest('[data-repeater-item]').parents('[data-repeater-item]').first();
+                const brandID = outerItem.find('select[data-type="brand"]').val();
+                if (!brandID) {
+                    evt.preventDefault();
+                    if (typeof toastr !== 'undefined') {
+                        toastr.warning('Pilih brand terlebih dahulu');
+                    } else {
+                        alert('Pilih brand terlebih dahulu');
+                    }
+                }
+            });
+            break;
+
+        case 'satuan':
+            el.select2($.extend({}, config, {
+                placeholder: 'Pilih satuan',
+                ajax: $.extend({}, config.ajax, { url: "{{ route('satuan.select') }}" })
+            }));
+            break;
     }
+}
+
+
+
+    // === Format Rupiah Otomatis (tanpa hapus titik saat submit) ===
+    function initFormatRupiah(container) {
+    container.find('.format-rupiah').each(function () {
+        let input = $(this);
+
+        input.off('input').on('input', function (e) {
+            let cursorPos = this.selectionStart;
+            let raw = this.value.replace(/\D/g, ''); // ambil hanya angka
+            if (raw === '') {
+                this.value = '';
+                input.data('value', '');
+                return;
+            }
+
+            // Simpan nilai mentah di data-value (biar backend bisa akses kalau mau)
+            input.data('value', raw);
+
+            // Format tampilan
+            this.value = new Intl.NumberFormat('id-ID').format(parseInt(raw));
+
+            // Kembalikan kursor di akhir
+            this.setSelectionRange(this.value.length, this.value.length);
+        });
+    });
+}
+
     
     // === FIX untuk modal: reinit select2 saat modal tampil ===
     $('#Modal_Tambah_Data').on('shown.bs.modal', function () {
@@ -486,6 +559,8 @@
                 initSelect2(el, type);
             }
         });
+
+        initFormatRupiah($('#repeater-barang'));
     });
     </script>
     
@@ -551,6 +626,13 @@
                         {
                             data: 'brand_id',
                             name: 'brand_id',
+                            orderable: false,
+                            searchable: false
+                        },
+
+                        {
+                            data: 'size',
+                            name: 'size',
                             orderable: false,
                             searchable: false
                         },
