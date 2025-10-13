@@ -79,7 +79,6 @@ class PenjualanController extends Controller
         return response()->json($penjualan);
     }
 
-
     private function generateNoPenjualan()
     {
         $kasirId = 'WAA';
