@@ -25,6 +25,7 @@ class Barang extends Model
         'stok',
         'harga_beli',
         'harga_jual',
+        'size',
     ];
     
 
