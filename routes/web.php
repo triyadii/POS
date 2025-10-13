@@ -36,9 +36,6 @@ use App\Http\Controllers\Backend\Master\SatuanController;
 use App\Http\Controllers\Backend\Master\JenisPembayaranController;
 //APPS
 use App\Http\Controllers\Backend\Apps\BarangController;
-//END CHIMOX
-use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
-use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
 
 
 
@@ -147,7 +144,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('penjualan', PenjualanController::class);
-    
+    Route::post('/penjualan/simpan', [PenjualanController::class, 'store'])->name('penjualan.store');
+    Route::get('/penjualan/history/data', [PenjualanController::class, 'historyData'])->name('penjualan.history.data');
+
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
     Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
     Route::get('/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('laporan.penjualan.export');
