@@ -45,7 +45,7 @@ class PenjualanController extends Controller
                 'jenis_pembayaran_id' => $request->pembayaran,
                 'user_id' => auth()->id() ?? 'dummy-user',
                 'total_item' => $request->total_item,
-                'total_harga' => $request->total_harga,
+                'total_harga' => preg_replace('/[^\d]/', '', $request->total),
                 'catatan' => $request->catatan,
             ]);
 
@@ -183,6 +183,16 @@ class PenjualanController extends Controller
             ->get();
 
         return response()->json($penjualan);
+    }
+    public function generateNoTransaksi()
+    {
+        $prefix = 'DB22';
+        $tanggal = now()->format('Ymd');
+
+        $countHariIni = \App\Models\Penjualan::whereDate('created_at', now())->count() + 1;
+        $kode = sprintf('%s-%s-%06d', $prefix, $tanggal, $countHariIni);
+
+        return response()->json(['no_penjualan' => $kode]);
     }
     public function produkData()
     {
