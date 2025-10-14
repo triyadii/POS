@@ -27,65 +27,74 @@ class LaporanPenjualanBrandController extends Controller
      */
     public function getLaporanData(Request $request)
     {
+        // ... Logika query dan statistik tidak berubah ...
         $query = Penjualan::query();
-
-        // Filter berdasarkan rentang tanggal
+        $startDate = null;
+        $endDate = null;
         if (!empty($request->filter_tanggal_start) && !empty($request->filter_tanggal_end)) {
             $startDate = Carbon::parse($request->filter_tanggal_start)->startOfDay();
             $endDate = Carbon::parse($request->filter_tanggal_end)->endOfDay();
             $query->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
         }
-
-        // Filter BARU: berdasarkan brand yang dipilih
-        if ($request->filled('filter_brand') && $request->filter_brand != 'all') {
-            $brandId = $request->filter_brand;
+        $brandId = ($request->filled('filter_brand') && $request->filter_brand != 'all') ? $request->filter_brand : null;
+        if ($brandId) {
             $query->whereHas('detail.barang', function ($q) use ($brandId) {
                 $q->where('brand_id', $brandId);
             });
         }
-
         $dateRangeExists = isset($startDate) && isset($endDate);
-
-        // Menghitung statistik berdasarkan data yang sudah difilter
         $totalTransaksi = $dateRangeExists ? (clone $query)->count() : 0;
-        $totalPendapatan = $dateRangeExists ? (clone $query)->sum('total_harga') : 0;
-        $penjualanIds = $dateRangeExists ? (clone $query)->pluck('id') : [];
-        $jumlahProdukTerjual = $dateRangeExists ? PenjualanDetail::whereIn('penjualan_id', $penjualanIds)->sum('qty') : 0;
-
-        // Eager loading untuk performa
-        $data = $query->with([
-            'user:id,name',
-            'detail.barang:id,kode_barang,nama,brand_id,tipe_id,kategori_id',
-            'detail.barang.tipe:id,nama',
-            'detail.barang.brand:id,nama',
-            'detail.barang.kategori:id,nama'
-        ]);
+        $detailQuery = PenjualanDetail::query();
+        if ($dateRangeExists) {
+            $detailQuery->whereHas('penjualan', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
+            });
+        }
+        if ($brandId) {
+            $detailQuery->whereHas('barang', function ($q) use ($brandId) {
+                $q->where('brand_id', $brandId);
+            });
+        }
+        $totalPendapatan = $dateRangeExists ? (clone $detailQuery)->sum('subtotal') : 0;
+        $jumlahProdukTerjual = $dateRangeExists ? (clone $detailQuery)->sum('qty') : 0;
+        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,tipe_id,kategori_id', 'detail.barang.tipe:id,nama', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama']);
 
         return \DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('tanggal', fn($data) => Carbon::parse($data->tanggal_penjualan)->translatedFormat('d F Y, H:i'))
             ->addColumn('user', fn($data) => $data->user->name ?? '-')
             ->addColumn('customer', fn($data) => $data->customer_nama ?? 'Umum')
-            ->addColumn('total', fn($data) => 'Rp ' . number_format($data->total_harga, 0, ',', '.'))
-            ->addColumn('detail_barang', function ($data) {
+            ->addColumn('total', function ($data) use ($brandId) {
+                // ... Logika addColumn('total') tidak berubah ...
+                $total = $brandId ? $data->detail->filter(fn($item) => $item->barang->brand_id == $brandId)->sum('subtotal') : $data->total_harga;
+                return 'Rp ' . number_format($total, 0, ',', '.');
+            })
+            ->addColumn('detail_barang', function ($data) use ($brandId) {
                 $details = '<ul class="list-unstyled mb-0">';
                 foreach ($data->detail as $item) {
+                    if ($brandId && optional($item->barang)->brand_id != $brandId) {
+                        continue;
+                    }
+
                     $details .= '<li class="border-bottom py-2">';
                     $details .= '<div class="fw-bold">' . e($item->barang->nama ?? 'N/A') . ' (' . e($item->barang->kode_barang ?? 'N/A') . ')</div>';
-                    $details .= '<small class="text-muted">Kategori: ' . e($item->barang->kategori->nama ?? '-') . ' | Tipe: ' . e($item->barang->tipe->nama ?? '-') . ' | Brand: ' . e($item->barang->brand->nama ?? '-') . '</small><br>';
-                    $details .= '<span>Qty: ' . $item->qty . ' x Rp ' . number_format($item->harga_jual, 0, ',', '.') . '</span>';
-                    $details .= '<span class="float-end fw-semibold">Rp ' . number_format($item->subtotal, 0, ',', '.') . '</span>';
+                    $details .= '<small class="text-muted">Kategori: ' . e(optional($item->barang->kategori)->nama ?? '-') . ' | Tipe: ' . e(optional($item->barang->tipe)->nama ?? '-') . ' | Brand: ' . e(optional($item->barang->brand)->nama ?? '-') . '</small>';
+
+                    // ===================================
+                    // PERUBAHAN DI SINI
+                    // ===================================
+                    $details .= '<div class="d-flex justify-content-between">
+                                    <span>Qty: ' . $item->qty . ' x Rp ' . number_format($item->harga_jual, 0, ',', '.') . '</span>
+                                    <span class="fw-semibold">Rp ' . number_format($item->subtotal, 0, ',', '.') . '</span>
+                                 </div>';
+
                     $details .= '</li>';
                 }
                 $details .= '</ul>';
                 return $details;
             })
             ->rawColumns(['detail_barang'])
-            ->with([
-                'total_transaksi' => $totalTransaksi,
-                'total_penjualan' => $totalPendapatan,
-                'jumlah_produk_terjual' => $jumlahProdukTerjual,
-            ])
+            ->with(['total_transaksi' => $totalTransaksi, 'total_penjualan' => $totalPendapatan, 'jumlah_produk_terjual' => $jumlahProdukTerjual])
             ->make(true);
     }
 
@@ -135,6 +144,7 @@ class LaporanPenjualanBrandController extends Controller
         $end = Carbon::parse($request->end)->endOfDay();
         $brandId = $request->brand_id;
 
+        // Query untuk mendapatkan data penjualan
         $query = Penjualan::with([
             'user:id,name',
             'detail.barang:id,kode_barang,nama,brand_id,kategori_id',
@@ -152,10 +162,20 @@ class LaporanPenjualanBrandController extends Controller
         }
 
         $penjualan = $query->get();
+
+        // Kalkulasi statistik yang akurat berdasarkan filter
         $totalTransaksi = $penjualan->count();
-        $totalPenjualan = $penjualan->sum('total_harga');
-        $jumlahItemTerjual = $penjualan->flatMap->detail->sum('qty');
-        $data = compact('penjualan', 'totalTransaksi', 'totalPenjualan', 'jumlahItemTerjual', 'start', 'end');
+
+        // Filter item detail berdasarkan brand untuk kalkulasi yang benar
+        $filteredDetails = $penjualan->flatMap->detail->when($brandId && $brandId != 'all', function ($collection) use ($brandId) {
+            return $collection->filter(fn($item) => optional($item->barang)->brand_id == $brandId);
+        });
+
+        $totalPenjualan = $filteredDetails->sum('subtotal');
+        $jumlahItemTerjual = $filteredDetails->sum('qty');
+
+        $data = compact('penjualan', 'totalTransaksi', 'totalPenjualan', 'jumlahItemTerjual', 'start', 'end', 'brandId');
+
         $viewPath = 'backend.laporan.laporan_penjualan_brand.';
         $viewName = '';
         switch ($request->tipe) {
