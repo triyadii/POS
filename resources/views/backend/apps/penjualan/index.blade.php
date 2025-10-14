@@ -13,9 +13,6 @@
                     </div>
                     <div class="card-toolbar d-flex gap-2">
                         <a href="#" class="btn btn-light-info btn-sm">History Penjualan</a>
-                        <a href="#" class="btn btn-sm btn-light-primary">
-                            <i class="ki-outline ki-plus fs-2 me-2"></i>Customer
-                        </a>
                     </div>
                 </div>
 
@@ -34,12 +31,27 @@
                         </div>
 
                         <div class="row gx-6 gx-xl-9 align-items-end mb-6">
-                            <div class="col-lg-12 mb-2">
-                                <select class="form-select" id="customer_id">
+                            <div class="col-lg-10 mb-2">
+                                <label for="customer_id" class="form-label fw-semibold text-gray-700 mb-1">
+                                    <i class="ki-duotone ki-user fs-3 me-1 text-primary"></i> Customer
+                                </label>
+                                <select class="form-select form-select-solid" id="customer_id" name="customer_id"
+                                    data-control="select2" data-placeholder="🔍 Cari atau pilih customer..."
+                                    data-allow-clear="true">
                                     <option value="">Pilih Customer</option>
                                 </select>
                             </div>
+
+                            <div class="col-lg-2 mb-2 d-flex align-items-end justify-content-end">
+                                <button type="button"
+                                    class="btn btn-light-success w-100 d-flex align-items-center justify-content-center gap-1"
+                                    id="btnTambahCustomer" data-bs-toggle="modal" data-bs-target="#modalTambahCustomer">
+                                    <i class="ki-duotone ki-user-plus fs-3"></i>
+                                    <span class="fw-semibold">Baru</span>
+                                </button>
+                            </div>
                         </div>
+
 
                         <div class="cart-payment mb-5">
                             <div class="table-responsive mb-6">
@@ -239,9 +251,118 @@
     <div style="text-align:center;">Terima Kasih 😊<br>--- Struk Non Pajak ---</div>
 </div>
 
+<!-- Modal Tambah Customer -->
+<div class="modal fade" id="modalTambahCustomer" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered mw-500px">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Tambah Customer Baru</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formTambahCustomer">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label">Nama Customer</label>
+                        <input type="text" class="form-control" name="nama" placeholder="Masukkan nama customer"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nomor WhatsApp</label>
+                        <input type="text" class="form-control" name="no_wa" placeholder="08xxxxxxxxxx" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btnSimpanCustomer">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+
+        // ✅ Inisialisasi Select2 AJAX
+        $('#customer_id').select2({
+            placeholder: '🔍 Cari atau pilih customer...',
+            allowClear: true,
+            ajax: {
+                url: "{{ route('customer.select') }}",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        q: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.map(function(item) {
+                            return {
+                                id: item.id,
+                                text: item.nama
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            width: '100%',
+            dropdownParent: $('#customer_id').closest('.col-lg-10')
+        });
+
+        // 💾 Tambah Customer - UX Improvement
+        $('#btnSimpanCustomer').off('click').on('click', function() {
+            const form = $('#formTambahCustomer');
+            const btn = $(this);
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Menambah...');
+
+            $.ajax({
+                url: "{{ route('customer.store') }}",
+                type: 'POST',
+                data: form.serialize(),
+                success: function(res) {
+                    btn.prop('disabled', false).html(
+                        '<i class="ki-duotone ki-check fs-3 me-1"></i> Simpan');
+
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: res.judul,
+                            text: res.success,
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+
+                        $('#modalTambahCustomer').modal('hide');
+                        form[0].reset();
+
+                        // 🔁 Auto-refresh dropdown customer dan pilih yang baru
+                        $('#customer_id').append(new Option(res.nama ?? form.find(
+                            '[name="nama"]').val(), res.id ?? '', true, true)).trigger(
+                            'change');
+                    } else if (res.errors) {
+                        let pesan = Object.values(res.errors).flat().join('<br>');
+                        Swal.fire('Validasi Gagal', pesan, 'warning');
+                    }
+                },
+                error: function(xhr) {
+                    btn.prop('disabled', false).html(
+                        '<i class="ki-duotone ki-check fs-3 me-1"></i> Simpan');
+                    Swal.fire('Error', 'Terjadi kesalahan pada server.', 'error');
+                }
+            });
+        });
+
+    });
+</script>
 <script>
     // Tombol History Penjualan
     $('.btn-light-info').on('click', function(e) {
@@ -392,10 +513,57 @@
     document.addEventListener("DOMContentLoaded", function() {
         const produkData = @json($produk);
 
-        // ✅ Data dummy customer
-        const customerDummy = ["Andi", "Budi", "Citra"];
-        customerDummy.forEach((c, i) => {
-            $('#customer_id').append(`<option value="${i+1}">${c}</option>`);
+        // 🔄 Load daftar customer dari database
+        function loadCustomerList(selectedId = null) {
+            $.get("{{ route('customer.select') }}", function(data) {
+                const select = $("#customer_id");
+                select.html('<option value="">Pilih Customer</option>');
+                data.forEach(function(c) {
+                    select.append(`<option value="${c.id}">${c.nama}</option>`);
+                });
+                if (selectedId) select.val(selectedId);
+            });
+        }
+
+        // 🔁 Panggil saat halaman pertama kali dibuka
+        loadCustomerList();
+
+        // 💾 Tambah customer baru
+        $("#btnSimpanCustomer").on("click", function() {
+            const form = $("#formTambahCustomer");
+            const payload = form.serialize();
+
+            $.ajax({
+                url: "{{ route('customer.store') }}",
+                method: "POST",
+                data: payload,
+                success: function(res) {
+                    if (res.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: res.judul,
+                            text: res.success,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        // 🔄 Reload daftar customer dan pilih yang baru
+                        $("#modalTambahCustomer").modal("hide");
+                        form[0].reset();
+
+                        loadCustomerList(); // muat ulang
+                    } else if (res.errors) {
+                        let pesan = Object.values(res.errors).flat().join("<br>");
+                        Swal.fire("Validasi Gagal", pesan, "warning");
+                    } else {
+                        Swal.fire("Gagal", "Tidak dapat menyimpan data", "error");
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    Swal.fire("Error", "Terjadi kesalahan di server", "error");
+                }
+            });
         });
 
         // Render produk dari database
@@ -524,25 +692,33 @@
         renderProduk(produkData);
 
         // Simulasi submit
-        $('#form-penjualan').on('submit', function(e) {
+        $('#form-penjualan').off('submit').on('submit', function(e) {
             e.preventDefault();
 
             const rows = $('#purchase_cart_list tr');
-            if (rows.length === 0) return Swal.fire('Oops!', 'Belum ada produk yang dipilih', 'warning');
+            const btn = $('#btn-simpan-penjualan');
+
+            // Blok klik ganda
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...');
+
+            if (rows.length === 0) {
+                Swal.fire('Oops!', 'Belum ada produk yang dipilih', 'warning');
+                btn.prop('disabled', false).html('Simpan');
+                return;
+            }
 
             const total = parseInt($('#total-penjualan').val().replace(/[^\d]/g, '')) || 0;
             const uangDiterima = parseInt($('#uang-diterima-penjualan').val().replace(/[^\d]/g, '')) || 0;
             const kembalian = uangDiterima - total;
 
-            // ✅ Validasi jika uang diterima kurang dari total
             if (kembalian < 0) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Uang Kurang!',
-                    text: 'Nominal uang yang diterima tidak mencukupi untuk membayar total pembelian.',
-                    confirmButtonText: 'OK'
+                    text: 'Nominal uang yang diterima tidak mencukupi untuk membayar total pembelian.'
                 });
-                return; // hentikan proses submit
+                btn.prop('disabled', false).html('Simpan');
+                return;
             }
 
             // Ambil semua item
@@ -557,9 +733,9 @@
                 items.push({
                     barang_id: id,
                     barang_nama: nama,
-                    qty: qty,
+                    qty,
                     harga_jual: harga,
-                    subtotal: subtotal
+                    subtotal
                 });
             });
 
@@ -580,6 +756,8 @@
                 method: "POST",
                 data: payload,
                 success: function(res) {
+                    btn.prop('disabled', false).html('Simpan');
+
                     if (res.status === 'success') {
                         Swal.fire({
                             icon: 'success',
@@ -592,44 +770,33 @@
                                 .val());
                             $('#modal-kembalian').text($('#kembalian-penjualan').val());
                             new bootstrap.Modal('#modalPenjualanSelesai').show();
-                            window.transaksiTerakhir = {
-                                no_penjualan: $('#no_penjualan').val(),
-                                tanggal: $('#tanggal').val(),
-                                customer: $('#customer_id option:selected').text(),
-                                total: $('#total-penjualan').val(),
-                                uang: $('#uang-diterima-penjualan').val(),
-                                kembalian: $('#kembalian-penjualan').val(),
-                                items: items
-                            };
-                            const lastCustomer = $('#customer_id').val();
+
+                            // Simpan transaksi terakhir untuk cetak struk
+                            window.transaksiTerakhir = payload;
 
                             // Reset form
                             $('#form-penjualan')[0].reset();
                             $('#purchase_cart_list').html('');
                             updateTotal();
 
-                            if (lastCustomer) {
-                                $('#customer_id').val(lastCustomer).trigger('change');
-                            }
-
-                            if (res.no_penjualan_baru) {
-                                $('#no_penjualan').val(res.no_penjualan_baru);
-                            }
-
+                            // Refresh produk
                             $.get("{{ route('penjualan.produk.data') }}", function(
                                 newProduk) {
-                                window.produkData = newProduk;
                                 renderProduk(newProduk);
                             });
                         });
+                    } else {
+                        Swal.fire('Gagal', res.message ?? 'Gagal menyimpan transaksi', 'error');
                     }
                 },
                 error: function(xhr) {
+                    btn.prop('disabled', false).html('Simpan');
+                    Swal.fire('Error', 'Terjadi kesalahan di server', 'error');
                     console.error(xhr.responseText);
-                    Swal.fire('Error', 'Gagal menyimpan transaksi', 'error');
                 }
             });
         });
+
 
 
         $('#btn-batal-penjualan').on('click', () => {
