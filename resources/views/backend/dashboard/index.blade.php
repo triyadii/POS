@@ -40,14 +40,15 @@
         </div>
 
         <div class="row g-5 g-xl-8">
-            <!-- Card 1 -->
             <div class="col-xl-3 col-md-6">
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
                         <span class="text-muted fw-bold fs-7">Total Penjualan Hari ini</span>
-                        <span class="fw-bold fs-2x text-success"><span class="fs-7 text-gray-600 mb-3">Rp. </span>358.750.000 </span>
-                        <span class="fs-7 text-gray-600 mb-3">Tanggal 01 September 2025</span>
-                      
+                        <span class="fw-bold fs-2x text-success">
+                            <span class="fs-7 text-gray-600 mb-3">Rp. </span>
+                            {{ number_format($totalPenjualanHariIni, 0, ',', '.') }}
+                        </span>
+                        <span class="fs-7 text-gray-600 mb-3">{{ $tanggalHariIni }}</span>
                     </div>
                 </div>
             </div>
@@ -59,9 +60,11 @@
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
                         <span class="text-muted fw-bold fs-7">Total Pengeluaran Hari ini</span>
-                        <span class="fw-bold fs-2x text-danger"><span class="fs-7 text-gray-600 mb-3">Rp. </span>127.750.000 </span>
-                        <span class="fs-7 text-gray-600 mb-3">Tanggal 01 September 2025</span>
-                      
+                        <span class="fw-bold fs-2x text-danger">
+                            <span class="fs-7 text-gray-600 mb-3">Rp. </span>
+                            {{ number_format($totalPengeluaranHariIni, 0, ',', '.') }}
+                        </span>
+                        <span class="fs-7 text-gray-600 mb-3">{{ $tanggalHariIni }}</span>
                     </div>
                 </div>
             </div>
@@ -71,9 +74,10 @@
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
                         <span class="text-muted fw-bold fs-7">Produk Terjual</span>
-                        <span class="fw-bold fs-2x text-dark">3.741</span>
-                        <span class="fs-7 text-gray-600 mb-3">Tanggal 01 September 2025</span>
-                        
+                        <span class="fw-bold fs-2x text-dark">
+                            {{ number_format($produkTerjualHariIni, 0, ',', '.') }}
+                        </span>
+                        <span class="fs-7 text-gray-600 mb-3">{{ $tanggalHariIni }}</span>
                     </div>
                 </div>
             </div>
@@ -82,428 +86,66 @@
             <div class="col-xl-3 col-md-6">
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
-                        <span class="text-muted fw-bold fs-7">Bersih</span>
-                        <span class="fw-bold fs-2x text-dark"><span class="fs-7 text-gray-600 mb-3">Rp. </span>231.000.000 </span>
-                        <span class="fs-7 text-gray-600 mb-3">Tanggal 01 September 2025</span>
-                        
+                        <span class="text-muted fw-bold fs-7">Laba Bersih</span>
+                        <span class="fw-bold fs-2x text-dark">
+                            <span class="fs-7 text-gray-600 mb-3">Rp. </span>
+                            {{ number_format($labaBersihHariIni, 0, ',', '.') }}
+                        </span>
+                        <span class="fs-7 text-gray-600 mb-3">{{ $tanggalHariIni }}</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="row g-5 g-xl-8">
-            <div class="col-xl-4">
-                <!--begin::List Widget 4-->
+            <div class="col-xl-8">
+                {{-- WIDGET BARU: CHART TREN PENJUALAN --}}
                 <div class="card card-xl-stretch mb-xl-8">
-                    <!--begin::Header-->
                     <div class="card-header border-0 pt-5">
                         <h3 class="card-title align-items-start flex-column">
-                            <span class="card-label fw-bold text-gray-900">Trends</span>
-                            <span class="text-muted mt-1 fw-semibold fs-7">Latest tech trends</span>
+                            <span class="card-label fw-bold text-gray-900">Tren Penjualan</span>
+                            <span class="text-muted mt-1 fw-semibold fs-7">7 Hari Terakhir</span>
                         </h3>
-                        <div class="card-toolbar">
-                            <!--begin::Menu-->
-                            <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary"
-                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                <i class="ki-outline ki-category fs-6"></i>
-                            </button>
-                            <!--begin::Menu 3-->
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
-                                data-kt-menu="true">
-                                <!--begin::Heading-->
-                                <div class="menu-item px-3">
-                                    <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Payments</div>
-                                </div>
-                                <!--end::Heading-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3">Create Invoice</a>
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link flex-stack px-3">Create Payment
-                                        <span class="ms-2" data-bs-toggle="tooltip"
-                                            aria-label="Specify a target name for future usage and reference"
-                                            data-bs-original-title="Specify a target name for future usage and reference"
-                                            data-kt-initialized="1">
-                                            <i class="ki-outline ki-information fs-6"></i>
-                                        </span></a>
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3">Generate Bill</a>
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
-                                    <a href="#" class="menu-link px-3">
-                                        <span class="menu-title">Subscription</span>
-                                        <span class="menu-arrow"></span>
-                                    </a>
-                                    <!--begin::Menu sub-->
-                                    <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3">Plans</a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3">Billing</a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3">Statements</a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu separator-->
-                                        <div class="separator my-2"></div>
-                                        <!--end::Menu separator-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <div class="menu-content px-3">
-                                                <!--begin::Switch-->
-                                                <label class="form-check form-switch form-check-custom form-check-solid">
-                                                    <!--begin::Input-->
-                                                    <input class="form-check-input w-30px h-20px" type="checkbox"
-                                                        value="1" checked="checked" name="notifications">
-                                                    <!--end::Input-->
-                                                    <!--end::Label-->
-                                                    <span class="form-check-label text-muted fs-6">Recuring</span>
-                                                    <!--end::Label-->
-                                                </label>
-                                                <!--end::Switch-->
-                                            </div>
-                                        </div>
-                                        <!--end::Menu item-->
-                                    </div>
-                                    <!--end::Menu sub-->
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3 my-1">
-                                    <a href="#" class="menu-link px-3">Settings</a>
-                                </div>
-                                <!--end::Menu item-->
-                            </div>
-                            <!--end::Menu 3-->
-                            <!--end::Menu-->
-                        </div>
                     </div>
-                    <!--end::Header-->
-                    <!--begin::Body-->
-                    <div class="card-body pt-5">
-                        <!--begin::Item-->
-                        <div class="d-flex align-items-sm-center mb-7">
-                            <!--begin::Symbol-->
-                            <div class="symbol symbol-50px me-5">
-                                <span class="symbol-label">
-                                    <img src="assets/media/svg/brand-logos/plurk.svg" class="h-50 align-self-center"
-                                        alt="">
-                                </span>
-                            </div>
-                            <!--end::Symbol-->
-                            <!--begin::Section-->
-                            <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                <div class="flex-grow-1 me-2">
-                                    <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold">Top
-                                        Authors</a>
-                                    <span class="text-muted fw-semibold d-block fs-7">Mark, Rowling, Esther</span>
-                                </div>
-                                <span class="badge badge-light fw-bold my-2">+82$</span>
-                            </div>
-                            <!--end::Section-->
-                        </div>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <div class="d-flex align-items-sm-center mb-7">
-                            <!--begin::Symbol-->
-                            <div class="symbol symbol-50px me-5">
-                                <span class="symbol-label">
-                                    <img src="assets/media/svg/brand-logos/telegram.svg" class="h-50 align-self-center"
-                                        alt="">
-                                </span>
-                            </div>
-                            <!--end::Symbol-->
-                            <!--begin::Section-->
-                            <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                <div class="flex-grow-1 me-2">
-                                    <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold">Popular
-                                        Authors</a>
-                                    <span class="text-muted fw-semibold d-block fs-7">Randy, Steve, Mike</span>
-                                </div>
-                                <span class="badge badge-light fw-bold my-2">+280$</span>
-                            </div>
-                            <!--end::Section-->
-                        </div>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <div class="d-flex align-items-sm-center mb-7">
-                            <!--begin::Symbol-->
-                            <div class="symbol symbol-50px me-5">
-                                <span class="symbol-label">
-                                    <img src="assets/media/svg/brand-logos/vimeo.svg" class="h-50 align-self-center"
-                                        alt="">
-                                </span>
-                            </div>
-                            <!--end::Symbol-->
-                            <!--begin::Section-->
-                            <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                <div class="flex-grow-1 me-2">
-                                    <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold">New
-                                        Users</a>
-                                    <span class="text-muted fw-semibold d-block fs-7">John, Pat, Jimmy</span>
-                                </div>
-                                <span class="badge badge-light fw-bold my-2">+4500$</span>
-                            </div>
-                            <!--end::Section-->
-                        </div>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <div class="d-flex align-items-sm-center mb-7">
-                            <!--begin::Symbol-->
-                            <div class="symbol symbol-50px me-5">
-                                <span class="symbol-label">
-                                    <img src="assets/media/svg/brand-logos/bebo.svg" class="h-50 align-self-center"
-                                        alt="">
-                                </span>
-                            </div>
-                            <!--end::Symbol-->
-                            <!--begin::Section-->
-                            <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                <div class="flex-grow-1 me-2">
-                                    <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold">Active
-                                        Customers</a>
-                                    <span class="text-muted fw-semibold d-block fs-7">Mark, Rowling, Esther</span>
-                                </div>
-                                <span class="badge badge-light fw-bold my-2">+686$</span>
-                            </div>
-                            <!--end::Section-->
-                        </div>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <div class="d-flex align-items-sm-center mb-7">
-                            <!--begin::Symbol-->
-                            <div class="symbol symbol-50px me-5">
-                                <span class="symbol-label">
-                                    <img src="assets/media/svg/brand-logos/kickstarter.svg" class="h-50 align-self-center"
-                                        alt="">
-                                </span>
-                            </div>
-                            <!--end::Symbol-->
-                            <!--begin::Section-->
-                            <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                <div class="flex-grow-1 me-2">
-                                    <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold">Bestseller
-                                        Theme</a>
-                                    <span class="text-muted fw-semibold d-block fs-7">Disco, Retro, Sports</span>
-                                </div>
-                                <span class="badge badge-light fw-bold my-2">+726$</span>
-                            </div>
-                            <!--end::Section-->
-                        </div>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <div class="d-flex align-items-sm-center">
-                            <!--begin::Symbol-->
-                            <div class="symbol symbol-50px me-5">
-                                <span class="symbol-label">
-                                    <img src="assets/media/svg/brand-logos/fox-hub.svg" class="h-50 align-self-center"
-                                        alt="">
-                                </span>
-                            </div>
-                            <!--end::Symbol-->
-                            <!--begin::Section-->
-                            <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                <div class="flex-grow-1 me-2">
-                                    <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold">Fox Broker
-                                        App</a>
-                                    <span class="text-muted fw-semibold d-block fs-7">Finance, Corporate, Apps</span>
-                                </div>
-                                <span class="badge badge-light fw-bold my-2">+145$</span>
-                            </div>
-                            <!--end::Section-->
-                        </div>
-                        <!--end::Item-->
+                    <div class="card-body">
+                        <div id="sales_trend_chart" style="height: 350px;"></div>
                     </div>
-                    <!--end::Body-->
                 </div>
-                <!--end::List Widget 4-->
             </div>
 
             <div class="col-xl-4">
-                <!--begin::List Widget 6-->
+                {{-- WIDGET BARU: NOTIFIKASI STOK KRITIS --}}
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
-                    <!--begin::Header-->
                     <div class="card-header border-0">
-                        <h3 class="card-title fw-bold text-gray-900">Notifications</h3>
-                        <div class="card-toolbar">
-                            <!--begin::Menu-->
-                            <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary"
-                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                <i class="ki-outline ki-category fs-6"></i>
-                            </button>
-                            <!--begin::Menu 3-->
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
-                                data-kt-menu="true">
-                                <!--begin::Heading-->
-                                <div class="menu-item px-3">
-                                    <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Payments</div>
-                                </div>
-                                <!--end::Heading-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3">Create Invoice</a>
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link flex-stack px-3">Create Payment
-                                        <span class="ms-2" data-bs-toggle="tooltip"
-                                            aria-label="Specify a target name for future usage and reference"
-                                            data-bs-original-title="Specify a target name for future usage and reference"
-                                            data-kt-initialized="1">
-                                            <i class="ki-outline ki-information fs-6"></i>
-                                        </span></a>
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3">Generate Bill</a>
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3" data-kt-menu-trigger="hover"
-                                    data-kt-menu-placement="right-end">
-                                    <a href="#" class="menu-link px-3">
-                                        <span class="menu-title">Subscription</span>
-                                        <span class="menu-arrow"></span>
-                                    </a>
-                                    <!--begin::Menu sub-->
-                                    <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3">Plans</a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3">Billing</a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3">Statements</a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu separator-->
-                                        <div class="separator my-2"></div>
-                                        <!--end::Menu separator-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <div class="menu-content px-3">
-                                                <!--begin::Switch-->
-                                                <label class="form-check form-switch form-check-custom form-check-solid">
-                                                    <!--begin::Input-->
-                                                    <input class="form-check-input w-30px h-20px" type="checkbox"
-                                                        value="1" checked="checked" name="notifications">
-                                                    <!--end::Input-->
-                                                    <!--end::Label-->
-                                                    <span class="form-check-label text-muted fs-6">Recuring</span>
-                                                    <!--end::Label-->
-                                                </label>
-                                                <!--end::Switch-->
-                                            </div>
-                                        </div>
-                                        <!--end::Menu item-->
-                                    </div>
-                                    <!--end::Menu sub-->
-                                </div>
-                                <!--end::Menu item-->
-                                <!--begin::Menu item-->
-                                <div class="menu-item px-3 my-1">
-                                    <a href="#" class="menu-link px-3">Settings</a>
-                                </div>
-                                <!--end::Menu item-->
-                            </div>
-                            <!--end::Menu 3-->
-                            <!--end::Menu-->
-                        </div>
+                        <h3 class="card-title fw-bold text-gray-900">Notifikasi Stok Kritis</h3>
                     </div>
-                    <!--end::Header-->
-                    <!--begin::Body-->
                     <div class="card-body pt-0">
-                        <!--begin::Item-->
-                        <div class="d-flex align-items-center bg-light-warning rounded p-5 mb-7">
-                            <i class="ki-outline ki-abstract-26 text-warning fs-1 me-5"></i>
-                            <!--begin::Title-->
-                            <div class="flex-grow-1 me-2">
-                                <a href="#" class="fw-bold text-gray-800 text-hover-primary fs-6">Group lunch
-                                    celebration</a>
-                                <span class="text-muted fw-semibold d-block">Due in 2 Days</span>
+                        @forelse ($stokKritis as $item)
+                            <div class="d-flex align-items-center {{ $loop->last ? 'mb-0' : 'mb-7' }}">
+                                <div class="symbol symbol-50px me-5">
+                                    <span class="symbol-label bg-light-danger">
+                                        <i class="ki-outline ki-abstract-24 fs-2x text-danger"></i>
+                                    </span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <a href="#"
+                                        class="text-gray-900 fw-bold text-hover-primary fs-6">{{ $item->nama }}</a>
+                                    <span
+                                        class="text-muted d-block fw-semibold">{{ optional($item->brand)->nama ?? 'No Brand' }}</span>
+                                </div>
+                                <div class="fw-bold text-danger py-1">{{ $item->stok }} Pcs</div>
                             </div>
-                            <!--end::Title-->
-                            <!--begin::Lable-->
-                            <span class="fw-bold text-warning py-1">+28%</span>
-                            <!--end::Lable-->
-                        </div>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <div class="d-flex align-items-center bg-light-success rounded p-5 mb-7">
-                            <i class="ki-outline ki-abstract-26 text-success fs-1 me-5"></i>
-                            <!--begin::Title-->
-                            <div class="flex-grow-1 me-2">
-                                <a href="#" class="fw-bold text-gray-800 text-hover-primary fs-6">Navigation
-                                    optimization</a>
-                                <span class="text-muted fw-semibold d-block">Due in 2 Days</span>
+                        @empty
+                            <div class="d-flex flex-column flex-center h-200px">
+                                <i class="ki-outline ki-like fs-4x text-success"></i>
+                                <span class="text-muted fs-6 mt-5">Semua stok dalam kondisi aman.</span>
                             </div>
-                            <!--end::Title-->
-                            <!--begin::Lable-->
-                            <span class="fw-bold text-success py-1">+50%</span>
-                            <!--end::Lable-->
-                        </div>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <div class="d-flex align-items-center bg-light-danger rounded p-5 mb-7">
-                            <i class="ki-outline ki-abstract-26 text-danger fs-1 me-5"></i>
-                            <!--begin::Title-->
-                            <div class="flex-grow-1 me-2">
-                                <a href="#" class="fw-bold text-gray-800 text-hover-primary fs-6">Rebrand
-                                    strategy
-                                    planning</a>
-                                <span class="text-muted fw-semibold d-block">Due in 5 Days</span>
-                            </div>
-                            <!--end::Title-->
-                            <!--begin::Lable-->
-                            <span class="fw-bold text-danger py-1">-27%</span>
-                            <!--end::Lable-->
-                        </div>
-                        <!--end::Item-->
-                        <!--begin::Item-->
-                        <div class="d-flex align-items-center bg-light-info rounded p-5">
-                            <i class="ki-outline ki-abstract-26 text-info fs-1 me-5"></i>
-                            <!--begin::Title-->
-                            <div class="flex-grow-1 me-2">
-                                <a href="#" class="fw-bold text-gray-800 text-hover-primary fs-6">Product goals
-                                    strategy</a>
-                                <span class="text-muted fw-semibold d-block">Due in 7 Days</span>
-                            </div>
-                            <!--end::Title-->
-                            <!--begin::Lable-->
-                            <span class="fw-bold text-info py-1">+8%</span>
-                            <!--end::Lable-->
-                        </div>
-                        <!--end::Item-->
+                        @endforelse
                     </div>
-                    <!--end::Body-->
                 </div>
-                <!--end::List Widget 6-->
             </div>
 
-            <div class="col-xl-4">
+            <div class="col-xl-12">
                 <!--begin::List Widget 5-->
                 <div class="card card-xl-stretch mb-xl-8">
                     <!--begin::Header-->
@@ -623,6 +265,126 @@
 
             // Perbarui setiap 5 menit (300000 ms)
             setInterval(loadLogActivities, 300000);
+
+            document.addEventListener("DOMContentLoaded", function() {
+                const chartElement = document.getElementById('sales_trend_chart');
+                if (!chartElement) {
+                    return;
+                }
+
+                const formatRupiah = (number) => 'Rp ' + (Number(number) || 0).toLocaleString('id-ID');
+                const trenPenjualanData = @json($trenPenjualan);
+
+                const options = {
+                    series: [{
+                        name: 'Pendapatan',
+                        data: trenPenjualanData.map(item => item.total)
+                    }],
+                    chart: {
+                        fontFamily: 'inherit',
+                        type: 'area',
+                        height: 350,
+                        toolbar: {
+                            show: false
+                        }
+                    },
+                    plotOptions: {},
+                    legend: {
+                        show: false
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    fill: {
+                        type: 'solid',
+                        opacity: 0.3
+                    },
+                    stroke: {
+                        curve: 'smooth',
+                        show: true,
+                        width: 3,
+                        colors: [KTUtil.getCssVariableValue('--bs-success')]
+                    },
+                    xaxis: {
+                        categories: trenPenjualanData.map(item => item.tanggal),
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        },
+                        labels: {
+                            style: {
+                                colors: KTUtil.getCssVariableValue('--bs-gray-500'),
+                                fontSize: '12px'
+                            }
+                        },
+                        crosshairs: {
+                            position: 'front',
+                            stroke: {
+                                color: KTUtil.getCssVariableValue('--bs-success'),
+                                width: 1,
+                                dashArray: 3
+                            }
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            formatter: (val) => formatRupiah(val),
+                            style: {
+                                colors: KTUtil.getCssVariableValue('--bs-gray-500'),
+                                fontSize: '12px'
+                            }
+                        }
+                    },
+                    states: {
+                        normal: {
+                            filter: {
+                                type: 'none',
+                                value: 0
+                            }
+                        },
+                        hover: {
+                            filter: {
+                                type: 'none',
+                                value: 0
+                            }
+                        },
+                        active: {
+                            allowMultipleDataPointsSelection: false,
+                            filter: {
+                                type: 'none',
+                                value: 0
+                            }
+                        }
+                    },
+                    tooltip: {
+                        style: {
+                            fontSize: '12px'
+                        },
+                        y: {
+                            formatter: (val) => formatRupiah(val)
+                        }
+                    },
+                    colors: [KTUtil.getCssVariableValue('--bs-success')],
+                    grid: {
+                        borderColor: KTUtil.getCssVariableValue('--bs-gray-200'),
+                        strokeDashArray: 4,
+                        yaxis: {
+                            lines: {
+                                show: true
+                            }
+                        }
+                    },
+                    markers: {
+                        strokeColor: KTUtil.getCssVariableValue('--bs-success'),
+                        strokeWidth: 3
+                    }
+                };
+
+                const chart = new ApexCharts(chartElement, options);
+                chart.render();
+            });
         </script>
     @endpush
 @endsection

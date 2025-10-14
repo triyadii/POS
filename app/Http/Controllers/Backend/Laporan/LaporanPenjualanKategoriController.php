@@ -148,7 +148,11 @@ class LaporanPenjualanKategoriController extends Controller
         $totalTransaksi = $penjualan->count();
         $totalPenjualan = $penjualan->sum('total_harga');
         $jumlahItemTerjual = $penjualan->flatMap->detail->sum('qty');
-        $data = compact('penjualan', 'totalTransaksi', 'totalPenjualan', 'jumlahItemTerjual', 'start', 'end');
+        // --- UBAH CARA PEMANGGILAN FUNGSI ---
+        $totalPenjualanTerbilang = $this->terbilang($totalPenjualan);
+
+        // --- Variabel yang dikirim ke compact() tetap sama ---
+        $data = compact('penjualan', 'totalTransaksi', 'totalPenjualan', 'jumlahItemTerjual', 'start', 'end', 'totalPenjualanTerbilang');
         $viewPath = 'backend.laporan.laporan_penjualan_kategori.';
         $viewName = '';
         switch ($request->tipe) {
@@ -164,5 +168,44 @@ class LaporanPenjualanKategoriController extends Controller
         }
         $pdf = Pdf::loadView($viewPath . $viewName, $data)->setPaper($request->ukuran, $request->orientasi);
         return $pdf->stream('laporan-penjualan-kategori.pdf');
+    }
+
+    private function terbilang($nilai)
+    {
+        if ($nilai < 0) {
+            $hasil = "minus " . trim($this->penyebut($nilai));
+        } else {
+            $hasil = trim($this->penyebut($nilai));
+        }
+        return ucwords($hasil) . " Rupiah";
+    }
+
+    private function penyebut($nilai)
+    {
+        $nilai = abs($nilai);
+        $huruf = array("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas");
+        $temp = "";
+        if ($nilai < 12) {
+            $temp = " " . $huruf[$nilai];
+        } else if ($nilai < 20) {
+            $temp = $this->penyebut($nilai - 10) . " belas";
+        } else if ($nilai < 100) {
+            $temp = $this->penyebut($nilai / 10) . " puluh" . $this->penyebut($nilai % 10);
+        } else if ($nilai < 200) {
+            $temp = " seratus" . $this->penyebut($nilai - 100);
+        } else if ($nilai < 1000) {
+            $temp = $this->penyebut($nilai / 100) . " ratus" . $this->penyebut($nilai % 100);
+        } else if ($nilai < 2000) {
+            $temp = " seribu" . $this->penyebut($nilai - 1000);
+        } else if ($nilai < 1000000) {
+            $temp = $this->penyebut($nilai / 1000) . " ribu" . $this->penyebut($nilai % 1000);
+        } else if ($nilai < 1000000000) {
+            $temp = $this->penyebut($nilai / 1000000) . " juta" . $this->penyebut($nilai % 1000000);
+        } else if ($nilai < 1000000000000) {
+            $temp = $this->penyebut($nilai / 1000000000) . " milyar" . $this->penyebut($nilai % 1000000000);
+        } else if ($nilai < 1000000000000000) {
+            $temp = $this->penyebut($nilai / 1000000000000) . " triliun" . $this->penyebut($nilai % 1000000000000);
+        }
+        return $temp;
     }
 }

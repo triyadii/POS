@@ -61,5 +61,10 @@
             <td colspan="3" class="text-right"><strong>Total Keseluruhan</strong></td>
             <td class="text-right"><strong>Rp {{ number_format($totalPenjualan, 0, ',', '.') }}</strong></td>
         </tr>
+        <tr class="total-row">
+            <td colspan="4" style="font-style: italic; text-align: right;">
+                ({{ $totalPenjualanTerbilang }})
+            </td>
+        </tr>
     </tfoot>
 </table>

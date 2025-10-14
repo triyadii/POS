@@ -40,5 +40,6 @@
             <td class="text-right"><strong>Rp {{ number_format($penjualan->sum('total_harga'), 0, ',', '.') }}</strong>
             </td>
         </tr>
+
     </tfoot>
 </table>
