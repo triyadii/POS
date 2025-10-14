@@ -182,7 +182,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     
-
+  
 
 // Route::prefix('barang-masuk')->group(function () {
 //     // resource utama
