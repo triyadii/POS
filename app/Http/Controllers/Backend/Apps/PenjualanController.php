@@ -106,7 +106,7 @@ class PenjualanController extends Controller
 
     protected function generateNextNoPenjualan()
     {
-        $kasirId = 'WAA';
+        $kasirId = 'DB22';
         $tanggal = \Carbon\Carbon::now()->format('Ymd');
         $today = \Carbon\Carbon::now()->toDateString();
 
@@ -133,7 +133,7 @@ class PenjualanController extends Controller
 
     private function generateNoPenjualan()
     {
-        $kasirId = 'WAA';
+        $kasirId = 'DB22';
         $tanggal = Carbon::now()->format('Ymd');
         $today = Carbon::now()->toDateString();
 
