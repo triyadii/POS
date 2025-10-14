@@ -110,6 +110,9 @@ License: For each use you must have a valid license purchased only from above li
         }
     </script>
     <!--end::Theme mode setup on page load-->
+
+   
+      
     <!--begin::App-->
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
 
@@ -191,6 +194,12 @@ License: For each use you must have a valid license purchased only from above li
             <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
                 <!--begin::Wrapper container-->
                 <div class="app-container container-xxl d-flex flex-row flex-column-fluid">
+                    {{-- @php
+                    $isFullPage = in_array(Route::currentRouteName(), ['barang-masuk.show']);
+                @endphp
+                
+                <div class="app-container {{ $isFullPage ? 'container-fluid px-0' : 'container-xxl' }} d-flex flex-row flex-column-fluid">
+                 --}}
                     <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <!--begin::Content wrapper-->

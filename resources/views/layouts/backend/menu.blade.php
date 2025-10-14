@@ -51,40 +51,40 @@
                 </div>
                 @endcan
 
-                @can('barang-masuk-list')
-                <div class="menu-item {{ request()->routeIs('barang-masuk.index') ? 'here show ' : '' }}">
-                    <!--begin:Menu link-->
-                    <a class="menu-link py-3" href="{{ route('barang-masuk.index') }}">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-delivery-2 fs-2"></i>
-                        </span>
-                        <span class="menu-title">Barang Masuk</span>
-                        <span class="badge badge-info">progres</span>
+                    @can('barang-masuk-list')
+                        <div class="menu-item {{ request()->routeIs('barang-masuk.index') ? 'here show ' : '' }}">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="{{ route('barang-masuk.index') }}">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-delivery-2 fs-2"></i>
+                                </span>
+                                <span class="menu-title">Barang Masuk</span>
+                                <span class="badge badge-success">Done</span>
+
+                
+
+                            </a>
+                        <!--end:Menu link-->
+                        </div>
+                    @endcan
 
 
+                    @can('kategori-list')
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="#">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-truck fs-2"></i>
+                                </span>
+                                <span class="menu-title">Barang Keluar</span>
+                                <span class="badge badge-info">progres</span>
 
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-                @endcan
+                
 
-
-                @can('kategori-list')
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link py-3" href="#">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-truck fs-2"></i>
-                        </span>
-                        <span class="menu-title">Barang Keluar</span>
-                        <span class="badge badge-info">progres</span>
-
-
-
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-                @endcan
+                            </a>
+                        <!--end:Menu link-->
+                        </div>
+                    @endcan
 
 
                 @can('kategori-list')
@@ -118,21 +118,21 @@
                 @endcan
 
 
+                
 
+                    @can('tipe-list')
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="#">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-tablet-book fs-2"></i>
+                                </span>
+                                <span class="menu-title">Laporan</span>
+                                <span class="badge badge-info">progres</span>
 
-                @can('tipe-list')
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link py-3" href="#">
-                        <span class="menu-icon">
-                            <i class="ki-outline ki-tablet-book fs-2"></i>
-                        </span>
-                        <span class="menu-title">Laporan</span>
-                        <span class="badge badge-info">progres</span>
-
-                    </a>
-                </div>
-                @endcan
+                            </a>
+                        </div>
+                    @endcan
 
 
 

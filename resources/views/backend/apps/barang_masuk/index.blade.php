@@ -125,9 +125,16 @@
                                     </div>
                                 </th>
                             @endcan
-                            <th class="min-w-125px">Tanggal</th>
+                            <th class="min-w-125px">Kode</th>
                            
-                            <th class="min-w-100px">Deskripsi</th>
+                            <th class="min-w-80px">Tanggal</th>
+                            <th class="min-w-100px">Supplier</th>
+                            <th class="min-w-100px">Catatan</th>
+                            <th class="text-end min-w-100px">Total Item</th>
+                            <th class="text-end min-w-100px">Total Harga</th>
+                            
+
+
                             @canany(['barang-masuk-show', 'barang-masuk-edit', 'barang-masuk-delete'])
                                 <th class="text-end min-w-100px">Action</th>
                             @endcanany
@@ -147,7 +154,7 @@
 
 
     <!--begin::Modal - Add-->
-    <div class="modal fade" id="Modal_Tambah_Data" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="Modal_Tambah_Data" tabindex="-1" aria-hidden="true" data-bs-focus="false">
         <!--begin::Modal dialog-->
         <div class="modal-dialog modal-dialog-centered mw-550px">
             <!--begin::Modal content-->
@@ -166,47 +173,57 @@
                 </div>
                 <!--end::Modal header-->
                 <!--begin::Modal body-->
-                <div class="modal-body px-5 my-7">
+                <div class="modal-body ">
                     <!--begin::Form-->
                     <form method="post" id="FormTambahModalID" class="form" enctype="multipart/form-data">
                         @csrf
                         <!--begin::Scroll-->
-                        <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll"
-                            data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto"
-                            data-kt-scroll-dependencies="#kt_modal_add_user_header"
-                            data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
+                        <div class="d-flex flex-column " >
 
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Tanggal</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" name="tanggal" id="tanggal"
-                                    class="form-control mb-3 mb-lg-0" placeholder="Tanggal" />
-                                <span class="text-danger error-text tanggal_error_add"></span>
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
+
+                            <div class="row mb-7">
+                                <div class="col-md-6 fv-row">
+                                    <!--begin::Label-->
+                                    <label class="required fw-semibold fs-6 mb-2">Tanggal</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input type="text" name="tanggal_masuk" id="tanggal_masuk"
+                                        class="form-control mb-3 mb-lg-0" placeholder="Tanggal" />
+                                    <span class="text-danger error-text tanggal_masuk_error_add"></span>
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Input group-->
 
                             
 
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Deskripsi</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" name="deskripsi" id="deskripsi"
-                                    class="form-control mb-3 mb-lg-0" placeholder="deskripsi barang masuk" />
-                                <span class="text-danger error-text deskripsi_error_add"></span>
-                                <!--end::Input-->
+                                <div class="col-md-6 fv-row">
+                                    <!--begin::Label-->
+                                    <label class="required fw-semibold fs-6 mb-2">Supplier</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <select id="supplier_id" name="supplier_id"
+                                    class="form-select b-3 mb-lg-0" data-control="select2"
+                                    data-placeholder="pilih supplier" data-dropdown-parent="#Modal_Tambah_Data">
+                                </select>
+                                    <span class="text-danger error-text supplier_id_error_add"></span>
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Input group-->
                             </div>
                             <!--end::Input group-->
 
 
 
-
+                            <div class="row mb-7 fv-row">
+                                    <!--begin::Label-->
+                                    <label for="catatantextarea" fw-semibold fs-6 mb-2">Catatan</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <textarea class="form-control" name="catatan" id="catatantextarea" rows="2"></textarea>
+                                    <span class="text-danger error-text catatan_error_add"></span>
+                                    <!--end::Input-->
+                            </div>
+                                <!--end::Input group-->
 
 
 
@@ -238,7 +255,7 @@
 
 
     <!-- Begin Modal Edit -->
-    <div class="modal fade" id="Modal_Edit_Data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    <div class="modal fade" id="Modal_Edit_Data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" data-bs-focus="false"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered mw-750px">
             <div class="modal-content" id="edit-modal-content">
@@ -360,13 +377,11 @@
         <script src="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
         <script>
             function resetForm() {
-
                 // Clear error messages
                 $(".error-text").text("");
-
-
-
             }
+
+            $("#tanggal_masuk").flatpickr();
         </script>
 <script>
     $(document).ready(function() {
@@ -451,17 +466,48 @@
                         } : null,
 
                         {
-                            data: 'nama',
-                            name: 'nama',
+                            data: 'kode_transaksi',
+                            name: 'kode_transaksi',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'deskripsi',
-                            name: 'deskripsi',
+                            data: 'tanggal_masuk',
+                            name: 'tanggal_masuk',
                             orderable: false,
                             searchable: false
                         },
+                        
+
+                        {
+                            data: 'supplier_id',
+                            name: 'supplier_id',
+                            orderable: false,
+                            searchable: false
+                        },
+
+                        {
+                            data: 'catatan',
+                            name: 'catatan',
+                            orderable: false,
+                            searchable: false
+                        },
+
+                        {
+                            data: 'total_item',
+                            name: 'total_item',
+                            orderable: false,
+                            searchable: false
+                        },
+
+                        {
+                            data: 'total_harga',
+                            name: 'total_harga',
+                            orderable: false,
+                            searchable: false
+                        },
+
+                       
                         
                        
                         // Kondisi untuk menampilkan kolom Action
@@ -1002,5 +1048,34 @@
                 }
             });
         </script>
+
+
+<script>
+    $(document).ready(function() {
+
+        //  select province:start
+        $('#supplier_id').select2({
+          
+            ajax: {
+                url: "{{ route('supplier.select') }}",
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    return {
+                        results: $.map(data, function(item) {
+                            return {
+                                text: item.nama,
+                                id: item.id
+                            }
+                        })
+                    };
+                }
+            }
+        });
+
+
+
+    });
+</script>
     @endpush
 @endsection
