@@ -206,7 +206,7 @@ Route::group(['middleware' => ['auth']], function () {
 // });
 
 
-
+ 
 
     //END CHIMOX
 
