@@ -159,6 +159,8 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('penjualan.daftar.data');
     Route::get('penjualan/history', [PenjualanController::class, 'historyData'])->name('penjualan.history.data');
     Route::get('/penjualan/produk/data', [PenjualanController::class, 'produkData'])->name('penjualan.produk.data');
+    Route::get('/penjualan/no-otomatis', [PenjualanController::class, 'generateNoTransaksi'])
+        ->name('penjualan.no_otomatis');
 
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
     Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');

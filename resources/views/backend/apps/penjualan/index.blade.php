@@ -149,7 +149,7 @@
 </div>
 
 <!-- Modal Transaksi Selesai -->
-<div class="modal fade" id="modalPenjualanSelesai" tabindex="-1">
+<div class="modal fade" id="modalPenjualanSelesai" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered mw-350px">
         <div class="modal-content rounded-3 overflow-hidden">
             <div class="modal-body text-center p-5">
@@ -287,6 +287,20 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
+
+        $(document).on('click', '#modalPenjualanSelesai .btn-secondary', function() {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalPenjualanSelesai'));
+            modal.hide();
+
+            // 🔁 Ambil nomor transaksi baru dari server
+            $.get("{{ route('penjualan.no_otomatis') }}", function(res) {
+                if (res.no_penjualan) {
+                    $('#no_penjualan').val(res.no_penjualan);
+                }
+            }).fail(() => {
+                Swal.fire('⚠️', 'Gagal memperbarui nomor transaksi', 'warning');
+            });
+        });
 
         // ✅ Inisialisasi Select2 AJAX
         $('#customer_id').select2({
@@ -743,11 +757,13 @@
                 _token: $('input[name="_token"]').val(),
                 no_penjualan: $('#no_penjualan').val(),
                 tanggal: $('#tanggal').val(),
-                customer_nama: $('#customer_id option:selected').text(),
+                customer: $('#customer_id option:selected').text(),
                 total_item: items.length,
-                total_harga: total,
+                total: `Rp ${total.toLocaleString('id-ID')}`,
+                uang: `Rp ${uangDiterima.toLocaleString('id-ID')}`,
+                kembalian: `Rp ${kembalian.toLocaleString('id-ID')}`,
                 catatan: $('#catatan').val(),
-                pembayaran: $('#pembayaran-penjualan').val(),
+                pembayaran: $('#pembayaran-penjualan option:selected').text(),
                 items: items
             };
 
@@ -871,8 +887,7 @@
             <div>Tanggal : ${new Date(t.tanggal).toLocaleDateString('id-ID')}</div>
             <div>Kode    : ${t.no_penjualan}</div>
             <div>Customer: ${t.customer ?? '-'}</div>
-            <div>Meja    : Meja Tamu</div>
-            <div>Kasir   : Kasir</div>
+            <div>Kasir   : {{ Auth::user()->name }}</div>
             <hr style="border-top:1px dashed #000;">
         </div>
 
@@ -883,16 +898,16 @@
         <hr style="border-top:1px dashed #000;">
 
         <div style="display:flex;justify-content:space-between;">
-            <span>Total</span><span>${t.total}</span>
+            <span>Total</span><span>${t.total ?? '-'}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
-            <span>Bayar</span><span>${t.uang}</span>
+            <span>Bayar</span><span>${t.uang ?? '-'}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
-            <span>Kembalian</span><span>${t.kembalian}</span>
+            <span>Kembalian</span><span>${t.kembalian ?? '-'}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
-            <span>Metode</span><span>Tunai</span>
+            <span>Metode</span><span>${t.pembayaran ?? '-'}</span>
         </div>
 
         <hr style="border-top:1px dashed #000;">
