@@ -25,7 +25,7 @@
                         <div class="row gx-6 gx-xl-9 mb-2">
                             <div class="col-lg-6 mb-2">
                                 <input type="date" class="form-control" name="tanggal" id="tanggal"
-                                    value="{{ date('Y-m-d') }}" />
+                                    value="{{ date('Y-m-d') }}" disabled />
                             </div>
                             <div class="col-lg-6 mb-2">
                                 <input type="text" class="form-control form-control-solid" name="no_penjualan"
@@ -158,7 +158,12 @@
                             id="modal-kembalian"></span></div>
                 </div>
 
-                <button class="btn btn-secondary mt-4 w-100" data-bs-dismiss="modal">Selesai</button>
+                <div class="d-flex flex-column gap-2">
+                    <button class="btn btn-success w-100" id="btn-cetak-struk">
+                        <i class="fas fa-print me-2"></i>Cetak Struk
+                    </button>
+                    <button class="btn btn-secondary w-100" data-bs-dismiss="modal">Selesai</button>
+                </div>
             </div>
         </div>
     </div>
@@ -179,10 +184,11 @@
                                 <th>Kode Transaksi</th>
                                 <th>Tanggal</th>
                                 <th>Customer</th>
+                                <th>Metode Pembayaran</th>
                                 <th>Total Item</th>
                                 <th>Total Harga</th>
                                 <th>Catatan</th>
-                                <th>Detail</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -221,6 +227,18 @@
     </div>
 </div>
 
+<!-- Template Struk (disembunyikan, hanya untuk dicetak) -->
+<div id="print-area" style="display:none;font-family:monospace;">
+    <div style="text-align:center;">
+        <h4 style="margin-bottom:0;">TOKO MAJU JAYA</h4>
+        <small>Jl. Contoh No. 123, Deli Serdang</small>
+        <hr>
+    </div>
+    <div id="print-detail"></div>
+    <hr>
+    <div style="text-align:center;">Terima Kasih 😊<br>--- Struk Non Pajak ---</div>
+</div>
+
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -245,22 +263,27 @@
             tbody.html('');
             res.forEach(p => {
                 const row = `
-                <tr>
-                    <td>${p.kode_transaksi}</td>
-                    <td>${new Date(p.tanggal_penjualan).toLocaleDateString('id-ID')}</td>
-                    <td>${p.customer_nama ?? '-'}</td>
-                    <td>${p.total_item}</td>
-                    <td>Rp ${parseInt(p.total_harga).toLocaleString('id-ID')}</td>
-                    <td>${p.catatan ?? '-'}</td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-light-primary" onclick="lihatDetail('${p.id}')">
-                            <i class="fas fa-eye"></i> Lihat
-                        </button>
-                    </td>
-                </tr>
-            `;
+        <tr>
+            <td>${p.kode_transaksi}</td>
+            <td>${new Date(p.tanggal_penjualan).toLocaleDateString('id-ID')}</td>
+            <td>${p.customer_nama ?? '-'}</td>
+            <td>${p.pembayaran ? p.pembayaran.nama : '-'}</td>
+            <td>${p.total_item}</td>
+            <td>Rp ${parseInt(p.total_harga).toLocaleString('id-ID')}</td>
+            <td>${p.catatan ?? '-'}</td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-light-primary" onclick="lihatDetail('${p.id}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-light-success" onclick="cetakStrukHistory('${p.id}')">
+                    <i class="fas fa-print"></i>
+                </button>
+            </td>
+        </tr>
+    `;
                 tbody.append(row);
             });
+
         }).fail(() => {
             tbody.html('<tr><td colspan="7" class="text-center text-danger">Gagal memuat data</td></tr>');
         });
@@ -289,6 +312,81 @@
             new bootstrap.Modal('#modalDetailPenjualan').show();
         });
     }
+
+    function cetakStrukHistory(id) {
+        $.get("{{ route('penjualan.history.data') }}", function(res) {
+            const transaksi = res.find(x => x.id === id);
+            if (!transaksi) {
+                Swal.fire('⚠️', 'Data transaksi tidak ditemukan', 'warning');
+                return;
+            }
+
+            // Buat item rows
+            let itemRows = '';
+            transaksi.detail.forEach(i => {
+                itemRows += `
+                <tr>
+                    <td colspan="2">${i.barang?.nama ?? '-'}</td>
+                    <td style="text-align:right;">Rp ${parseInt(i.harga_jual).toLocaleString('id-ID')}</td>
+                </tr>
+                <tr>
+                    <td style="width:10%;"></td>
+                    <td>${i.qty} x Rp ${parseInt(i.harga_jual).toLocaleString('id-ID')}</td>
+                    <td style="text-align:right;">Rp ${parseInt(i.subtotal).toLocaleString('id-ID')}</td>
+                </tr>
+            `;
+            });
+            const logoPath = document.querySelector('.theme-light-show')?.getAttribute('src') ||
+                "{{ asset('assets/media/logos/keenthemes.svg') }}";
+            const strukHTML = `
+        <div style="font-family: monospace; font-size: 12px; width: 260px; margin: auto;">
+   <div style="text-align:center;">
+        <img src="${logoPath}" style="width:100%;height:60px;object-fit:contain;">
+        <div>Jl. KL. Yos Sudarso PAJAK SORE km 9,5, M A B A R, Kec. Medan Deli, Kota Medan, Sumatera Utara 20242 Telp: 081210003014</div>
+        <hr style="border-top:1px dashed #000;">
+    </div>
+
+            <div style="line-height:1.4;">
+                <div>Tanggal : ${new Date(transaksi.tanggal_penjualan).toLocaleDateString('id-ID')}</div>
+                <div>Kode    : ${transaksi.kode_transaksi}</div>
+                <div>Customer: ${transaksi.customer_nama ?? '-'}</div>
+                <div>Kasir   : Kasir</div>
+                <hr style="border-top:1px dashed #000;">
+            </div>
+
+            <table style="width:100%;border-collapse:collapse;">
+                <tbody>${itemRows}</tbody>
+            </table>
+
+            <hr style="border-top:1px dashed #000;">
+            <div style="display:flex;justify-content:space-between;"><span>Total</span><span>Rp ${parseInt(transaksi.total_harga).toLocaleString('id-ID')}</span></div>
+            <div style="display:flex;justify-content:space-between;"><span>Pembayaran</span><span>${transaksi.pembayaran?.nama ?? '-'}</span></div>
+            <hr style="border-top:1px dashed #000;">
+            <div style="text-align:center;margin-top:5px;">Terima Kasih Atas Kunjungan Anda</div>
+        </div>
+        `;
+
+            const printWindow = window.open('', '', 'width=400,height=600');
+            printWindow.document.write(`
+        <html>
+        <head>
+            <title>Struk Penjualan</title>
+            <style>
+                body { font-family: monospace; margin: 0; padding: 10px; font-size: 12px; }
+                hr { border: 1px dashed #000; }
+                table { width: 100%; border-collapse: collapse; }
+                td { padding: 2px 0; vertical-align: top; }
+            </style>
+        </head>
+        <body>${strukHTML}</body>
+        </html>
+        `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        });
+    }
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -305,24 +403,37 @@
             const container = document.querySelector('.daftar-produk');
             container.innerHTML = '';
             data.forEach(p => {
+                const stok = parseInt(p.stok ?? 0);
+                const habis = stok <= 0;
+
                 const card = document.createElement('div');
                 card.className = 'col-lg-6 mb-3';
                 card.innerHTML = `
-                <div class="card card-flush p-2 text-center produk-item" data-id="${p.id}">
-                    <div class="fw-bold">${p.nama}</div>
-                    <div class="text-muted">${p.kategori ? p.kategori.nama : '-'}</div>
-                    <div class="text-success">Rp ${parseInt(p.harga_jual).toLocaleString('id-ID')}</div>
-                </div>`;
+            <div class="card card-flush p-2 text-center produk-item ${habis ? 'bg-light-secondary' : ''}" 
+                 data-id="${p.id}" style="cursor:${habis ? 'not-allowed' : 'pointer'};opacity:${habis ? 0.5 : 1}">
+                <div class="fw-bold">${p.nama}</div>
+                <div class="text-muted">${p.kategori ? p.kategori.nama : '-'}</div>
+                <div class="text-success">Rp ${parseInt(p.harga_jual).toLocaleString('id-ID')}</div>
+                <div class="mt-1 ${habis ? 'text-danger fw-bold' : 'text-muted small'}">
+                    ${habis ? 'Stok Habis' : 'Stok: ' + stok}
+                </div>
+            </div>`;
                 container.appendChild(card);
             });
 
             document.querySelectorAll('.produk-item').forEach(item => {
                 item.addEventListener('click', function() {
                     const produk = produkData.find(p => p.id == this.dataset.id);
+                    const stok = parseInt(produk.stok ?? 0);
+                    if (stok <= 0) {
+                        Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
+                        return;
+                    }
                     tambahKeTabel(produk);
                 });
             });
         }
+
 
         // fungsi-fungsi perhitungan
         function tambahKeTabel(produk) {
@@ -360,12 +471,23 @@
 
         function updateSubtotal(input) {
             const tr = input.closest('tr');
+            const produkId = tr.id.replace('row-', '');
+            const produk = produkData.find(p => p.id == produkId);
+            const stok = parseInt(produk.stok ?? 0);
+            let qty = parseInt(input.value);
+
+            if (qty > stok) {
+                qty = stok;
+                input.value = stok;
+                Swal.fire('⚠️ Stok Tidak Cukup', `Stok ${produk.nama} hanya ${stok}`, 'warning');
+            }
+
             const harga = parseInt(tr.children[2].textContent.replace(/[^\d]/g, ''));
-            const qty = parseInt(input.value);
             const subtotal = harga * qty;
             tr.querySelector('.subtotal').textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
             updateTotal();
         }
+
 
         function updateTotal() {
             const subtotalEls = document.querySelectorAll('#purchase_cart_list .subtotal');
@@ -408,16 +530,33 @@
             const rows = $('#purchase_cart_list tr');
             if (rows.length === 0) return Swal.fire('Oops!', 'Belum ada produk yang dipilih', 'warning');
 
+            const total = parseInt($('#total-penjualan').val().replace(/[^\d]/g, '')) || 0;
+            const uangDiterima = parseInt($('#uang-diterima-penjualan').val().replace(/[^\d]/g, '')) || 0;
+            const kembalian = uangDiterima - total;
+
+            // ✅ Validasi jika uang diterima kurang dari total
+            if (kembalian < 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Uang Kurang!',
+                    text: 'Nominal uang yang diterima tidak mencukupi untuk membayar total pembelian.',
+                    confirmButtonText: 'OK'
+                });
+                return; // hentikan proses submit
+            }
+
             // Ambil semua item
             const items = [];
             rows.each(function() {
                 const id = $(this).attr('id').replace('row-', '');
+                const nama = $(this).find('td:nth-child(1)').text();
                 const qty = parseInt($(this).find('.qty').val());
                 const harga = parseInt($(this).find('td:nth-child(3)').text().replace(/[^\d]/g,
                     ''));
                 const subtotal = harga * qty;
                 items.push({
                     barang_id: id,
+                    barang_nama: nama,
                     qty: qty,
                     harga_jual: harga,
                     subtotal: subtotal
@@ -430,7 +569,7 @@
                 tanggal: $('#tanggal').val(),
                 customer_nama: $('#customer_id option:selected').text(),
                 total_item: items.length,
-                total_harga: parseInt($('#total-penjualan').val().replace(/[^\d]/g, '')),
+                total_harga: total,
                 catatan: $('#catatan').val(),
                 pembayaran: $('#pembayaran-penjualan').val(),
                 items: items
@@ -453,12 +592,36 @@
                                 .val());
                             $('#modal-kembalian').text($('#kembalian-penjualan').val());
                             new bootstrap.Modal('#modalPenjualanSelesai').show();
+                            window.transaksiTerakhir = {
+                                no_penjualan: $('#no_penjualan').val(),
+                                tanggal: $('#tanggal').val(),
+                                customer: $('#customer_id option:selected').text(),
+                                total: $('#total-penjualan').val(),
+                                uang: $('#uang-diterima-penjualan').val(),
+                                kembalian: $('#kembalian-penjualan').val(),
+                                items: items
+                            };
+                            const lastCustomer = $('#customer_id').val();
+
+                            // Reset form
                             $('#form-penjualan')[0].reset();
                             $('#purchase_cart_list').html('');
                             updateTotal();
+
+                            if (lastCustomer) {
+                                $('#customer_id').val(lastCustomer).trigger('change');
+                            }
+
+                            if (res.no_penjualan_baru) {
+                                $('#no_penjualan').val(res.no_penjualan_baru);
+                            }
+
+                            $.get("{{ route('penjualan.produk.data') }}", function(
+                                newProduk) {
+                                window.produkData = newProduk;
+                                renderProduk(newProduk);
+                            });
                         });
-                    } else {
-                        Swal.fire('Gagal', res.message, 'error');
                     }
                 },
                 error: function(xhr) {
@@ -467,6 +630,7 @@
                 }
             });
         });
+
 
         $('#btn-batal-penjualan').on('click', () => {
             $('#purchase_cart_list').html('');
@@ -500,6 +664,101 @@
                 fullscreenBtn.innerHTML = '<i class="fas fa-expand text-white"></i>';
             }
         });
+
+        $(document).on('click', '#btn-cetak-struk', function() {
+            const t = window.transaksiTerakhir;
+            if (!t) {
+                Swal.fire('⚠️', 'Data transaksi tidak ditemukan.', 'warning');
+                return;
+            }
+
+            // Format daftar item
+            let itemRows = '';
+            t.items.forEach(i => {
+                const nama = i.barang_nama ?? i.barang_id;
+                const harga = i.harga_jual?.toLocaleString('id-ID') ?? '0';
+                const subtotal = i.subtotal?.toLocaleString('id-ID') ?? '0';
+                itemRows += `
+            <tr>
+                <td colspan="2">${nama}</td>
+                <td style="text-align:right;">Rp ${harga}</td>
+            </tr>
+            <tr>
+                <td style="width:10%;"></td>
+                <td>${i.qty} x Rp ${harga}</td>
+                <td style="text-align:right;">Rp ${subtotal}</td>
+            </tr>
+        `;
+            });
+            const logoPath = document.querySelector('.theme-light-show')?.getAttribute('src') ||
+                "{{ asset('assets/media/logos/keenthemes.svg') }}";
+            // Template Struk
+            const strukHTML = `
+    <div style="font-family: monospace; font-size: 12px; width: 260px; margin: auto;">
+   <div style="text-align:center;">
+        <img src="${logoPath}" style="width:100%;height:60px;object-fit:contain;">
+        <div>Jl. KL. Yos Sudarso PAJAK SORE km 9,5, M A B A R, Kec. Medan Deli, Kota Medan, Sumatera Utara 20242 Telp: 081210003014</div>
+        <hr style="border-top:1px dashed #000;">
+    </div>
+        <div style="line-height:1.4;">
+            <div>Tanggal : ${new Date(t.tanggal).toLocaleDateString('id-ID')}</div>
+            <div>Kode    : ${t.no_penjualan}</div>
+            <div>Customer: ${t.customer ?? '-'}</div>
+            <div>Meja    : Meja Tamu</div>
+            <div>Kasir   : Kasir</div>
+            <hr style="border-top:1px dashed #000;">
+        </div>
+
+        <table style="width:100%;border-collapse:collapse;">
+            <tbody>${itemRows}</tbody>
+        </table>
+
+        <hr style="border-top:1px dashed #000;">
+
+        <div style="display:flex;justify-content:space-between;">
+            <span>Total</span><span>${t.total}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+            <span>Bayar</span><span>${t.uang}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+            <span>Kembalian</span><span>${t.kembalian}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+            <span>Metode</span><span>Tunai</span>
+        </div>
+
+        <hr style="border-top:1px dashed #000;">
+        <div style="text-align:center;margin-top:5px;">
+            Terima Kasih Atas Kunjungan Anda
+        </div>
+    </div>
+    `;
+
+            // Cetak struk ke window baru
+            const printWindow = window.open('', '', 'width=400,height=600');
+            printWindow.document.write(`
+        <html>
+        <head>
+            <title>Struk Penjualan</title>
+            <style>
+                body { font-family: monospace; margin: 0; padding: 10px; font-size: 12px; }
+                hr { border: 1px dashed #000; }
+                table { width: 100%; border-collapse: collapse; }
+                td { padding: 2px 0; vertical-align: top; }
+            </style>
+        </head>
+        <body>
+            ${strukHTML}
+        </body>
+        </html>
+    `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        });
+
     });
 </script>
 @endpush

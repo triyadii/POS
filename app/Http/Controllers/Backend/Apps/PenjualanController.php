@@ -42,6 +42,7 @@ class PenjualanController extends Controller
                 'kode_transaksi' => $request->no_penjualan,
                 'tanggal_penjualan' => $request->tanggal,
                 'customer_nama' => $request->customer_nama,
+                'jenis_pembayaran_id' => $request->pembayaran,
                 'user_id' => auth()->id() ?? 'dummy-user',
                 'total_item' => $request->total_item,
                 'total_harga' => $request->total_harga,
@@ -60,10 +61,22 @@ class PenjualanController extends Controller
                     'subtotal' => $item['subtotal'],
                     'keterangan' => $item['keterangan'] ?? null,
                 ]);
+                $barang = Barang::find($item['barang_id']);
+                if ($barang) {
+                    $barang->stok -= $item['qty'];
+                    $barang->save();
+                }
             }
 
+
             DB::commit();
-            return response()->json(['status' => 'success', 'message' => 'Transaksi berhasil disimpan']);
+            // ✅ Generate kode transaksi berikutnya
+            $nextNo = $this->generateNextNoPenjualan();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Transaksi berhasil disimpan',
+                'no_penjualan_baru' => $nextNo,
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
@@ -71,20 +84,56 @@ class PenjualanController extends Controller
     }
     public function historyData()
     {
-        $penjualan = \App\Models\Penjualan::with([
-            'detail.barang' => function ($q) {
-                $q->select('id', 'nama');
-            }
+        $penjualan = Penjualan::with([
+            'detail.barang:id,nama',
+            'pembayaran:id,nama' // ✅ relasi jenis_pembayaran
         ])
-            ->select('id', 'kode_transaksi', 'tanggal_penjualan', 'customer_nama', 'total_item', 'total_harga', 'catatan')
+            ->select(
+                'id',
+                'kode_transaksi',
+                'tanggal_penjualan',
+                'customer_nama',
+                'jenis_pembayaran_id', // ✅ tambahkan kolom ini!
+                'total_item',
+                'total_harga',
+                'catatan'
+            )
             ->orderBy('tanggal_penjualan', 'desc')
             ->get();
+
         return response()->json($penjualan);
     }
 
+    protected function generateNextNoPenjualan()
+    {
+        $kasirId = 'DB22';
+        $tanggal = \Carbon\Carbon::now()->format('Ymd');
+        $today = \Carbon\Carbon::now()->toDateString();
+
+        // Ambil kode terakhir untuk hari ini dengan pola yang sama
+        $lastPenjualan = \DB::table('penjualan')
+            ->whereDate('created_at', $today)
+            ->where('kode_transaksi', 'like', "{$kasirId}-{$tanggal}-%")
+            ->orderByDesc('kode_transaksi')
+            ->value('kode_transaksi');
+
+        if ($lastPenjualan) {
+            // Ambil 6 digit terakhir dari kode terakhir
+            $lastNumber = (int) substr($lastPenjualan, -6);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        $urutan = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+        return "{$kasirId}-{$tanggal}-{$urutan}";
+    }
+
+
     private function generateNoPenjualan()
     {
-        $kasirId = 'WAA';
+        $kasirId = 'DB22';
         $tanggal = Carbon::now()->format('Ymd');
         $today = Carbon::now()->toDateString();
 
@@ -134,5 +183,13 @@ class PenjualanController extends Controller
             ->get();
 
         return response()->json($penjualan);
+    }
+    public function produkData()
+    {
+        $produk = Barang::select('id', 'nama', 'harga_jual', 'stok')
+            ->with('kategori:id,nama')
+            ->get();
+
+        return response()->json($produk);
     }
 }

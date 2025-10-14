@@ -131,6 +131,9 @@
                         </div>
                     @endcan
 
+                    </a>
+                </div>
+                @endcan
 
 
                 </div>
