@@ -41,35 +41,36 @@
             {{-- Bagian Body Card (Tidak Berubah) --}}
             <div class="card-body py-4">
                 {{-- Kartu Statistik --}}
-                {{-- KODE BARU DENGAN MARGIN YANG DISESUAIKAN --}}
                 <div class="row g-5 g-xl-8">
                     <div class="col-xl-4 d-none" id="statistik-total-pembelian-wrapper">
                         <div class="card bg-light-success hoverable card-xl-stretch">
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                {{-- Ubah mb-2 menjadi mb-3 --}}
-                                <div class="text-success fw-bold fs-2 mb-3" id="stat-total-pembelian">-</div>
-                                <div class="fw-semibold text-success mb-5">Total Pembelian</div>
+                            <div class="card-body">
+                                <div class="text-success fw-bold fs-2 mb-2 mt-5" id="stat-total-pembelian">-</div>
+                                <div class="fw-semibold text-success">Total Pembelian</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4 d-none" id="statistik-total-supplier-wrapper">
                         <div class="card bg-light-info hoverable card-xl-stretch">
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                {{-- Ubah mb-2 menjadi mb-3 --}}
-                                <div class="text-info fw-bold fs-2 mb-3" id="stat-total-supplier">-</div>
-                                <div class="fw-semibold text-info mb-5">Total Supplier</div>
+                            <div class="card-body">
+                                <div class="text-info fw-bold fs-2 mb-2 mt-5" id="stat-total-supplier">-</div>
+                                <div class="fw-semibold text-info">Total Supplier</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4 d-none" id="statistik-barang-diterima-wrapper">
                         <div class="card bg-light-primary hoverable card-xl-stretch">
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                {{-- Ubah mb-2 menjadi mb-3 --}}
-                                <div class="text-primary fw-bold fs-2 mb-3" id="stat-barang-diterima">-</div>
-                                <div class="fw-semibold text-primary mb-5">Jumlah Barang Diterima</div>
+                            <div class="card-body">
+                                <div class="text-primary fw-bold fs-2 mb-2 mt-5" id="stat-barang-diterima">-</div>
+                                <div class="fw-semibold text-primary">Jumlah Barang Diterima</div>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {{-- Chart --}}
+                <div class="row my-10 d-none" id="chart-wrapper">
+                    <div id="pembelianChart" style="height: 350px;"></div>
                 </div>
 
                 {{-- Tabel Data --}}
@@ -160,7 +161,7 @@
         <script src="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
         <script>
             $(document).ready(function() {
-                let table;
+                let table, chart;
                 const formatRupiah = (number) => 'Rp ' + (Number(number) || 0).toLocaleString('id-ID');
 
                 // DataTable (Tidak Berubah)
@@ -215,6 +216,7 @@
                 function reloadData() {
                     if ($('#filter_tanggal').val()) {
                         table.ajax.reload();
+                        fetchChart();
                     }
                 }
 
@@ -243,9 +245,71 @@
                     $('#filter_tanggal').val(start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
                     $('#statistik-total-pembelian-wrapper, #statistik-total-supplier-wrapper, #statistik-barang-diterima-wrapper')
                         .removeClass('d-none');
-                    $('#table-wrapper, .btn-export').removeClass('d-none');
+                    $('#table-wrapper, #chart-wrapper, .btn-export').removeClass('d-none');
                     reloadData();
                 });
+
+                // Chart & Export Logic (Tidak Berubah)
+                function fetchChart() {
+                    const picker = $('#filter_tanggal').data('daterangepicker');
+                    $.get("{{ route('laporan.pembelian.supplier.chart') }}", {
+                        filter_tanggal_start: picker.startDate.format('YYYY-MM-DD'),
+                        filter_tanggal_end: picker.endDate.format('YYYY-MM-DD'),
+                    }, function(data) {
+                        renderBarChart(data);
+                    });
+                }
+
+                function renderBarChart(data) {
+                    const chartElement = document.getElementById('pembelianChart');
+                    if (!chartElement) return;
+                    if (chart) chart.destroy();
+                    const options = {
+                        series: [{
+                            name: 'Total Pembelian',
+                            data: Object.values(data).reverse()
+                        }],
+                        chart: {
+                            fontFamily: 'inherit',
+                            type: 'bar',
+                            height: 350,
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        plotOptions: {
+                            bar: {
+                                borderRadius: 4,
+                                horizontal: true
+                            }
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        xaxis: {
+                            categories: Object.keys(data).reverse(),
+                            labels: {
+                                formatter: (val) => formatRupiah(val)
+                            }
+                        },
+                        yaxis: {
+                            labels: {
+                                style: {
+                                    colors: KTUtil.getCssVariableValue('--bs-gray-500'),
+                                    fontSize: '12px'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            y: {
+                                formatter: (val) => formatRupiah(val)
+                            }
+                        },
+                        colors: [KTUtil.getCssVariableValue('--bs-primary')],
+                    };
+                    chart = new ApexCharts(chartElement, options);
+                    chart.render();
+                }
 
                 $('#btn-print-laporan').on('click', function() {
                     const tanggal = $('#filter_tanggal').val();
