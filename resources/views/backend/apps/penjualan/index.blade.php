@@ -696,12 +696,35 @@
         document.getElementById('filter-cari-daftar-produk').addEventListener('input', _.debounce(function() {
             const search = this.value.toLowerCase();
             const kategori = $('#filter-kategori-daftar-produk').val();
-            const hasil = produkData.filter(p =>
-                p.nama.toLowerCase().includes(search) &&
-                (kategori === '' || (p.kategori && p.kategori.nama === kategori))
-            );
+
+            // 🔍 Pencarian bisa berdasarkan nama ATAU kode_barang
+            const hasil = produkData.filter(p => {
+                const namaMatch = p.nama?.toLowerCase().includes(search);
+                const kodeMatch = p.kode_barang?.toLowerCase().includes(search);
+                const kategoriMatch = kategori === '' || (p.kategori && p.kategori.nama ===
+                    kategori);
+                return (namaMatch || kodeMatch) && kategoriMatch;
+            });
+
             renderProduk(hasil);
         }, 300));
+
+        // 🎯 Filter produk berdasarkan kategori dropdown
+        $('#filter-kategori-daftar-produk').on('change', function() {
+            const kategori = $(this).val();
+            const search = $('#filter-cari-daftar-produk').val().toLowerCase();
+
+            const hasil = produkData.filter(p => {
+                const namaMatch = p.nama?.toLowerCase().includes(search);
+                const kodeMatch = p.kode_barang?.toLowerCase().includes(search);
+                const kategoriMatch = kategori === '' || (p.kategori && p.kategori.nama ===
+                    kategori);
+                return (namaMatch || kodeMatch) && kategoriMatch;
+            });
+
+            renderProduk(hasil);
+        });
+
 
         renderProduk(produkData);
 
