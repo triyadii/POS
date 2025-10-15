@@ -80,16 +80,16 @@
                         <div class="card bg-light-danger hoverable card-xl-stretch">
                             <div class="card-body">
                                 <div class="text-danger fw-bold fs-2 mb-2 mt-5" id="stat-stok-kritis">-</div>
-                                <div class="fw-semibold text-danger">Stok Kritis (<= 10)</div>
+                                <div class="fw-semibold text-danger">Stok Hampir Habis (<= 10)</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {{-- Chart --}}
-                    <div class="row my-10">
+                    {{-- <div class="row my-10">
                         <div id="stokChart" style="height: 350px;"></div>
-                    </div>
+                    </div> --}}
 
                     {{-- Tabel Data --}}
                     <div class="table-responsive mt-5">
@@ -100,9 +100,9 @@
                                     <th>Kode</th>
                                     <th>Nama Barang</th>
                                     <th>Size</th>
-                                    <th>Kategori</th>
+                                    <th>Stok</th>
                                     <th>Brand</th>
-                                    <th class="text-end">Stok</th>
+                                    <th>Kategori</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -188,17 +188,17 @@
                                 name: 'size'
                             },
                             {
-                                data: 'kategori',
-                                name: 'kategori.nama'
+                                data: 'stok',
+                                name: 'stok',
+                                className: 'text-left'
                             },
                             {
                                 data: 'brand',
                                 name: 'brand.nama'
                             },
                             {
-                                data: 'stok',
-                                name: 'stok',
-                                className: 'text-end'
+                                data: 'kategori',
+                                name: 'kategori.nama'
                             },
                         ],
                         order: [
@@ -276,13 +276,34 @@
 
                     fetchChart(); // Load chart for the first time
 
-                    $('#btn-print-laporan').on('click', function() {
-                        const url = new URL("{{ route('stok.export') }}");
-                        url.searchParams.set('ukuran', $('#ukuran_kertas').val());
-                        url.searchParams.set('orientasi', $('#orientasi_kertas').val());
-                        url.searchParams.set('kategori_id', $('#filter_kategori').val());
-                        url.searchParams.set('brand_id', $('#filter_brand').val());
-                        window.open(url.toString(), '_blank');
+                    // index.blade.php
+
+                    // Ganti dengan fungsi 'async' untuk menunggu proses pembuatan gambar chart
+                    $('#btn-print-laporan').on('click', async function() {
+                        const button = $(this);
+                        // Tambahkan indikator loading untuk user experience yang lebih baik
+                        button.attr('data-kt-indicator', 'on').prop('disabled', true);
+
+                        try {
+
+                            // 2. Buat URL seperti sebelumnya
+                            const url = new URL("{{ route('stok.export') }}");
+                            url.searchParams.set('ukuran', $('#ukuran_kertas').val());
+                            url.searchParams.set('orientasi', $('#orientasi_kertas').val());
+                            url.searchParams.set('kategori_id', $('#filter_kategori').val());
+                            url.searchParams.set('brand_id', $('#filter_brand').val());
+
+                            // 4. Buka URL di tab baru
+                            window.open(url.toString(), '_blank');
+
+                        } catch (error) {
+                            console.error("Gagal membuat gambar chart:", error);
+                            // Anda bisa menambahkan notifikasi error di sini jika perlu
+                            Swal.fire('Error', 'Gagal memproses laporan.', 'error');
+                        } finally {
+                            // Hapus indikator loading setelah selesai (baik berhasil maupun gagal)
+                            button.removeAttr('data-kt-indicator').prop('disabled', false);
+                        }
                     });
                 });
             </script>

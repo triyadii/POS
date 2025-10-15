@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Laporan Penjualan</title>
+
+    {{-- Ganti seluruh isi file dengan ini --}}
     <style>
         body {
             font-family: 'Helvetica', sans-serif;
@@ -19,6 +21,7 @@
         .header h1 {
             margin: 0;
             font-size: 20px;
+            color: #222;
         }
 
         .header p {
@@ -26,41 +29,43 @@
             font-size: 12px;
         }
 
-        .section-title {
-            font-size: 14px;
-            margin-top: 25px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
+        /* ====================================================== */
+        /* PERUBAHAN 1: Memberi jarak agar tidak tertimpa footer  */
+        /* ====================================================== */
+        main {
+            margin-bottom: 60px;
+            /* Menambahkan margin bawah seukuran footer + spasi */
         }
 
-        /* Statistik */
-        .stats-container {
-            display: table;
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 10px 0;
+        .footer {
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            height: 50px;
+            font-size: 9px;
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
         }
 
-        .stat-box {
-            display: table-cell;
-            width: 33.33%;
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
+        .footer-left {
+            float: left;
+            width: 50%;
+            text-align: left;
         }
 
-        .stat-box .value {
-            font-size: 18px;
-            font-weight: bold;
+        .footer-right {
+            float: right;
+            width: 50%;
+            text-align: right;
+            color: #888;
         }
 
-        .stat-box .label {
-            font-size: 12px;
-            color: #666;
-        }
-
-        /* Tabel Utama */
+        /* ====================================================== */
+        /* PERUBAHAN 2: Mempercantik Tabel Utama                  */
+        /* ====================================================== */
         .main-table {
             width: 100%;
             border-collapse: collapse;
@@ -69,36 +74,47 @@
 
         .main-table th,
         .main-table td {
-            border: 1px solid #ccc;
-            padding: 6px;
+            border: 1px solid #ddd;
+            /* Border lebih soft */
+            padding: 8px;
+            /* Padding lebih besar */
             text-align: left;
             vertical-align: top;
         }
 
         .main-table th {
-            background-color: #f2f2f2;
+            background-color: #4A5568;
+            /* Header lebih gelap */
+            color: #FFFFFF;
+            /* Teks header putih */
             font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Zebra-striping untuk baris agar mudah dibaca */
+        .main-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
 
         .text-right {
-            text-align: right;
+            text-align: right !important;
         }
 
         /* Tabel Detail Barang */
         .detail-table {
             width: 100%;
-            margin-top: 5px;
+            border: none;
         }
 
         .detail-table td {
             border: none;
-            padding: 2px 0;
+            padding: 4px 0;
         }
 
         .detail-item {
-            border-bottom: 1px dashed #eee;
-            padding-bottom: 3px;
-            margin-bottom: 3px;
+            border-bottom: 1px dashed #e0e0e0;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
         }
 
         .detail-item:last-child {
@@ -107,8 +123,20 @@
             padding-bottom: 0;
         }
 
-        .total-row strong {
-            font-size: 12px;
+        /* Footer Tabel */
+        .main-table tfoot tr {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .main-table tfoot td {
+            font-size: 11px;
+        }
+
+        .terbilang {
+            font-style: italic;
+            font-weight: normal;
+            text-align: right;
         }
     </style>
 </head>

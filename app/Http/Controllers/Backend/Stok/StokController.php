@@ -9,6 +9,7 @@ use App\Models\Brand;
 use App\Models\Kategori;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class StokController extends Controller
 {
@@ -71,16 +72,13 @@ class StokController extends Controller
 
     public function export(Request $request)
     {
-        // Tambahkan validasi untuk chart_image
         $request->validate([
             'ukuran' => 'required|in:A4,F4',
             'orientasi' => 'required|in:portrait,landscape',
-            'chart_image' => 'required|string', // Validasi untuk data gambar
         ]);
 
         $query = Barang::with(['kategori', 'brand']);
 
-        // Logika filter tidak berubah
         if ($request->filled('kategori_id') && $request->kategori_id != 'all') {
             $query->where('kategori_id', $request->kategori_id);
         }
@@ -90,11 +88,11 @@ class StokController extends Controller
 
         $barang = $query->orderBy('nama', 'asc')->get();
 
-        // Tambahkan chartImage ke data yang dikirim ke view PDF
+        // 2. Modifikasi array data yang dikirim ke view
         $data = [
             'barang' => $barang,
-            'tanggal' => Carbon::now()->translatedFormat('d F Y'),
-            'chartImage' => $request->chart_image, // Data gambar dari chart
+            'namaUser' => Auth::user()->name,       // Ambil nama user yang login
+            'tanggalCetak' => Carbon::now(),        // Ambil waktu saat ini untuk tanggal cetak
         ];
 
         $pdf = Pdf::loadView('backend.stok.laporan-stok-pdf', $data)
