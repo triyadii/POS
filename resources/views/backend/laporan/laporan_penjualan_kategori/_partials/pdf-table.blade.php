@@ -49,5 +49,10 @@
             <td class="text-right"><strong>Rp {{ number_format($penjualan->sum('total_harga'), 0, ',', '.') }}</strong>
             </td>
         </tr>
+        <tr class="total-row">
+            <td colspan="4" style="font-style: italic; text-align: right;">
+                ({{ $totalPenjualanTerbilang }})
+            </td>
+        </tr>
     </tfoot>
 </table>

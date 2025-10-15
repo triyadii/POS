@@ -46,9 +46,9 @@ use App\Http\Controllers\Backend\Apps\BarangKeluarDetailController;
 //END CHIMOX
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
 use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
+use App\Http\Controllers\Backend\Laporan\LaporanPembelianSupplierController;
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanBrandController;
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanKategoriController;
-use App\Http\Controllers\Backend\Laporan\LaporanPenjualanSupplierController;
 use App\Http\Controllers\Backend\Stok\StokController;
 use App\Http\Controllers\SettingAppController;
 
@@ -56,7 +56,9 @@ use App\Http\Controllers\SettingAppController;
 Route::get('/', function () {
     return redirect()->route('login');
 });
-
+Route::get('/info-cek', function () {
+    phpinfo();
+});
 
 Auth::routes();
 
@@ -150,8 +152,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/select/barang', [BarangController::class, 'select'])->name('barang.select');
 
     Route::post('/barang/update-inline', [BarangController::class, 'updateInline'])
-    ->name('barang.update-inline');
+        ->name('barang.update-inline');
 
+    Route::get('/PencarianBarang', [BarangController::class, 'pencarianBarang'])->name('barang.pencarian');
+    Route::get('/PencarianBarangList', [BarangController::class, 'pencarianBarangList'])->name('pencarianList.barang');
 
     // Route::resource('barang-masuk', BarangMasukController::class);
     // Route::get('get-barang-masuk', [BarangMasukController::class, 'getData'])->name('get-barang-masuk');
@@ -172,8 +176,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/{id}/edit', [BarangMasukController::class, 'edit'])->name('barang-masuk.edit');
         Route::put('/{id}', [BarangMasukController::class, 'update'])->name('barang-masuk.update');
         Route::delete('/{id}', [BarangMasukController::class, 'destroy'])->name('barang-masuk.destroy');
-    
-        
+
+
         // detail gabung
         Route::get('/{id}/detail/list', [BarangMasukController::class, 'getDetailList'])->name('barang-masuk.detail.list');
         Route::post('/{id}/detail/add', [BarangMasukController::class, 'addDetail'])->name('barang-masuk.detail.add');
@@ -184,12 +188,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('barang-masuk/mass-delete', [BarangMasukController::class, 'massDelete'])->name('barang-masuk.mass-delete');
     Route::get('select/barang-masuk', [BarangMasukController::class, 'select'])->name('barang-masuk.select');
     Route::post('barang-masuk/{id}/finalize', [BarangMasukController::class, 'finalize'])
-    ->name('barang-masuk.finalize');
+        ->name('barang-masuk.finalize');
     Route::get('/barang-masuk/{id}/print', [BarangMasukController::class, 'print'])->name('barang-masuk.print');
     Route::post('/barang-masuk/detail/update-price', [BarangMasukController::class, 'updatePrice'])
-    ->name('barang-masuk.detail.update-price');
+        ->name('barang-masuk.detail.update-price');
 
-    
+
 
 
 
@@ -201,8 +205,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/{id}/edit', [BarangKeluarController::class, 'edit'])->name('barang-keluar.edit');
         Route::put('/{id}', [BarangKeluarController::class, 'update'])->name('barang-keluar.update');
         Route::delete('/{id}', [BarangKeluarController::class, 'destroy'])->name('barang-keluar.destroy');
-    
-        
+
+
         // detail gabung
         Route::get('/{id}/detail/list', [BarangKeluarController::class, 'getDetailList'])->name('barang-keluar.detail.list');
         Route::post('/{id}/detail/add', [BarangKeluarController::class, 'addDetail'])->name('barang-keluar.detail.add');
@@ -213,36 +217,36 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('barang-keluar/mass-delete', [BarangKeluarController::class, 'massDelete'])->name('barang-keluar.mass-delete');
     Route::get('select/barang-keluar', [BarangKeluarController::class, 'select'])->name('barang-keluar.select');
     Route::post('barang-keluar/{id}/finalize', [BarangKeluarController::class, 'finalize'])
-    ->name('barang-keluar.finalize');
+        ->name('barang-keluar.finalize');
     Route::get('/barang-keluar/{id}/print', [BarangKeluarController::class, 'print'])->name('barang-keluar.print');
 
 
-    
-  
-
-// Route::prefix('barang-masuk')->group(function () {
-//     // resource utama
-//     Route::get('/', [BarangMasukController::class, 'index'])->name('barang-masuk.index');
-//     Route::get('/create', [BarangMasukController::class, 'create'])->name('barang-masuk.create');
-//     Route::post('/', [BarangMasukController::class, 'store'])->name('barang-masuk.store');
-//     Route::get('/{id}', [BarangMasukController::class, 'show'])->name('barang-masuk.show');
-//     Route::get('/{id}/edit', [BarangMasukController::class, 'edit'])->name('barang-masuk.edit');
-//     Route::put('/{id}', [BarangMasukController::class, 'update'])->name('barang-masuk.update');
-//     Route::delete('/{id}', [BarangMasukController::class, 'destroy'])->name('barang-masuk.destroy');
-
-//     // custom tambahan
-//     Route::get('/get/data', [BarangMasukController::class, 'getData'])->name('barang-masuk.getData');
-//     Route::post('/mass-delete', [BarangMasukController::class, 'massDelete'])->name('barang-masuk.mass-delete');
-//     Route::get('/select/data', [BarangMasukController::class, 'select'])->name('barang-masuk.select');
-
-//     // 🧩 detail gabung di sini
-//     Route::get('/{id}/detail/list', [BarangMasukController::class, 'getDetailList'])->name('barang-masuk.detail.list');
-//     Route::post('/{id}/detail/add', [BarangMasukController::class, 'addDetail'])->name('barang-masuk.detail.add');
-//     Route::delete('/detail/{detailId}', [BarangMasukController::class, 'deleteDetail'])->name('barang-masuk.detail.delete');
-// });
 
 
- 
+
+    // Route::prefix('barang-masuk')->group(function () {
+    //     // resource utama
+    //     Route::get('/', [BarangMasukController::class, 'index'])->name('barang-masuk.index');
+    //     Route::get('/create', [BarangMasukController::class, 'create'])->name('barang-masuk.create');
+    //     Route::post('/', [BarangMasukController::class, 'store'])->name('barang-masuk.store');
+    //     Route::get('/{id}', [BarangMasukController::class, 'show'])->name('barang-masuk.show');
+    //     Route::get('/{id}/edit', [BarangMasukController::class, 'edit'])->name('barang-masuk.edit');
+    //     Route::put('/{id}', [BarangMasukController::class, 'update'])->name('barang-masuk.update');
+    //     Route::delete('/{id}', [BarangMasukController::class, 'destroy'])->name('barang-masuk.destroy');
+
+    //     // custom tambahan
+    //     Route::get('/get/data', [BarangMasukController::class, 'getData'])->name('barang-masuk.getData');
+    //     Route::post('/mass-delete', [BarangMasukController::class, 'massDelete'])->name('barang-masuk.mass-delete');
+    //     Route::get('/select/data', [BarangMasukController::class, 'select'])->name('barang-masuk.select');
+
+    //     // 🧩 detail gabung di sini
+    //     Route::get('/{id}/detail/list', [BarangMasukController::class, 'getDetailList'])->name('barang-masuk.detail.list');
+    //     Route::post('/{id}/detail/add', [BarangMasukController::class, 'addDetail'])->name('barang-masuk.detail.add');
+    //     Route::delete('/detail/{detailId}', [BarangMasukController::class, 'deleteDetail'])->name('barang-masuk.detail.delete');
+    // });
+
+
+
 
     //END CHIMOX
 
@@ -253,6 +257,8 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('penjualan.daftar.data');
     Route::get('penjualan/history', [PenjualanController::class, 'historyData'])->name('penjualan.history.data');
     Route::get('/penjualan/produk/data', [PenjualanController::class, 'produkData'])->name('penjualan.produk.data');
+    Route::get('/penjualan/no-otomatis', [PenjualanController::class, 'generateNoTransaksi'])
+        ->name('penjualan.no_otomatis');
 
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
     Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
@@ -261,14 +267,14 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('laporan-penjualan-brand-data', [LaporanPenjualanBrandController::class, 'getLaporanData'])->name('laporan.penjualan.brand.data');
     Route::get('laporan-penjualan-brand/chart', [LaporanPenjualanBrandController::class, 'getChartData'])->name('laporan.penjualan.brand.chart');
-    Route::get('/laporan/penjualan/brand/export', [LaporanPenjualanBrandController::class, 'export'])->name('laporan.penjualan.brand.export');
+    Route::match(['get', 'post'], '/laporan/penjualan/brand/export', [LaporanPenjualanBrandController::class, 'export'])->name('laporan.penjualan.brand.export');
     Route::resource('laporan-penjualan-brand', LaporanPenjualanBrandController::class);
 
-    // --- Laporan Penjualan (berdasarkan Supplier Terakhir) ---
-    Route::get('laporan-penjualan-supplier-data', [LaporanPenjualanSupplierController::class, 'getLaporanData'])->name('laporan.penjualan.supplier.data');
-    Route::get('laporan-penjualan-supplier/chart', [LaporanPenjualanSupplierController::class, 'getChartData'])->name('laporan.penjualan.supplier.chart');
-    Route::post('/laporan/penjualan/supplier/export', [LaporanPenjualanSupplierController::class, 'export'])->name('laporan.penjualan.supplier.export');
-    Route::resource('laporan-penjualan-supplier', LaporanPenjualanSupplierController::class);
+    // --- Laporan Pembelian (berdasarkan Supplier) ---
+    Route::get('laporan-pembelian-supplier-data', [LaporanPembelianSupplierController::class, 'getLaporanData'])->name('laporan.pembelian.supplier.data');
+    Route::get('laporan-pembelian-supplier/chart', [LaporanPembelianSupplierController::class, 'getChartData'])->name('laporan.pembelian.supplier.chart');
+    Route::get('/laporan/pembelian/supplier/export', [LaporanPembelianSupplierController::class, 'export'])->name('laporan.pembelian.supplier.export');
+    Route::resource('laporan-pembelian-supplier', LaporanPembelianSupplierController::class);
 
     // --- Laporan Penjualan per Kategori ---
     Route::get('laporan-penjualan-kategori-data', [LaporanPenjualanKategoriController::class, 'getLaporanData'])->name('laporan.penjualan.kategori.data');
@@ -282,7 +288,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('stok-data', [StokController::class, 'getStokData'])->name('stok.data');
     Route::get('stok/chart', [StokController::class, 'getChartData'])->name('stok.chart');
-    Route::post('/stok/export', [StokController::class, 'export'])->name('stok.export');
+    Route::get('/stok/export', [StokController::class, 'export'])->name('stok.export');
     Route::resource('stok', StokController::class);
 });
 

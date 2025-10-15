@@ -1,4 +1,5 @@
 <div class="header">
-    <h1>Laporan Penjualan</h1>
+    <h1>Laporan Penjualan Global</h1>
+    <p><strong>DISKON BESAR 22</strong></p>
     <p>Periode: {{ $start->translatedFormat('d F Y') }} - {{ $end->translatedFormat('d F Y') }}</p>
 </div>

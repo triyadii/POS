@@ -41,6 +41,10 @@ class BarangController extends Controller
     {
         return view('backend.apps.barang.index');
     }
+    public function pencarianBarang(Request $request)
+    {
+        return view('backend.apps.barang.pencarian');
+    }
 
     public function getData(Request $request)
     {
@@ -649,5 +653,42 @@ class BarangController extends Controller
             $barang = Barang::limit(30)->get();
         }
         return response()->json($barang);
+    }
+    public function pencarianBarangList(Request $request)
+    {
+        $q = $request->get('q', '');
+
+        $data = Barang::query()
+            ->leftJoin('kategori', 'barang.kategori_id', '=', 'kategori.id')
+            ->leftJoin('brands', 'barang.brand_id', '=', 'brands.id')
+            ->when($q, function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('barang.nama', 'like', "%{$q}%")
+                        ->orWhere('barang.kode_barang', 'like', "%{$q}%");
+                });
+            })
+            ->select(
+                'barang.id',
+                'barang.kode_barang',
+                'barang.nama',
+                'barang.stok',
+                'kategori.nama as kategori',
+                'brands.nama as brand'
+            )
+            ->orderBy('barang.nama')
+            ->limit(20)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id'       => $item->id,
+                    'kode'     => $item->kode_barang,
+                    'nama'     => $item->nama,
+                    'stok'     => $item->stok,
+                    'kategori' => $item->kategori ?? '-',
+                    'brand'    => $item->brand ?? '-',
+                ];
+            });
+
+        return response()->json(['data' => $data]);
     }
 }

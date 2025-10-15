@@ -37,8 +37,10 @@
     <tfoot>
         <tr class="total-row">
             <td colspan="3" class="text-right"><strong>Total Keseluruhan</strong></td>
-            <td class="text-right"><strong>Rp {{ number_format($penjualan->sum('total_harga'), 0, ',', '.') }}</strong>
+            <td class="text-right" style="text-align: right;"><strong>Rp
+                    {{ number_format($penjualan->sum('total_harga'), 0, ',', '.') }}</strong>
             </td>
         </tr>
+
     </tfoot>
 </table>
