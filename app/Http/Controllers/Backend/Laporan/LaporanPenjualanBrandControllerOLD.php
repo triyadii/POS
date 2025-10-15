@@ -5,22 +5,21 @@ namespace App\Http\Controllers\Backend\Laporan;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Models\Kategori;
+use App\Models\Brand;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
-use Illuminate\Support\Facades\Auth;
 use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class LaporanPenjualanKategoriController extends Controller
+class LaporanPenjualanBrandController extends Controller
 {
     /**
-     * Menampilkan halaman laporan dan mengirim data kategori untuk filter.
+     * Menampilkan halaman laporan dan mengirim data brand untuk filter.
      */
     public function index()
     {
-        $kategori = Kategori::orderBy('nama', 'asc')->get();
-        return view('backend.laporan.laporan_penjualan_kategori.index', compact('kategori'));
+        $brands = Brand::orderBy('nama', 'asc')->get();
+        return view('backend.laporan.laporan_penjualan_brand.index', compact('brands'));
     }
 
     /**
@@ -28,6 +27,7 @@ class LaporanPenjualanKategoriController extends Controller
      */
     public function getLaporanData(Request $request)
     {
+        // ... Logika query dan statistik tidak berubah ...
         $query = Penjualan::query();
         $startDate = null;
         $endDate = null;
@@ -36,10 +36,10 @@ class LaporanPenjualanKategoriController extends Controller
             $endDate = Carbon::parse($request->filter_tanggal_end)->endOfDay();
             $query->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
         }
-        $kategoriId = ($request->filled('filter_kategori') && $request->filter_kategori != 'all') ? $request->filter_kategori : null;
-        if ($kategoriId) {
-            $query->whereHas('detail.barang', function ($q) use ($kategoriId) {
-                $q->where('kategori_id', $kategoriId);
+        $brandId = ($request->filled('filter_brand') && $request->filter_brand != 'all') ? $request->filter_brand : null;
+        if ($brandId) {
+            $query->whereHas('detail.barang', function ($q) use ($brandId) {
+                $q->where('brand_id', $brandId);
             });
         }
         $dateRangeExists = isset($startDate) && isset($endDate);
@@ -50,9 +50,9 @@ class LaporanPenjualanKategoriController extends Controller
                 $q->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
             });
         }
-        if ($kategoriId) {
-            $detailQuery->whereHas('barang', function ($q) use ($kategoriId) {
-                $q->where('kategori_id', $kategoriId);
+        if ($brandId) {
+            $detailQuery->whereHas('barang', function ($q) use ($brandId) {
+                $q->where('brand_id', $brandId);
             });
         }
         $totalPendapatan = $dateRangeExists ? (clone $detailQuery)->sum('subtotal') : 0;
@@ -64,14 +64,15 @@ class LaporanPenjualanKategoriController extends Controller
             ->addColumn('tanggal', fn($data) => Carbon::parse($data->tanggal_penjualan)->translatedFormat('d F Y, H:i'))
             ->addColumn('user', fn($data) => $data->user->name ?? '-')
             ->addColumn('customer', fn($data) => $data->customer_nama ?? 'Umum')
-            ->addColumn('total', function ($data) use ($kategoriId) {
-                $total = $kategoriId ? $data->detail->filter(fn($item) => $item->barang->kategori_id == $kategoriId)->sum('subtotal') : $data->total_harga;
+            ->addColumn('total', function ($data) use ($brandId) {
+                // ... Logika addColumn('total') tidak berubah ...
+                $total = $brandId ? $data->detail->filter(fn($item) => $item->barang->brand_id == $brandId)->sum('subtotal') : $data->total_harga;
                 return 'Rp ' . number_format($total, 0, ',', '.');
             })
-            ->addColumn('detail_barang', function ($data) use ($kategoriId) {
+            ->addColumn('detail_barang', function ($data) use ($brandId) {
                 $details = '<ul class="list-unstyled mb-0">';
                 foreach ($data->detail as $item) {
-                    if ($kategoriId && optional($item->barang)->kategori_id != $kategoriId) {
+                    if ($brandId && optional($item->barang)->brand_id != $brandId) {
                         continue;
                     }
 
@@ -93,32 +94,29 @@ class LaporanPenjualanKategoriController extends Controller
                 return $details;
             })
             ->rawColumns(['detail_barang'])
-            ->with(['total_transaksi' => $totalTransaksi, 'total_penjualan' => $totalPendapatan, 'jumlah_produk_terjual' => $jumlahProdukTerjual,])
+            ->with(['total_transaksi' => $totalTransaksi, 'total_penjualan' => $totalPendapatan, 'jumlah_produk_terjual' => $jumlahProdukTerjual])
             ->make(true);
     }
 
     /**
-     * Mengambil data untuk chart (sekarang penjualan harian berdasarkan filter).
+     * Mengambil data untuk chart (penjualan harian berdasarkan filter).
      */
     public function getChartData(Request $request)
     {
-        // ... Tidak ada perubahan di method ini ...
         $startDate = Carbon::parse($request->filter_tanggal_start)->startOfDay();
         $endDate = Carbon::parse($request->filter_tanggal_end)->endOfDay();
         $query = Penjualan::query()
-            ->select(
-                DB::raw('DATE(tanggal_penjualan) as tanggal'),
-                DB::raw('SUM(total_harga) as total')
-            )
+            ->select(DB::raw('DATE(tanggal_penjualan) as tanggal'), DB::raw('SUM(total_harga) as total'))
             ->whereBetween('tanggal_penjualan', [$startDate, $endDate])
-            ->groupBy('tanggal')
-            ->orderBy('tanggal');
-        if ($request->filled('filter_kategori') && $request->filter_kategori != 'all') {
-            $kategoriId = $request->filter_kategori;
-            $query->whereHas('detail.barang', function ($q) use ($kategoriId) {
-                $q->where('kategori_id', $kategoriId);
+            ->groupBy('tanggal')->orderBy('tanggal');
+
+        if ($request->filled('filter_brand') && $request->filter_brand != 'all') {
+            $brandId = $request->filter_brand;
+            $query->whereHas('detail.barang', function ($q) use ($brandId) {
+                $q->where('brand_id', $brandId);
             });
         }
+
         $penjualanData = $query->pluck('total', 'tanggal');
         $periode = [];
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
@@ -129,35 +127,60 @@ class LaporanPenjualanKategoriController extends Controller
     }
 
     /**
-     * Fungsi untuk export ke PDF (sekarang data transaksional).
+     * Fungsi untuk export ke PDF (data transaksional).
      */
     public function export(Request $request)
     {
-        // ... Tidak ada perubahan di method ini ...
-        $request->validate(['ukuran' => 'required|in:A4,F4', 'orientasi' => 'required|in:portrait,landscape', 'tipe' => 'required|in:datatable', 'start' => 'required|date', 'end' => 'required|date', 'kategori_id' => 'nullable|string',]);
+        $request->validate([
+            'ukuran' => 'required|in:A4,F4',
+            'orientasi' => 'required|in:portrait,landscape',
+            'tipe' => 'required|in:datatable',
+            'start' => 'required|date',
+            'end' => 'required|date',
+            'brand_id' => 'nullable|string',
+        ]);
+
         $start = Carbon::parse($request->start)->startOfDay();
         $end = Carbon::parse($request->end)->endOfDay();
-        $kategoriId = $request->kategori_id;
-        $query = Penjualan::with(['user:id,name', 'detail.barang:id,kode_barang,nama', 'detail.barang.tipe:id,nama',])
-            ->whereBetween('tanggal_penjualan', [$start, $end])->orderBy('tanggal_penjualan', 'asc');
-        if ($kategoriId && $kategoriId != 'all') {
-            $query->whereHas('detail.barang', function ($q) use ($kategoriId) {
-                $q->where('kategori_id', $kategoriId);
+        $brandId = $request->brand_id;
+
+        // Query untuk mendapatkan data penjualan
+        $query = Penjualan::with([
+            'user:id,name',
+            'detail.barang:id,kode_barang,nama,brand_id,kategori_id',
+            'detail.barang.tipe:id,nama',
+            'detail.barang.brand:id,nama',
+            'detail.barang.kategori:id,nama'
+        ])
+            ->whereBetween('tanggal_penjualan', [$start, $end])
+            ->orderBy('tanggal_penjualan', 'asc');
+
+        if ($brandId && $brandId != 'all') {
+            $query->whereHas('detail.barang', function ($q) use ($brandId) {
+                $q->where('brand_id', $brandId);
             });
         }
+
         $penjualan = $query->get();
+
+        // Kalkulasi statistik yang akurat berdasarkan filter
         $totalTransaksi = $penjualan->count();
-        $totalPenjualan = $penjualan->sum('total_harga');
-        $jumlahItemTerjual = $penjualan->flatMap->detail->sum('qty');
+
+        // Filter item detail berdasarkan brand untuk kalkulasi yang benar
+        $filteredDetails = $penjualan->flatMap->detail->when($brandId && $brandId != 'all', function ($collection) use ($brandId) {
+            return $collection->filter(fn($item) => optional($item->barang)->brand_id == $brandId);
+        });
+
+        $totalPenjualan = $filteredDetails->sum('subtotal');
+        $jumlahItemTerjual = $filteredDetails->sum('qty');
+
         // --- UBAH CARA PEMANGGILAN FUNGSI ---
         $totalPenjualanTerbilang = $this->terbilang($totalPenjualan);
 
-        $namaUser = Auth::user()->name; // Mengambil nama user yang login
-        $tanggalCetak = Carbon::now();  // Mengambil waktu saat ini    $namaUser = Auth::user()->name; // Mengambil nama user yang login
-
         // --- Variabel yang dikirim ke compact() tetap sama ---
-        $data = compact('penjualan', 'totalTransaksi', 'totalPenjualan', 'jumlahItemTerjual', 'start', 'end', 'totalPenjualanTerbilang', 'namaUser', 'tanggalCetak');
-        $viewPath = 'backend.laporan.laporan_penjualan_kategori.';
+        $data = compact('penjualan', 'totalTransaksi', 'totalPenjualan', 'jumlahItemTerjual', 'start', 'end', 'brandId', 'totalPenjualanTerbilang');
+
+        $viewPath = 'backend.laporan.laporan_penjualan_brand.';
         $viewName = '';
         switch ($request->tipe) {
             default:
@@ -165,7 +188,7 @@ class LaporanPenjualanKategoriController extends Controller
                 break;
         }
         $pdf = Pdf::loadView($viewPath . $viewName, $data)->setPaper($request->ukuran, $request->orientasi);
-        return $pdf->stream('laporan-penjualan-kategori.pdf');
+        return $pdf->stream('laporan-penjualan-brand.pdf');
     }
 
     private function terbilang($nilai)

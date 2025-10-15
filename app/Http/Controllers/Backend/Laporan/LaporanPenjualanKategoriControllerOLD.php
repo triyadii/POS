@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use App\Models\Kategori;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
-use Illuminate\Support\Facades\Auth;
 use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -134,7 +133,7 @@ class LaporanPenjualanKategoriController extends Controller
     public function export(Request $request)
     {
         // ... Tidak ada perubahan di method ini ...
-        $request->validate(['ukuran' => 'required|in:A4,F4', 'orientasi' => 'required|in:portrait,landscape', 'tipe' => 'required|in:datatable', 'start' => 'required|date', 'end' => 'required|date', 'kategori_id' => 'nullable|string',]);
+        $request->validate(['ukuran' => 'required|in:A4,F4', 'orientasi' => 'required|in:portrait,landscape', 'tipe' => 'required|in:statistik,datatable,gabungan', 'start' => 'required|date', 'end' => 'required|date', 'kategori_id' => 'nullable|string',]);
         $start = Carbon::parse($request->start)->startOfDay();
         $end = Carbon::parse($request->end)->endOfDay();
         $kategoriId = $request->kategori_id;
@@ -152,16 +151,19 @@ class LaporanPenjualanKategoriController extends Controller
         // --- UBAH CARA PEMANGGILAN FUNGSI ---
         $totalPenjualanTerbilang = $this->terbilang($totalPenjualan);
 
-        $namaUser = Auth::user()->name; // Mengambil nama user yang login
-        $tanggalCetak = Carbon::now();  // Mengambil waktu saat ini    $namaUser = Auth::user()->name; // Mengambil nama user yang login
-
         // --- Variabel yang dikirim ke compact() tetap sama ---
-        $data = compact('penjualan', 'totalTransaksi', 'totalPenjualan', 'jumlahItemTerjual', 'start', 'end', 'totalPenjualanTerbilang', 'namaUser', 'tanggalCetak');
+        $data = compact('penjualan', 'totalTransaksi', 'totalPenjualan', 'jumlahItemTerjual', 'start', 'end', 'totalPenjualanTerbilang');
         $viewPath = 'backend.laporan.laporan_penjualan_kategori.';
         $viewName = '';
         switch ($request->tipe) {
-            default:
+            case 'statistik':
+                $viewName = 'laporan-statistik';
+                break;
+            case 'datatable':
                 $viewName = 'laporan-data';
+                break;
+            default:
+                $viewName = 'laporan-gabungan';
                 break;
         }
         $pdf = Pdf::loadView($viewPath . $viewName, $data)->setPaper($request->ukuran, $request->orientasi);
