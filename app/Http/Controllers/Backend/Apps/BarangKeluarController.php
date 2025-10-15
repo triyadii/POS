@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Backend\Apps;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\BarangMasuk;
-use App\Models\BarangMasukDetail;
+use App\Models\BarangKeluar;
+use App\Models\BarangKeluarDetail;
 use App\Models\Barang;
 use Illuminate\Support\Arr;
 use DB;
@@ -14,9 +14,10 @@ use Ramsey\Uuid\Uuid;
 use DataTables;
 use Auth; 
 use Validator;
+use Str;
 
 
-class BarangMasukController extends Controller
+class BarangKeluarController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,11 +27,11 @@ class BarangMasukController extends Controller
     function __construct()
     {
         $this->middleware(['auth']);
-        $this->middleware('permission:barang-masuk-list', ['only' => ['index','getData']]);
-        $this->middleware('permission:barang-masuk-create', ['only' => ['store']]);
-        $this->middleware('permission:barang-masuk-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:barang-masuk-delete', ['only' => ['destroy']]);
-        $this->middleware('permission:barang-masuk-massdelete', ['only' => ['massDelete']]);
+        $this->middleware('permission:barang-keluar-list', ['only' => ['index','getData']]);
+        $this->middleware('permission:barang-keluar-create', ['only' => ['store']]);
+        $this->middleware('permission:barang-keluar-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:barang-keluar-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:barang-keluar-massdelete', ['only' => ['massDelete']]);
     }
     
     /**
@@ -42,12 +43,12 @@ class BarangMasukController extends Controller
     {
      
 
-        return view('backend.apps.barang_masuk.index');
+        return view('backend.apps.barang_keluar.index');
     }
 
     public function getData(Request $request)
     {
-        $postsQuery = BarangMasuk::orderBy('created_at', 'desc');
+        $postsQuery = BarangKeluar::orderBy('created_at', 'desc');
         if (!empty($request->search['value'])) {
             $searchValue = $request->search['value'];
             $postsQuery->where(function ($query) use ($searchValue) {
@@ -61,8 +62,8 @@ class BarangMasukController extends Controller
         
 
         ->addColumn('action', function($data) {
-            $urlShow  = route('barang-masuk.show', $data->id);
-            $urlPrint = route('barang-masuk.print', $data->id);
+            $urlShow  = route('barang-keluar.show', $data->id);
+            $urlPrint = route('barang-keluar.print', $data->id);
         
             // === Tombol Print ===
             $printBtn = $data->status === 'final'
@@ -111,9 +112,7 @@ class BarangMasukController extends Controller
         
         
 
-         ->addColumn('supplier_id', function ($row) {
-            return $row->supplier ? e($row->supplier->nama) : '<span class="badge bg-danger">Tidak ada supplier</span>';
-        })
+         
        
 
         // 🔹 Kolom Total Item (format angka Indonesia + rata kanan)
@@ -133,25 +132,23 @@ class BarangMasukController extends Controller
             $status = $row->status ?? 'draft';
             $badgeClass = $status === 'final'
                 ? 'badge-light-success'
-                : 'badge-light-warning';
+                : 'badge-light-secondary';
             $label = ucfirst($status);
 
             return '<span class="badge fw-semibold ' . $badgeClass . '">' . $label . '</span>';
         })
 
-        
-
            
-        ->rawColumns(['supplier_id', 'total_item', 'total_harga', 'status', 'action'])
+        ->rawColumns(['total_item', 'total_harga', 'status', 'action'])
             ->make(true);
     }
     
 
      public function show($id)
      {
-         $data = BarangMasuk::with(['supplier', 'detail.barang'])->findOrFail($id);
+         $data = BarangKeluar::with(['detail.barang'])->findOrFail($id);
      
-         return view('backend.apps.barang_masuk.show', compact('data'));
+         return view('backend.apps.barang_keluar.show', compact('data'));
      }
 
 
@@ -159,8 +156,8 @@ class BarangMasukController extends Controller
      
      public function getDetailList($id)
      {
-         $details = BarangMasukDetail::with(['barang.kategori', 'barang.brand', 'barang.tipe'])
-             ->where('barang_masuk_id', $id)
+         $details = BarangKeluarDetail::with(['barang.kategori', 'barang.brand', 'barang.tipe'])
+             ->where('barang_keluar_id', $id)
              ->orderBy('created_at', 'desc');
      
          return \DataTables::of($details)
@@ -223,32 +220,23 @@ class BarangMasukController extends Controller
     ';
 })
 
-// 🔹 Kolom Harga Beli (editable)
+// 🔹 Kolom Harga Beli
 ->addColumn('harga_beli', function ($row) {
     return '
         <div class="text-end">
-            <span class="editable-price text-primary fw-bold"
-                  data-id="' . $row->id . '"
-                  data-field="harga_beli">
-                ' . number_format($row->harga_beli, 0, ',', '.') . '
-            </span>
+            Rp ' . number_format($row->harga_beli, 0, ',', '.') . '
         </div>
     ';
 })
 
-// 🔹 Kolom Harga Jual (editable, ambil dari relasi barang)
+// 🔹 Kolom Harga Beli
 ->addColumn('harga_jual', function ($row) {
     return '
         <div class="text-end">
-            <span class="editable-price text-success fw-bold"
-                  data-id="' . ($row->barang?->id ?? '') . '"
-                  data-field="harga_jual">
-                ' . number_format($row->barang?->harga_jual ?? 0, 0, ',', '.') . '
-            </span>
+            Rp ' . number_format($row->barang?->harga_jual ?? '-', 0, ',', '.') . '
         </div>
     ';
 })
-
 
 // 🔹 Kolom Subtotal
 ->addColumn('subtotal', function ($row) {
@@ -277,155 +265,161 @@ class BarangMasukController extends Controller
      }
      
      
-     public function addDetail(Request $request, $id)
-     {
-        $bm = BarangMasuk::findOrFail($id); // di addDetail
-if (($bm->status ?? 'draft') === 'final') {
-    return response()->json(['success' => false, 'message' => 'Transaksi sudah final, tidak bisa diubah.']);
-}
+    // =========================================================
+    // 🔹 Tambah Detail Barang Keluar
+    // =========================================================
+    public function addDetail(Request $request, $id)
+    {
+        $bm = BarangKeluar::findOrFail($id);
 
+        // Cegah perubahan jika sudah final
+        if (($bm->status ?? 'draft') === 'final') {
+            return response()->json(['success' => false, 'message' => 'Transaksi sudah final, tidak bisa diubah.']);
+        }
 
-         $request->validate([
-             'kode_barang' => 'required|string',
-             'qty' => 'required|integer|min:1',
-         ]);
-     
-         $barang = \App\Models\Barang::where('kode_barang', $request->kode_barang)->first();
-     
-         if (!$barang) {
-             return response()->json(['success' => false, 'message' => 'Barang tidak ditemukan']);
-         }
-     
-         $existing = \App\Models\BarangMasukDetail::where('barang_masuk_id', $id)
-             ->where('barang_id', $barang->id)
-             ->first();
-     
-         if ($existing) {
-             $existing->increment('qty', $request->qty);
-             $existing->update(['subtotal' => $existing->qty * $existing->harga_beli]);
-         } else {
-             \App\Models\BarangMasukDetail::create([
-                 'id' => \Str::uuid(),
-                 'barang_masuk_id' => $id,
-                 'barang_id' => $barang->id,
-                 'qty' => $request->qty,
-                 'harga_beli' => $barang->harga_beli ?? 0,
-                 'subtotal' => $request->qty * ($barang->harga_beli ?? 0),
-             ]);
-         }
-     
-         return response()->json(['success' => true]);
-     }
+        // Validasi input
+        $request->validate([
+            'kode_barang' => 'required|string',
+            'qty'         => 'required|integer|min:1',
+        ]);
 
-     public function updatePrice(Request $request)
-{
-    $request->validate([
-        'id' => 'required|uuid',
-        'field' => 'required|in:harga_beli,harga_jual',
-        'value' => 'required|numeric|min:0',
-    ]);
+        $barang = Barang::where('kode_barang', $request->kode_barang)->first();
 
-    if ($request->field === 'harga_beli') {
-        // update di BarangMasukDetail
-        $detail = \App\Models\BarangMasukDetail::findOrFail($request->id);
-        $detail->update(['harga_beli' => $request->value]);
-    } else {
-        // update di Barang
-        $barang = \App\Models\Barang::findOrFail($request->id);
-        $barang->update(['harga_jual' => $request->value]);
+        if (!$barang) {
+            return response()->json(['success' => false, 'message' => 'Barang tidak ditemukan.']);
+        }
+
+        // 🔸 Pastikan stok cukup
+        if ($barang->stok < $request->qty) {
+            return response()->json(['success' => false, 'message' => 'Stok tidak mencukupi.']);
+        }
+
+        // 🔸 Cek apakah barang sudah ada di detail
+        $existing = BarangKeluarDetail::where('barang_keluar_id', $id)
+            ->where('barang_id', $barang->id)
+            ->first();
+
+        if ($existing) {
+            $newQty = $existing->qty + $request->qty;
+
+            // Cek stok lagi jika mau tambah
+            if ($barang->stok < $newQty) {
+                return response()->json(['success' => false, 'message' => 'Stok tidak mencukupi untuk menambah qty.']);
+            }
+
+            $existing->update([
+                'qty'      => $newQty,
+                'subtotal' => $newQty * ($barang->harga_jual ?? 0),
+            ]);
+        } else {
+            BarangKeluarDetail::create([
+                'id'               => (string) Str::uuid(),
+                'barang_keluar_id' => $id,
+                'barang_id'        => $barang->id,
+                'qty'              => $request->qty,
+                'harga_jual'       => $barang->harga_jual ?? 0,
+                'subtotal'         => $request->qty * ($barang->harga_jual ?? 0),
+            ]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Barang berhasil ditambahkan ke transaksi.']);
     }
 
-    return response()->json(['success' => true]);
-}
+    // =========================================================
+    // 🔹 Hapus Detail Barang Keluar
+    // =========================================================
+    public function deleteDetail($detailId)
+    {
+        $detail = BarangKeluarDetail::with('barangKeluar')->findOrFail($detailId);
 
-     
-     public function deleteDetail($detailId)
-     {
-
-        $detail = BarangMasukDetail::with('barangMasuk')->findOrFail($detailId); // di deleteDetail
-if (($detail->barangMasuk->status ?? 'draft') === 'final') {
-    return response()->json(['success' => false, 'message' => 'Transaksi sudah final, tidak bisa dihapus.']);
-}
-
-
-
-         $detail = \App\Models\BarangMasukDetail::findOrFail($detailId);
-         $detail->delete();
-     
-         return response()->json(['success' => true]);
-     }
-
-
-
-public function finalize($id)
-{
-    return DB::transaction(function () use ($id) {
-        // Lock header + eager load detail+barang
-        $bm = BarangMasuk::with(['detail.barang'])->lockForUpdate()->findOrFail($id);
-
-        // Sudah final? hentikan (idempotent)
-        if (($bm->status ?? 'draft') === 'final') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Transaksi sudah difinalisasi.'
-            ]);
+        if (($detail->barangKeluar->status ?? 'draft') === 'final') {
+            return response()->json(['success' => false, 'message' => 'Transaksi sudah final, tidak bisa dihapus.']);
         }
 
-        // Wajib punya detail
-        if ($bm->detail->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tidak dapat finalisasi: belum ada item.'
-            ]);
-        }
+        $detail->delete();
 
-        // Hitung total
-        $totalItem  = $bm->detail->sum('qty');
-        $totalHarga = $bm->detail->sum(fn($d) => $d->qty * $d->harga_beli);
+        return response()->json(['success' => true, 'message' => 'Item berhasil dihapus.']);
+    }
 
-        // Tambah stok per barang (atomic)
-        foreach ($bm->detail as $d) {
-            // pastikan stok integer & tidak null
-            $current = (int) ($d->barang->stok ?? 0);
-            $added   = (int) $d->qty;
+    // =========================================================
+    // 🔹 Finalisasi Transaksi Barang Keluar
+    // =========================================================
+    public function finalize($id)
+    {
+        return DB::transaction(function () use ($id) {
+            // Lock header + eager load detail + barang
+            $bk = BarangKeluar::with(['detail.barang'])->lockForUpdate()->findOrFail($id);
 
-            // UPDATE barang SET stok = stok + qty, harga_beli = last price (opsional)
-            DB::table('barang')
-                ->where('id', $d->barang_id)
-                ->update([
-                    'stok'       => $current + $added,
-                    // kalau mau pakai last purchase price:
-                    'harga_beli' => $d->harga_beli ?? $d->barang->harga_beli,
+            if (($bk->status ?? 'draft') === 'final') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaksi sudah difinalisasi.',
                 ]);
-        }
+            }
 
-        // Kunci header
-        $bm->update([
-            'total_item'  => $totalItem,
-            'total_harga' => $totalHarga,
-            'status'      => 'final',
-        ]);
+            if ($bk->detail->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak dapat finalisasi: belum ada item.',
+                ]);
+            }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaksi berhasil difinalisasi. Stok barang telah diperbarui.',
-        ]);
-    });
-}
+            // 🔹 Validasi stok semua barang dulu
+            foreach ($bk->detail as $d) {
+                $stok = (int) ($d->barang->stok ?? 0);
+                if ($stok < $d->qty) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Stok barang '{$d->barang->nama}' tidak mencukupi (tersisa: {$stok}).",
+                    ]);
+                }
+            }
+
+            // 🔹 Kurangi stok & hitung total
+            $totalItem  = 0;
+            $totalHarga = 0;
+
+            foreach ($bk->detail as $d) {
+                $qty   = (int) $d->qty;
+                $harga = (float) ($d->harga_jual ?? 0);
+
+                DB::table('barang')
+                    ->where('id', $d->barang_id)
+                    ->update([
+                        'stok' => DB::raw("GREATEST(stok - {$qty}, 0)"), // tidak boleh minus
+                    ]);
+
+                $totalItem  += $qty;
+                $totalHarga += $qty * $harga;
+            }
+
+            // 🔹 Update header
+            $bk->update([
+                'total_item'  => $totalItem,
+                'total_harga' => $totalHarga,
+                'status'      => 'final',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaksi barang keluar berhasil difinalisasi. Stok telah dikurangi.',
+            ]);
+        });
+    }
 
 
 ///===============================END DETAIL==========================////
 
 public function print($id)
 {
-    $data = BarangMasuk::with(['supplier', 'detail.barang'])->findOrFail($id);
+    $data = BarangKeluar::with(['detail.barang'])->findOrFail($id);
 
     // Jika mau langsung view HTML print-friendly:
-    return view('backend.apps.barang_masuk.print', compact('data'));
+    return view('backend.apps.barang_keluar.print', compact('data'));
 
     // atau kalau mau versi PDF:
-    // $pdf = \PDF::loadView('backend.apps.barang_masuk.print', compact('data'));
-    // return $pdf->stream('BarangMasuk-'.$data->kode_transaksi.'.pdf');
+    // $pdf = \PDF::loadView('backend.apps.barang_keluar.print', compact('data'));
+    // return $pdf->stream('BarangKeluar-'.$data->kode_transaksi.'.pdf');
 }
 
 
@@ -436,12 +430,10 @@ public function store(Request $request)
 
     // 🧩 Validasi input header saja
     $validator = Validator::make($request->all(), [
-        'tanggal_masuk' => 'required|date',
-        'supplier_id'   => 'required|exists:suppliers,id',
+        'tanggal_keluar' => 'required|date',
         'catatan'       => 'nullable|string',
     ], [
-        'tanggal_masuk.required' => 'Tanggal masuk wajib diisi',
-        'supplier_id.required'   => 'Supplier wajib dipilih',
+        'tanggal_keluar.required' => 'Tanggal keluar wajib diisi',
     ]);
 
     if ($validator->fails()) {
@@ -453,19 +445,18 @@ public function store(Request $request)
 
         // 🔢 Generate kode transaksi unik
         $today = Carbon::now()->format('Ymd');
-        $lastKode = BarangMasuk::whereDate('created_at', Carbon::today())
+        $lastKode = BarangKeluar::whereDate('created_at', Carbon::today())
             ->orderBy('kode_transaksi', 'desc')
             ->first();
         $nextNumber = $lastKode
             ? intval(substr($lastKode->kode_transaksi, -4)) + 1
             : 1;
-        $kodeTransaksi = 'BM-' . $today . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        $kodeTransaksi = 'BK-' . $today . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
         // ✅ Simpan data header
-        $data = BarangMasuk::create([
+        $data = BarangKeluar::create([
             'kode_transaksi' => $kodeTransaksi,
-            'tanggal_masuk'  => $request->tanggal_masuk,
-            'supplier_id'    => $request->supplier_id,
+            'tanggal_keluar'  => $request->tanggal_keluar,
             'user_id'        => Auth::id(),
             'catatan'        => $request->catatan,
             'total_item'     => 0,
@@ -503,10 +494,9 @@ public function store(Request $request)
      */
     public function edit($id)
     {
-        $data = BarangMasuk::findOrFail($id);
-        $html = view('backend.apps.barang_masuk.edit', [
+        $data = BarangKeluar::findOrFail($id);
+        $html = view('backend.apps.barang_keluar.edit', [
             'data' => $data,
-            'supplierSelected' => $data->findOrFail($id)->supplier,
         ])->render();
 
         return response()->json(['html' => $html]);
@@ -526,12 +516,10 @@ public function store(Request $request)
 
     // 🧩 Validasi input
     $validator = \Validator::make($request->all(), [
-        'tanggal_masuk' => 'required|date',
-        'supplier_id'   => 'required|exists:suppliers,id',
+        'tanggal_keluar' => 'required|date',
         'catatan'       => 'nullable|string',
     ], [
-        'tanggal_masuk.required' => 'Tanggal masuk wajib diisi',
-        'supplier_id.required'   => 'Supplier wajib dipilih',
+        'tanggal_keluar.required' => 'Tanggal keluar wajib diisi',
     ]);
 
     if ($validator->fails()) {
@@ -542,13 +530,12 @@ public function store(Request $request)
         \DB::beginTransaction();
 
         // 🔍 Ambil data lama
-        $data = \App\Models\BarangMasuk::findOrFail($id);
+        $data = \App\Models\BarangKeluar::findOrFail($id);
         $oldData = $data->getOriginal();
 
         // 🔁 Update data header
         $data->update([
-            'tanggal_masuk' => $request->input('tanggal_masuk'),
-            'supplier_id'   => $request->input('supplier_id'),
+            'tanggal_keluar' => $request->input('tanggal_keluar'),
             'catatan'       => $request->input('catatan'),
         ]);
 
@@ -558,11 +545,11 @@ public function store(Request $request)
             'old'        => $oldData,
         ];
 
-        activity('edit barang masuk')
+        activity('edit barang keluar')
             ->causedBy(\Auth::user() ?? null)
             ->performedOn($data)
             ->withProperties($changes)
-            ->log('Mengubah data Barang Masuk: ' . $data->kode_transaksi);
+            ->log('Mengubah data Barang Keluar: ' . $data->kode_transaksi);
 
         \DB::commit();
 
@@ -598,8 +585,8 @@ public function store(Request $request)
     try {
         DB::beginTransaction();
 
-        $data = BarangMasuk::findOrFail($id);
-        $details = BarangMasukDetail::where('barang_masuk_id', $id)->get();
+        $data = BarangKeluar::findOrFail($id);
+        $details = BarangKeluarDetail::where('barang_keluar_id', $id)->get();
 
         // 🔁 Kembalikan stok barang (kurangi sesuai qty)
         foreach ($details as $detail) {
@@ -611,20 +598,20 @@ public function store(Request $request)
         }
 
         // 🗑️ Hapus semua detail dulu
-        BarangMasukDetail::where('barang_masuk_id', $id)->delete();
+        BarangKeluarDetail::where('barang_keluar_id', $id)->delete();
 
         // 🗑️ Hapus header transaksi
         $data->delete();
 
         // 🧠 Log aktivitas
-        activity('hapus barang masuk')
+        activity('hapus barang keluar')
             ->causedBy(Auth::user() ?? null)
             ->performedOn($data)
             ->withProperties([
                 'attributes' => $data->toArray(),
                 'details'    => $details->toArray()
             ])
-            ->log('Menghapus Transaksi Barang Masuk: ' . $data->kode_transaksi);
+            ->log('Menghapus Transaksi Barang Keluar: ' . $data->kode_transaksi);
 
         DB::commit();
 
@@ -663,10 +650,10 @@ public function massDelete(Request $request)
             ]);
         }
 
-        $records = BarangMasuk::whereIn('id', $ids)->get();
+        $records = BarangKeluar::whereIn('id', $ids)->get();
 
         foreach ($records as $record) {
-            $details = BarangMasukDetail::where('barang_masuk_id', $record->id)->get();
+            $details = BarangKeluarDetail::where('barang_keluar_id', $record->id)->get();
 
             // 🔁 Kembalikan stok barang
             foreach ($details as $detail) {
@@ -678,7 +665,7 @@ public function massDelete(Request $request)
             }
 
             // 🗑️ Hapus detail & header
-            BarangMasukDetail::where('barang_masuk_id', $record->id)->delete();
+            BarangKeluarDetail::where('barang_keluar_id', $record->id)->delete();
             $record->delete();
         }
 
@@ -686,16 +673,16 @@ public function massDelete(Request $request)
 
         // 🧠 Log di luar transaksi
         foreach ($records as $record) {
-            activity('mass delete barang masuk')
+            activity('mass delete barang keluar')
                 ->causedBy(Auth::user() ?? null)
                 ->performedOn($record)
                 ->withProperties(['attributes' => $record->toArray()])
-                ->log('Menghapus Transaksi Barang Masuk: ' . $record->kode_transaksi);
+                ->log('Menghapus Transaksi Barang Keluar: ' . $record->kode_transaksi);
         }
 
         return response()->json([
             'status'  => 'success',
-            'message' => count($ids) . ' transaksi barang masuk berhasil dihapus.',
+            'message' => count($ids) . ' transaksi barang keluar berhasil dihapus.',
             'time'    => $formattedTime,
             'judul'   => 'Berhasil',
         ]);

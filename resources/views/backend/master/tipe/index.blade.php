@@ -183,7 +183,7 @@
 
 
                                 <select id="brand_id" name="brand_id"
-                                    class="form-select b-3 mb-lg-0" data-control="select2"
+                                    class="form-select mb-3 mb-lg-0" data-control="select2"
                                     data-placeholder="pilih brand" data-dropdown-parent="#Modal_Tambah_Data">
                                 </select>
                                 <span class="text-danger error-text brand_id_error_add"></span>
