@@ -42,25 +42,25 @@
                 <div class="row g-5 g-xl-8">
                     <div class="col-xl-4 d-none" id="statistik-pendapatan-wrapper">
                         <div class="card bg-light-info hoverable card-xl-stretch mb-xl-8">
-                            <div class="card-body">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="text-info fw-bold fs-2 mb-2 mt-5" id="stat-pendapatan">-</div>
-                                <div class="fw-semibold text-info">Total Pendapatan</div>
+                                <div class="fw-semibold text-info mb-5">Total Pendapatan</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4 d-none" id="statistik-pengeluaran-wrapper">
                         <div class="card bg-light-danger hoverable card-xl-stretch mb-xl-8">
-                            <div class="card-body">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="text-danger fw-bold fs-2 mb-2 mt-5" id="stat-pengeluaran">-</div>
-                                <div class="fw-semibold text-danger">Total Pengeluaran (HPP)</div>
+                                <div class="fw-semibold text-danger mb-5">Total Pengeluaran (HPP)</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4 d-none" id="statistik-laba-bersih-wrapper">
                         <div class="card bg-light-primary hoverable card-xl-stretch mb-5 mb-xl-8">
-                            <div class="card-body">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="text-primary fw-bold fs-2 mb-2 mt-5" id="stat-laba-bersih">-</div>
-                                <div class="fw-semibold text-primary">Profit / Laba Bersih</div>
+                                <div class="fw-semibold text-primary mb-5">Profit / Laba Bersih</div>
                             </div>
                         </div>
                     </div>
