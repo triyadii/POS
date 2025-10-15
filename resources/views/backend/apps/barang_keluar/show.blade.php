@@ -1,5 +1,5 @@
 @extends('layouts.backend.index')
-@section('title', 'Barang Masuk Detail')
+@section('title', 'Barang Keluar Detail')
 @section('content')
 
     <!--begin::Toolbar-->
@@ -9,7 +9,7 @@
             <!--begin::Page title-->
             <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                 <!--begin::Title-->
-                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Barang Masuk
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Barang Keluar
                     Details</h1>
                 <!--end::Title-->
                 <!--begin::Breadcrumb-->
@@ -33,7 +33,7 @@
                     </li>
                     <!--end::Item-->
                     <!--begin::Item-->
-                    <li class="breadcrumb-item text-muted">Barang Masuk</li>
+                    <li class="breadcrumb-item text-muted">Barang Keluar</li>
                     <!--end::Item-->
                     <!--begin::Item-->
                     <li class="breadcrumb-item">
@@ -41,7 +41,7 @@
                     </li>
                     <!--end::Item-->
                     <!--begin::Item-->
-                    <li class="breadcrumb-item text-gray-900">Barang Masuk Detail</li>
+                    <li class="breadcrumb-item text-gray-900">Barang Keluar Detail</li>
                     <!--end::Item-->
                 </ul>
                 <!--end::Breadcrumb-->
@@ -60,9 +60,9 @@
         
         <div class="card border-top-accent shadow-sm mb-xl-10 mb-5">
             <div class="card-header d-flex justify-content-between align-items-center border-gray-400">
-                <h3 class="card-title">Detail Barang Masuk</h3>
+                <h3 class="card-title">Detail Barang Keluar</h3>
                 <div class="card-toolbar">
-                    <a href="{{ route('barang-masuk.index') }}" class="btn btn-secondary btn-sm">
+                    <a href="{{ route('barang-keluar.index') }}" class="btn btn-secondary btn-sm">
                         <i class="ki-outline ki-arrow-left fs-2"></i> Kembali
                     </a>
                 </div>
@@ -76,13 +76,10 @@
                             <td>{{ $data->kode_transaksi }}</td>
                         </tr>
                         <tr>
-                            <th>Tanggal Masuk</th>
-                            <td>{{ $data->tanggal_masuk }}</td>
+                            <th>Tanggal Keluar</th>
+                            <td>{{ $data->tanggal_keluar }}</td>
                         </tr>
-                        <tr>
-                            <th>Supplier</th>
-                            <td>{{ $data->supplier?->nama ?? 'Tidak ada supplier' }}</td>
-                        </tr>
+                       
                         <tr>
                             <th>Catatan</th>
                             <td>{{ $data->catatan ?? '-' }}</td>
@@ -108,7 +105,7 @@
      style="left:50%; width:99vw; margin-left:-50vw; padding-left:8vw; padding-right:8vw;">
      {{-- <div class="position-relative px-10" style="left:50%;width:100vw;margin-left:-50vw;"> --}}
 
-    <div class="card border-top-accent shadow-sm mb-10" id="itemdetailbarangmasuk">
+    <div class="card border-top-accent shadow-sm mb-10" id="itemdetailbarangkeluar">
         <div class="card-header d-flex justify-content-between align-items-center border-gray-400">
             <h3 class="card-title">Transaksi: {{ $data->kode_transaksi }}</h3>
             @if($data->status !== 'final')
@@ -187,15 +184,6 @@
                 padding-top: 1rem;
                 padding-bottom: 0.5rem;
             }
-
-            .editable-price {
-    cursor: pointer;
-    border-bottom: 1px dashed #0d6efd;
-}
-.editable-price:hover {
-    color: #0d6efd;
-}
-
             
             
             </style>
@@ -204,10 +192,10 @@
         <script src="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
         <script>
 $(function() {
-    const barangMasukId = "{{ $data->id }}";
+    const barangKeluarId = "{{ $data->id }}";
 
     const table = $('#table-detail').DataTable({
-    ajax: "{{ route('barang-masuk.detail.list', $data->id) }}",
+    ajax: "{{ route('barang-keluar.detail.list', $data->id) }}",
     processing: true,
     serverSide: true,
     order: [],
@@ -228,55 +216,6 @@ $(function() {
 ]
 
 });
-
-
-// 🔹 Inline Edit Harga
-$('#table-detail').on('click', '.editable-price', function () {
-    const span = $(this);
-    const oldValue = span.text().replace(/[^\d]/g, '');
-    const id = span.data('id');
-    const field = span.data('field');
-
-    // Ganti teks jadi input
-    const input = $('<input type="number" min="0" class="form-control form-control-sm text-end" style="width:100px;">')
-        .val(oldValue)
-        .on('blur keypress', function (e) {
-            if (e.type === 'blur' || e.which === 13) {
-                const newValue = parseInt($(this).val());
-                if (isNaN(newValue)) {
-                    span.text('Rp ' + Number(oldValue).toLocaleString('id-ID'));
-                    return;
-                }
-
-                $.ajax({
-                    url: "{{ route('barang-masuk.detail.update-price') }}",
-                    type: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        id: id,
-                        field: field,
-                        value: newValue
-                    },
-                    success: res => {
-                        if (res.success) {
-                            span.text('Rp ' + newValue.toLocaleString('id-ID'));
-                            toastr.success('Harga berhasil diperbarui');
-                            $('#table-detail').DataTable().ajax.reload(null, false);
-                        } else {
-                            toastr.error('Gagal memperbarui harga');
-                        }
-                    },
-                    error: () => {
-                        toastr.error('Terjadi kesalahan saat update harga');
-                    }
-                });
-            }
-        });
-
-    span.html(input);
-    input.focus().select();
-});
-
 
 
 table.on('xhr.dt', function (e, settings, json) {
@@ -305,7 +244,7 @@ $('#formAddDetail').on('submit', function(e) {
         toastr.warning('Qty harus lebih dari 0');
         return;
     }
-    $.post(`/barang-masuk/${barangMasukId}/detail/add`, {
+    $.post(`/barang-keluar/${barangKeluarId}/detail/add`, {
         _token: $('meta[name="csrf-token"]').attr('content'),
         kode_barang: $('#kode_barang').val(),
         qty: $('#qty').val()
@@ -337,7 +276,7 @@ $('#table-detail').on('click', '.btn-delete-detail', function () {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: `/barang-masuk/detail/${detailId}`,
+                url: `/barang-keluar/detail/${detailId}`,
                 type: 'DELETE',
                 data: {
                     _token: $('meta[name="csrf-token"]').attr('content')
@@ -367,11 +306,11 @@ $('#btnFinalize').on('click', function() {
         confirmButtonText: 'Ya, finalisasi',
     }).then(result => {
         if (result.isConfirmed) {
-            $.post(`/barang-masuk/${barangMasukId}/finalize`, {
+            $.post(`/barang-keluar/${barangKeluarId}/finalize`, {
                 _token: $('meta[name="csrf-token"]').attr('content')
             }, res => {
                 toastr.success('Transaksi berhasil difinalisasi');
-                window.location.href = "{{ route('barang-masuk.index') }}";
+                window.location.href = "{{ route('barang-keluar.index') }}";
             });
         }
     });

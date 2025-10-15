@@ -8,9 +8,9 @@
         <label class="required fw-semibold fs-6 mb-2">Tanggal</label>
         <!--end::Label-->
         <!--begin::Input-->
-        <input type="text" name="tanggal_masuk" id="Edittanggal_masuk"
-            class="form-control mb-3 mb-lg-0" placeholder="Tanggal" value="{{$data->tanggal_masuk}}"/>
-        <span class="text-danger error-text tanggal_masuk_error_edit"></span>
+        <input type="text" name="tanggal_keluar" id="Edittanggal_keluar"
+            class="form-control mb-3 mb-lg-0" placeholder="Tanggal" value="{{$data->tanggal_keluar}}"/>
+        <span class="text-danger error-text tanggal_keluar_error_edit"></span>
         <!--end::Input-->
     </div>
     <!--end::Input group-->
