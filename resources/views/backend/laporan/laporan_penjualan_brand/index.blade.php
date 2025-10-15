@@ -140,15 +140,7 @@
                         </div>
                         <div class="fv-row">
                             <label class="required form-label">Tipe Laporan</label>
-                            <label class="d-flex flex-stack mb-5 cursor-pointer"><span
-                                    class="d-flex align-items-center me-2"><span class="symbol symbol-50px me-6"><span
-                                            class="symbol-label bg-light-primary"><i
-                                                class="ki-outline ki-chart-simple fs-1 text-primary"></i></span></span><span
-                                        class="d-flex flex-column"><span class="fw-bold fs-6">Statistik Saja</span><span
-                                            class="fs-7 text-muted">Hanya menampilkan ringkasan
-                                            statistik.</span></span></span><span
-                                    class="form-check form-check-custom form-check-solid"><input class="form-check-input"
-                                        type="radio" name="tipe_laporan" value="statistik" checked /></span></label>
+
                             <label class="d-flex flex-stack mb-5 cursor-pointer"><span
                                     class="d-flex align-items-center me-2"><span class="symbol symbol-50px me-6"><span
                                             class="symbol-label bg-light-danger"><i
@@ -157,16 +149,8 @@
                                             class="fs-7 text-muted">Hanya menampilkan tabel data penjualan per
                                             brand.</span></span></span><span
                                     class="form-check form-check-custom form-check-solid"><input class="form-check-input"
-                                        type="radio" name="tipe_laporan" value="datatable" /></span></label>
-                            <label class="d-flex flex-stack cursor-pointer"><span
-                                    class="d-flex align-items-center me-2"><span class="symbol symbol-50px me-6"><span
-                                            class="symbol-label bg-light-success"><i
-                                                class="ki-outline ki-tablet-ok fs-1 text-success"></i></span></span><span
-                                        class="d-flex flex-column"><span class="fw-bold fs-6">Statistik & Data</span><span
-                                            class="fs-7 text-muted">Menampilkan statistik dan tabel
-                                            data.</span></span></span><span
-                                    class="form-check form-check-custom form-check-solid"><input class="form-check-input"
-                                        type="radio" name="tipe_laporan" value="gabungan" /></span></label>
+                                        type="radio" name="tipe_laporan" value="datatable" checked /></span></label>
+
                         </div>
                     </div>
                     <div class="modal-footer"><button type="button" class="btn btn-sm btn-secondary"

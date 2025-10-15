@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\Brand;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
+use Illuminate\Support\Facades\Auth;
 use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -131,10 +132,12 @@ class LaporanPenjualanBrandController extends Controller
      */
     public function export(Request $request)
     {
+        // ... (kode validasi dan query tidak berubah)
+        //
         $request->validate([
             'ukuran' => 'required|in:A4,F4',
             'orientasi' => 'required|in:portrait,landscape',
-            'tipe' => 'required|in:statistik,datatable,gabungan',
+            'tipe' => 'required|in:datatable',
             'start' => 'required|date',
             'end' => 'required|date',
             'brand_id' => 'nullable|string',
@@ -144,7 +147,6 @@ class LaporanPenjualanBrandController extends Controller
         $end = Carbon::parse($request->end)->endOfDay();
         $brandId = $request->brand_id;
 
-        // Query untuk mendapatkan data penjualan
         $query = Penjualan::with([
             'user:id,name',
             'detail.barang:id,kode_barang,nama,brand_id,kategori_id',
@@ -163,34 +165,44 @@ class LaporanPenjualanBrandController extends Controller
 
         $penjualan = $query->get();
 
-        // Kalkulasi statistik yang akurat berdasarkan filter
+        // ... (kode kalkulasi statistik tidak berubah)
+
         $totalTransaksi = $penjualan->count();
 
-        // Filter item detail berdasarkan brand untuk kalkulasi yang benar
         $filteredDetails = $penjualan->flatMap->detail->when($brandId && $brandId != 'all', function ($collection) use ($brandId) {
             return $collection->filter(fn($item) => optional($item->barang)->brand_id == $brandId);
         });
 
         $totalPenjualan = $filteredDetails->sum('subtotal');
         $jumlahItemTerjual = $filteredDetails->sum('qty');
-
-        // --- UBAH CARA PEMANGGILAN FUNGSI ---
         $totalPenjualanTerbilang = $this->terbilang($totalPenjualan);
 
-        // --- Variabel yang dikirim ke compact() tetap sama ---
-        $data = compact('penjualan', 'totalTransaksi', 'totalPenjualan', 'jumlahItemTerjual', 'start', 'end', 'brandId', 'totalPenjualanTerbilang');
+        // ==========================================================
+        // PERUBAHAN DI SINI: Tambahkan data user dan tanggal cetak
+        // ==========================================================
+        $namaUser = Auth::user()->name; // Mengambil nama user yang login
+        $tanggalCetak = Carbon::now();  // Mengambil waktu saat ini
+
+        // Tambahkan variabel baru ke dalam compact()
+        $data = compact(
+            'penjualan',
+            'totalTransaksi',
+            'totalPenjualan',
+            'jumlahItemTerjual',
+            'start',
+            'end',
+            'brandId',
+            'totalPenjualanTerbilang',
+            'namaUser', // Variabel baru
+            'tanggalCetak' // Variabel baru
+        );
 
         $viewPath = 'backend.laporan.laporan_penjualan_brand.';
         $viewName = '';
         switch ($request->tipe) {
-            case 'statistik':
-                $viewName = 'laporan-statistik';
-                break;
-            case 'datatable':
-                $viewName = 'laporan-data';
-                break;
             default:
-                $viewName = 'laporan-gabungan';
+                // Kita akan membuat view ini di langkah berikutnya
+                $viewName = 'laporan-data';
                 break;
         }
         $pdf = Pdf::loadView($viewPath . $viewName, $data)->setPaper($request->ukuran, $request->orientasi);

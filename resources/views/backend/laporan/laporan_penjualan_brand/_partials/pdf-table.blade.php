@@ -1,24 +1,22 @@
+{{-- Ganti seluruh isi file dengan ini --}}
 <table class="main-table">
     <thead>
         <tr>
             <th style="width: 15%;">No. Transaksi</th>
             <th style="width: 15%;">Tanggal</th>
             <th style="width: 55%;">Detail Barang</th>
-            <th style="width: 15%;" class="text-right">Total</th>
+            <th class="text-right" style="width: 15%;">Total</th> {{-- Menggunakan class --}}
         </tr>
     </thead>
     <tbody>
         @forelse ($penjualan as $trx)
             @php
-                // Hitung ulang total per baris berdasarkan brand yang difilter
-                $rowTotal = 0;
-                if ($brandId && $brandId != 'all') {
-                    $rowTotal = $trx->detail
-                        ->filter(fn($item) => optional($item->barang)->brand_id == $brandId)
-                        ->sum('subtotal');
-                } else {
-                    $rowTotal = $trx->total_harga;
-                }
+                $rowTotal =
+                    $brandId && $brandId != 'all'
+                        ? $trx->detail
+                            ->filter(fn($item) => optional($item->barang)->brand_id == $brandId)
+                            ->sum('subtotal')
+                        : $trx->total_harga;
             @endphp
             <tr>
                 <td>
@@ -29,7 +27,6 @@
                 <td>
                     <table class="detail-table">
                         @foreach ($trx->detail as $item)
-                            {{-- Tampilkan hanya item yang cocok dengan filter brand --}}
                             @if (!$brandId || $brandId == 'all' || optional($item->barang)->brand_id == $brandId)
                                 <tr class="detail-item">
                                     <td>
@@ -43,12 +40,13 @@
                                         </span>
                                     </td>
                                     <td class="text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                                    {{-- Menggunakan class --}}
                                 </tr>
                             @endif
                         @endforeach
                     </table>
                 </td>
-                <td class="text-right">Rp {{ number_format($rowTotal, 0, ',', '.') }}</td>
+                <td class="text-right">Rp {{ number_format($rowTotal, 0, ',', '.') }}</td> {{-- Menggunakan class --}}
             </tr>
         @empty
             <tr>
@@ -57,12 +55,12 @@
         @endforelse
     </tbody>
     <tfoot>
-        <tr class="total-row">
+        <tr>
             <td colspan="3" class="text-right"><strong>Total Keseluruhan</strong></td>
             <td class="text-right"><strong>Rp {{ number_format($totalPenjualan, 0, ',', '.') }}</strong></td>
         </tr>
-        <tr class="total-row">
-            <td colspan="4" style="font-style: italic; text-align: right;">
+        <tr>
+            <td colspan="4" class="terbilang">
                 ({{ $totalPenjualanTerbilang }})
             </td>
         </tr>

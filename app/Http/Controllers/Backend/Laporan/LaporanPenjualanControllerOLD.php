@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
-use Illuminate\Support\Facades\Auth;
 use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -125,7 +124,7 @@ class LaporanPenjualanController extends Controller
         $request->validate([
             'ukuran' => 'required|in:A4,F4',
             'orientasi' => 'required|in:portrait,landscape',
-            'tipe' => 'required|in:datatable',
+            'tipe' => 'required|in:statistik,datatable,gabungan',
             'start' => 'required|date',
             'end' => 'required|date',
         ]);
@@ -150,26 +149,27 @@ class LaporanPenjualanController extends Controller
             $q->whereBetween('tanggal_penjualan', [$start, $end]);
         })->sum('qty');
 
-        $namaUser = Auth::user()->name; // Mengambil nama user yang login
-        $tanggalCetak = Carbon::now();  // Mengambil waktu saat ini    $namaUser = Auth::user()->name; // Mengambil nama user yang login
-
         $data = compact(
             'penjualan',
             'totalTransaksi',
             'totalPendapatan',
             'jumlahProdukTerjual',
             'start',
-            'end',
-            'namaUser', // Variabel baru
-            'tanggalCetak' // Variabel baru
+            'end'
         );
 
         $viewPath = 'backend.laporan.laporan_penjualan.';
         $viewName = '';
 
         switch ($request->tipe) {
-            default:
+            case 'statistik':
+                $viewName = 'laporan-statistik';
+                break;
+            case 'datatable':
                 $viewName = 'laporan-data';
+                break;
+            default: // gabungan
+                $viewName = 'laporan-gabungan';
                 break;
         }
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
+use Illuminate\Support\Facades\Auth;
 use DB;
 use DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;

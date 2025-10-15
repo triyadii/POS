@@ -41,9 +41,9 @@ use App\Http\Controllers\Backend\Apps\BarangMasukController;
 //END CHIMOX
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
 use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
+use App\Http\Controllers\Backend\Laporan\LaporanPembelianSupplierController;
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanBrandController;
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanKategoriController;
-use App\Http\Controllers\Backend\Laporan\LaporanPenjualanSupplierController;
 use App\Http\Controllers\Backend\Stok\StokController;
 use App\Http\Controllers\SettingAppController;
 
@@ -51,7 +51,9 @@ use App\Http\Controllers\SettingAppController;
 Route::get('/', function () {
     return redirect()->route('login');
 });
-
+Route::get('/info-cek', function () {
+    phpinfo();
+});
 
 Auth::routes();
 
@@ -166,14 +168,14 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('laporan-penjualan-brand-data', [LaporanPenjualanBrandController::class, 'getLaporanData'])->name('laporan.penjualan.brand.data');
     Route::get('laporan-penjualan-brand/chart', [LaporanPenjualanBrandController::class, 'getChartData'])->name('laporan.penjualan.brand.chart');
-    Route::get('/laporan/penjualan/brand/export', [LaporanPenjualanBrandController::class, 'export'])->name('laporan.penjualan.brand.export');
+    Route::match(['get', 'post'], '/laporan/penjualan/brand/export', [LaporanPenjualanBrandController::class, 'export'])->name('laporan.penjualan.brand.export');
     Route::resource('laporan-penjualan-brand', LaporanPenjualanBrandController::class);
 
-    // --- Laporan Penjualan (berdasarkan Supplier Terakhir) ---
-    Route::get('laporan-penjualan-supplier-data', [LaporanPenjualanSupplierController::class, 'getLaporanData'])->name('laporan.penjualan.supplier.data');
-    Route::get('laporan-penjualan-supplier/chart', [LaporanPenjualanSupplierController::class, 'getChartData'])->name('laporan.penjualan.supplier.chart');
-    Route::post('/laporan/penjualan/supplier/export', [LaporanPenjualanSupplierController::class, 'export'])->name('laporan.penjualan.supplier.export');
-    Route::resource('laporan-penjualan-supplier', LaporanPenjualanSupplierController::class);
+    // --- Laporan Pembelian (berdasarkan Supplier) ---
+    Route::get('laporan-pembelian-supplier-data', [LaporanPembelianSupplierController::class, 'getLaporanData'])->name('laporan.pembelian.supplier.data');
+    Route::get('laporan-pembelian-supplier/chart', [LaporanPembelianSupplierController::class, 'getChartData'])->name('laporan.pembelian.supplier.chart');
+    Route::post('/laporan/pembelian/supplier/export', [LaporanPembelianSupplierController::class, 'export'])->name('laporan.pembelian.supplier.export');
+    Route::resource('laporan-pembelian-supplier', LaporanPembelianSupplierController::class);
 
     // --- Laporan Penjualan per Kategori ---
     Route::get('laporan-penjualan-kategori-data', [LaporanPenjualanKategoriController::class, 'getLaporanData'])->name('laporan.penjualan.kategori.data');
