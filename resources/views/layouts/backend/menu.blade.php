@@ -55,6 +55,18 @@
                 </div>
                 @endcan
 
+                <div class="menu-item {{ request()->routeIs('barang.pencarian') ? 'here show ' : '' }}">
+                    <!--begin:Menu link-->
+                    <a class="menu-link py-3" href="{{ route('barang.pencarian') }}">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-parcel fs-2"></i>
+                        </span>
+                        <span class="menu-title">Cari Barang</span>
+                        <span class="badge badge-success">Done</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+
                 @can('barang-masuk-list')
                 <div class="menu-item {{ request()->routeIs('barang-masuk.index') ? 'here show ' : '' }}">
                     <!--begin:Menu link-->
@@ -164,9 +176,9 @@
                         <!--end:Menu item-->
                         <!--begin:Menu item-->
                         <div
-                            class="menu-item {{ request()->routeIs('laporan-penjualan-supplier.index') ? 'here show ' : '' }}">
+                            class="menu-item {{ request()->routeIs('laporan-pembelian-supplier.index') ? 'here show ' : '' }}">
                             <!--begin:Menu link-->
-                            <a class="menu-link py-3" href="{{ route('laporan-penjualan-supplier.index') }}">
+                            <a class="menu-link py-3" href="{{ route('laporan-pembelian-supplier.index') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>
