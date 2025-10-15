@@ -189,7 +189,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('stok-data', [StokController::class, 'getStokData'])->name('stok.data');
     Route::get('stok/chart', [StokController::class, 'getChartData'])->name('stok.chart');
-    Route::post('/stok/export', [StokController::class, 'export'])->name('stok.export');
+    Route::get('/stok/export', [StokController::class, 'export'])->name('stok.export');
     Route::resource('stok', StokController::class);
 });
 
