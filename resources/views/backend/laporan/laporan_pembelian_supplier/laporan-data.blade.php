@@ -1,4 +1,4 @@
-@include('backend.laporan.laporan_penjualan_supplier._partials.pdf-style')
+@include('backend.laporan.laporan_pembelian_supplier._partials.pdf-style')
 
 <body>
     <script type="text/php">
@@ -12,9 +12,9 @@
             $pdf->page_text($x, $y, $text, $font, $size);
         }
     </script>
-    @include('backend.laporan.laporan_penjualan_supplier._partials.pdf-header')
+    @include('backend.laporan.laporan_pembelian_supplier._partials.pdf-header')
     <main>
-        @include('backend.laporan.laporan_penjualan_supplier._partials.pdf-table')
+        @include('backend.laporan.laporan_pembelian_supplier._partials.pdf-table')
     </main>
 
     <footer class="footer">

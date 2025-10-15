@@ -19,6 +19,7 @@
         .header h1 {
             margin: 0;
             font-size: 20px;
+            color: #222;
         }
 
         .header p {
@@ -60,7 +61,6 @@
             color: #666;
         }
 
-        /* Tabel Utama */
         .main-table {
             width: 100%;
             border-collapse: collapse;
@@ -69,19 +69,30 @@
 
         .main-table th,
         .main-table td {
-            border: 1px solid #ccc;
-            padding: 6px;
+            border: 1px solid #ddd;
+            /* Border lebih soft */
+            padding: 8px;
+            /* Padding lebih besar */
             text-align: left;
             vertical-align: top;
         }
 
         .main-table th {
-            background-color: #f2f2f2;
+            background-color: #4A5568;
+            /* Header lebih gelap */
+            color: #FFFFFF;
+            /* Teks header putih */
             font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Zebra-striping untuk baris agar mudah dibaca */
+        .main-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
 
         .text-right {
-            text-align: right;
+            text-align: right !important;
         }
 
         /* Tabel Detail Barang */
@@ -109,6 +120,32 @@
 
         .total-row strong {
             font-size: 12px;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            height: 50px;
+            font-size: 9px;
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .footer-left {
+            float: left;
+            width: 50%;
+            text-align: left;
+        }
+
+        .footer-right {
+            float: right;
+            width: 50%;
+            text-align: right;
+            color: #888;
         }
     </style>
 </head>

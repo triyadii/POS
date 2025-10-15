@@ -174,7 +174,7 @@ Route::group(['middleware' => ['auth']], function () {
     // --- Laporan Pembelian (berdasarkan Supplier) ---
     Route::get('laporan-pembelian-supplier-data', [LaporanPembelianSupplierController::class, 'getLaporanData'])->name('laporan.pembelian.supplier.data');
     Route::get('laporan-pembelian-supplier/chart', [LaporanPembelianSupplierController::class, 'getChartData'])->name('laporan.pembelian.supplier.chart');
-    Route::post('/laporan/pembelian/supplier/export', [LaporanPembelianSupplierController::class, 'export'])->name('laporan.pembelian.supplier.export');
+    Route::get('/laporan/pembelian/supplier/export', [LaporanPembelianSupplierController::class, 'export'])->name('laporan.pembelian.supplier.export');
     Route::resource('laporan-pembelian-supplier', LaporanPembelianSupplierController::class);
 
     // --- Laporan Penjualan per Kategori ---
