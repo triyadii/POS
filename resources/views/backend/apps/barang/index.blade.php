@@ -58,6 +58,112 @@
     <!--end::Toolbar-->
 
     <div id="kt_app_content" class="app-content flex-column-fluid">
+
+
+        <div class="card border-top-accent shadow-sm mb-xl-10 mb-5">
+            <!--begin::Card body-->
+            <div class="card-body">
+                <!--begin::Compact form-->
+                <div class="d-flex align-items-center">
+                    <!--begin::Input group-->
+                    <div class="position-relative w-md-400px me-md-2">
+                        <i class="ki-outline ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6"></i>
+                        <input type="text" class="form-control ps-10" name="search" id="search" value="" placeholder="cari kode item & nama item">
+                    </div>
+                    <!--end::Input group-->
+    
+                    <!--begin:Action-->
+                    <div class="d-flex align-items-center">               
+                        {{-- <button type="submit" class="btn btn-primary me-5">Search</button> --}}
+                        
+                        <a href="#" id="kt_horizontal_search_advanced_link" class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#kt_advanced_search_form">Advanced Search</a>
+                    </div>
+                    <!--end:Action-->
+                </div>
+                <!--end::Compact form-->
+    
+                <!--begin::Advance form-->
+                <div class="collapse" id="kt_advanced_search_form">
+                    <!--begin::Separator-->
+                    <div class="separator separator-dashed mt-9 mb-6"></div>
+                    <!--end::Separator-->
+    
+                   <!--begin::Row-->
+<div class="row g-8 mb-8">
+    <!-- Kategori -->
+    <div class="col-xxl-4 col-md-4">
+        <label class="fs-6 form-label fw-bold text-gray-900">Kategori Item</label>
+        <select id="filter_kategori_id" name="filter_kategori_id"
+                class="form-select form-select-sm" data-control="select2"
+                data-placeholder="Pilih Kategori">
+        </select>
+    </div>
+
+    <!-- Brand -->
+    <div class="col-xxl-4 col-md-4">
+        <label class="fs-6 form-label fw-bold text-gray-900">Brand Item</label>
+        <select id="filter_brand_id" name="filter_brand_id"
+                class="form-select form-select-sm" data-control="select2"
+                data-placeholder="Pilih Brand">
+        </select>
+    </div>
+
+    <!-- Tipe (nested dari Brand) -->
+    <div class="col-xxl-4 col-md-4">
+        <label class="fs-6 form-label fw-bold text-gray-900">Tipe Item</label>
+        <select id="filter_tipe_id" name="filter_tipe_id"
+                class="form-select form-select-sm" data-control="select2"
+                data-placeholder="Pilih Tipe">
+        </select>
+    </div>
+</div>
+<!--end::Row-->
+
+    
+                    <!--begin::Row-->
+                    <div class="row g-8">
+                        <div class="col-xxl-3 col-md-3">
+                            <label class="form-label fw-bold text-gray-800">Size</label>
+                            <input type="text" id="filter_size" class="form-control form-control-sm" placeholder="cth: 30, XL, L">
+                        </div>
+                    
+                        <div class="col-xxl-3 col-md-3">
+                            <label class="form-label fw-bold text-gray-800">Stok</label>
+                            <select id="filter_stok" class="form-select form-select-sm">
+                                <option value="">Semua</option>
+                                <option value="0">Stok Kosong</option>
+                                <option value="1">Tersedia ( > 0 )</option>
+                            </select>
+                        </div>
+                    
+                        <div class="col-xxl-3 col-md-3">
+                            <label class="form-label fw-bold text-gray-800">Harga Jual</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" id="filter_min_jual" class="form-control" placeholder="Min">
+                                <span class="input-group-text">-</span>
+                                <input type="number" id="filter_max_jual" class="form-control" placeholder="Max">
+                            </div>
+                        </div>
+                    
+                        <div class="col-xxl-3 col-md-3">
+                            <label class="form-label fw-bold text-gray-800">Harga Beli</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" id="filter_min_beli" class="form-control" placeholder="Min">
+                                <span class="input-group-text">-</span>
+                                <input type="number" id="filter_max_beli" class="form-control" placeholder="Max">
+                            </div>
+                        </div>
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Advance form--> 
+            </div>
+            <!--end::Card body--> 
+        </div>
+
+
+
+
         <!--begin::Card-->
         <div class="card border-top-accent shadow-sm mb-xl-10 mb-5">
             <!--begin::Card header-->
@@ -65,11 +171,11 @@
                 <!--begin::Card title-->
                 <div class="card-title">
                     <!--begin::Search-->
-                    <div class="d-flex align-items-center position-relative my-1">
+                    {{-- <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
                         <input type="text" data-kt-user-table-filter="search" id="search"
                             class="form-control w-250px ps-13" placeholder="Search data" />
-                    </div>
+                    </div> --}}
                     <!--end::Search-->
                 </div>
                 <!--begin::Card title-->
@@ -206,43 +312,76 @@
                                     </div>
                               
                                     <!-- INNER: daftar item (TANPA select kategori/brand) -->
-                                    <div class="inner-repeater">
-                                      <div data-repeater-list="barang">
-                                        <div data-repeater-item class="row g-3 align-items-center mb-3">
-                                            <div class="col-md-2">
-                                                <select data-type="tipe" name="tipe_id" class="form-select form-select-sm tipe_id" data-kt-repeater="select2" data-placeholder="pilih tipe/jenis brand">
-                                                </select>
-                                            </div>
-                                             <div class="col-md-2">
-                                            <input type="text"    name="kode"       class="form-control form-control-sm"           placeholder="Kode Item">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <input type="text"    name="nama"       class="form-control form-control-sm"           placeholder="Nama Item">
-                                            </div>
-                                            <div class="col-md-1">
-                                                <input type="text"    name="size"       class="form-control form-control-sm"           placeholder="Size">
-                                            </div>
-                                            <div class="col-md-1">
-                                                <select data-type="satuan" name="satuan_id" class="form-select form-select-sm satuan_id" data-kt-repeater="select2" data-placeholder="pilih satuan">
-                                                </select>
-                                            </div>
-                                            <div class="col-md-1">
-                                                <input type="text"  name="harga_jual" class="form-control form-control-sm text-end format-rupiah"  placeholder="Harga Jual">
-                                            </div>
-                                            <div class="col-md-1">
-                                                <input type="text"  name="harga_beli" class="form-control form-control-sm text-end format-rupiah"  placeholder="Harga Beli">
-                                            </div>
-                                          <div class="col-md-1 text-center">
-                                            <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger"><i class="ki-outline ki-trash fs-2"></i></button>
-                                          </div>
-                                        </div>
-                                      </div>
-                              
-                                      <button type="button" data-repeater-create class="btn btn-sm btn-light-primary btn-sm">
-                                        + Tambah Item
-                                      </button>
-                                    </div>
-                              
+                                    <!-- INNER: daftar item -->
+<div class="inner-repeater">
+    <div data-repeater-list="barang">
+      <div data-repeater-item class="p-4 mb-5 border rounded bg-light-subtle">
+  
+        <div class="row g-3 align-items-start">
+          <div class="col-md-2">
+            <select data-type="tipe" name="tipe_id" class="form-select form-select-sm tipe_id"
+              data-kt-repeater="select2" data-placeholder="pilih tipe/jenis brand"></select>
+          </div>
+  
+          <!-- Kolom Kode Item + Sub Repeater -->
+          <div class="col-md-2">
+            <input type="text" name="kode" class="form-control form-control-sm mb-2" placeholder="Kode Item">
+  
+            <!-- SUB-REPEATER UNTUK TAMBAHAN KODE & SIZE -->
+            <div class="sub-repeater ms-2">
+              <div data-repeater-list="variasi">
+                <div data-repeater-item class="row g-2 align-items-center mb-2">
+                  <div class="col-7">
+                    <input type="text" name="kode_variasi" class="form-control form-control-sm"
+                      placeholder="Kode Item">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="size" class="form-control form-control-sm" placeholder="Size">
+                  </div>
+                  <div class="col-1 text-center">
+                    <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger btn-sm">
+                      <i class="ki-outline ki-trash fs-2"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button type="button" data-repeater-create
+                class="btn btn-light-primary btn-sm w-100 mt-1">+ Tambah</button>
+            </div>
+          </div>
+          <!-- END SUB-REPEATER -->
+  
+          <div class="col-md-2">
+            <input type="text" name="nama" class="form-control form-control-sm" placeholder="Nama Item">
+          </div>
+          <div class="col-md-1">
+            <input type="text" name="size_main" class="form-control form-control-sm" placeholder="Size">
+          </div>
+          <div class="col-md-1">
+            <select data-type="satuan" name="satuan_id" class="form-select form-select-sm satuan_id"
+              data-kt-repeater="select2" data-placeholder="pilih satuan"></select>
+          </div>
+          <div class="col-md-1">
+            <input type="text" name="harga_jual" class="form-control form-control-sm text-end format-rupiah"
+              placeholder="Harga Jual">
+          </div>
+          <div class="col-md-1">
+            <input type="text" name="harga_beli" class="form-control form-control-sm text-end format-rupiah"
+              placeholder="Harga Beli">
+          </div>
+          <div class="col-md-1 text-center">
+            <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger btn-sm">
+              <i class="ki-outline ki-trash fs-2"></i>
+            </button>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  
+    <button type="button" data-repeater-create class="btn btn-sm btn-light-primary">+ Tambah Item</button>
+  </div>
+  
                                   </div>
                                 </div>
                               
@@ -374,7 +513,15 @@
                 padding-bottom: 0.5rem;
             }
             
-            
+            .sub-repeater {
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.sub-repeater input {
+  background-color: #fff;
+}
             </style>
     @endpush
 
@@ -424,22 +571,33 @@
             initFormatRupiah($('#repeater-barang'));
         },
     
-        repeaters: [{
-            selector: '.inner-repeater',
-            initEmpty: false,
-            show: function () {
-                $(this).slideDown();
-    
-                // reinit select2 di inner repeater
-                $(this).find('[data-kt-repeater="select2"]').each(function () {
-                    let el = $(this);
-                    let type = el.data('type');
-                    initSelect2(el, type);
-                });
-                initFormatRupiah($(this));
-            },
-            hide: function (del) { $(this).slideUp(del); }
-        }]
+        repeaters: [
+  {
+    selector: '.inner-repeater',
+    initEmpty: false,
+    show: function () {
+      $(this).slideDown();
+      $(this).find('[data-kt-repeater="select2"]').each(function () {
+        let el = $(this);
+        let type = el.data('type');
+        initSelect2(el, type);
+      });
+      initFormatRupiah($(this));
+    },
+    hide: function (del) { $(this).slideUp(del); },
+    repeaters: [
+      {
+        selector: '.sub-repeater',
+        initEmpty: false,
+        show: function () {
+          $(this).slideDown();
+        },
+        hide: function (del) { $(this).slideUp(del); }
+      }
+    ]
+  }
+]
+
     });
     
     // === Helper untuk inisialisasi Select2 ===
@@ -595,7 +753,17 @@
                     ajax: {
                         url: "{{ route('get-barang') }}",
                         type: 'GET',
-                        data: function(d) {}
+                        data: function(d) {
+                            d.kategori_id = $('#filter_kategori_id').val();
+                            d.brand_id = $('#filter_brand_id').val();
+                            d.tipe_id = $('#filter_tipe_id').val();
+                            d.size = $('#filter_size').val();
+                            d.stok = $('#filter_stok').val();
+                            d.min_jual = $('#filter_min_jual').val();
+                            d.max_jual = $('#filter_max_jual').val();
+                            d.min_beli = $('#filter_min_beli').val();
+                            d.max_beli = $('#filter_max_beli').val();
+                        }
                     },
                     columns: [
                         // Kondisi untuk Mass Delete Checkbox
@@ -666,6 +834,48 @@
                 });
 
 
+// Event inline edit
+$(document).on('change', '.inline-edit', function() {
+    const el = $(this);
+    const id = el.data('id');
+    const field = el.data('field');
+    let value = el.val();
+
+    // Hilangkan format rupiah sebelum kirim
+    if (el.hasClass('format-rupiah')) {
+        value = value.replace(/\./g, '').replace(/[^0-9]/g, '');
+    }
+
+    el.prop('disabled', true); // lock sementara
+
+    $.ajax({
+        url: "{{ route('barang.update-inline') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            id,
+            field,
+            value
+        },
+        success: function(res) {
+            el.prop('disabled', false);
+            if (res.success) {
+                toastr.success('Data berhasil diperbarui');
+            } else {
+                toastr.error('Gagal memperbarui data');
+            }
+        },
+        error: function(xhr) {
+            el.prop('disabled', false);
+            toastr.error('Terjadi kesalahan saat menyimpan');
+            console.error(xhr.responseText);
+        }
+    });
+});
+$(document).on('input', '.format-rupiah', function() {
+    let val = $(this).val().replace(/\D/g, '');
+    $(this).val(new Intl.NumberFormat('id-ID').format(val));
+});
 
 
                 $(document).ready(function() {
@@ -690,14 +900,42 @@
                     table.search($(this).val()).draw();
                 }, 500));
 
-                $('#btnResetSearch').click(function() {
-                    $('#filterrole').val(null).trigger('change');
-                    table.draw(true);
+                $('#filter_kategori_id').on('change', function() {
+                    table.ajax.reload();
                 });
 
-                $('#btnFiterSubmitSearch').click(function() {
-                    table.draw(true);
+                // Trigger reload saat brand berubah
+                $('#filter_brand_id').on('change', function() {
+                    table.ajax.reload();
                 });
+
+                $('#filter_tipe_id').on('change', function() {
+                    table.ajax.reload();
+                });
+
+                $('#filter_size').on('keyup', debounce(function() {
+                    table.ajax.reload();
+                }, 500));
+
+                $('#filter_stok').on('change', function() {
+                    table.ajax.reload();
+                });
+
+                // === Filter Harga Jual (min–max) ===
+                $('#filter_min_jual, #filter_max_jual').on('keyup change', debounce(function() {
+                    table.ajax.reload();
+                }, 500));
+
+                // === Filter Harga Beli (min–max) ===
+                $('#filter_min_beli, #filter_max_beli').on('keyup change', debounce(function() {
+                    table.ajax.reload();
+                }, 500));
+
+
+
+
+
+              
 
 
 
@@ -1193,5 +1431,89 @@
                 }
             });
         </script>
+
+
+<script>
+    $(document).ready(function() {
+
+
+// === 1️⃣ KATEGORI (bebas) ===
+$('#filter_kategori_id').select2({
+    ajax: {
+        url: "{{ route('kategori.select') }}",
+        dataType: 'json',
+        delay: 250,
+        processResults: function (data) {
+            return {
+                results: data.map(function (item) {
+                    return { id: item.id, text: item.nama };
+                })
+            };
+        }
+    }
+});
+// === 2️⃣ BRAND (bebas) ===
+$('#filter_brand_id').select2({
+        ajax: {
+            url: "{{ route('brand.select') }}",
+            dataType: 'json',
+            delay: 250,
+            processResults: function (data) {
+                return {
+                    results: data.map(function (item) {
+                        return { id: item.id, text: item.nama };
+                    })
+                };
+            }
+        }
+    });
+
+    // === 3️⃣ TIPE (nested dari brand) ===
+    $('#filter_tipe_id').select2({
+    ajax: {
+        url: "{{ route('tipe.select') }}",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            // ⬇️ kirim brandID ke controller
+            return {
+                q: params.term || '',
+                brandID: $('#filter_brand_id').val() || ''
+            };
+        },
+        processResults: function (data) {
+            return {
+                results: data.map(function (item) {
+                    return { id: item.id, text: item.nama };
+                })
+            };
+        }
+    }
+});
+
+
+// 🚫 Awalnya disable dropdown tipe
+$('#filter_tipe_id').prop('disabled', true);
+
+// 🔄 Aktifkan tipe setelah brand dipilih
+$('#filter_brand_id').on('change', function () {
+    const brandID = $(this).val();
+
+    // Kosongkan tipe setiap kali brand berubah
+    $('#filter_tipe_id').val(null).trigger('change');
+
+    if (brandID) {
+        $('#filter_tipe_id').prop('disabled', false);
+    } else {
+        $('#filter_tipe_id').prop('disabled', true);
+    }
+
+});
+
+
+
+
+    });
+</script>
     @endpush
 @endsection
