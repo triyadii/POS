@@ -22,6 +22,7 @@ class BarangMasuk extends Model
         'total_item',
         'total_harga',
         'catatan',
+        'status'
     ];
 
     public function supplier()
