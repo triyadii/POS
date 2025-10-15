@@ -1,5 +1,5 @@
 @extends('layouts.backend.index')
-@section('title', 'Barang Masuk')
+@section('title', 'Barang')
 @section('content')
 
 
@@ -10,7 +10,7 @@
             <!--begin::Page title-->
             <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                 <!--begin::Title-->
-                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Barang Masuk
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Barang
                     List</h1>
                 <!--end::Title-->
                 <!--begin::Breadcrumb-->
@@ -35,7 +35,7 @@
                     <!--end::Item-->
 
                     <!--begin::Item-->
-                    <li class="breadcrumb-item text-gray-900">Barang Masuk List</li>
+                    <li class="breadcrumb-item text-gray-900">Barang List</li>
                     <!--end::Item-->
                 </ul>
                 <!--end::Breadcrumb-->
@@ -43,14 +43,9 @@
             <!--end::Page title-->
             <!--begin::Actions-->
             <div class="d-flex align-items-center pt-4 pb-7 pt-lg-1 pb-lg-2">
-                <!--begin::Wrapper-->
-                <div class="me-3">
-                    
-                    <!--end::Menu-->
-                </div>
-                <!--end::Wrapper-->
+                
                 <!--begin::Button-->
-                @can('barang-masuk-create')
+                @can('barang-create')
                     <button type="button" id="btn_tambah_data" class="btn btn-sm btn-primary">
                         <i class="ki-outline ki-plus fs-2"></i>Add</button>
                 @endcan
@@ -73,25 +68,28 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
                         <input type="text" data-kt-user-table-filter="search" id="search"
-                            class="form-control w-450px ps-13" placeholder="Search data" />
+                            class="form-control w-250px ps-13" placeholder="Search data" />
                     </div>
                     <!--end::Search-->
                 </div>
                 <!--begin::Card title-->
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar">
-                    <!--begin::Toolbar-->
-                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                         <!--begin::Group actions-->
-                    <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
+
+                     <!--begin::Group actions-->
+                     <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
                         <div class="fw-bold me-5">
                             <span class="me-2" data-kt-user-table-select="selected_count"></span>Selected
                         </div>
-                        <button type="button" class="btn btn-sm btn-danger me-2" data-kt-user-table-select="delete_selected"> <i
+                        <button type="button" class="btn btn-sm btn-danger me-3" data-kt-user-table-select="delete_selected"> <i
                                 class="ki-outline ki-trash  me-2"></i>Delete
                             Selected</button>
                     </div>
                     <!--end::Group actions-->
+
+
+                    <!--begin::Toolbar-->
+                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                         <!--begin::Reload Data-->
                         <button type="button" class="btn btn-sm btn-primary " id="refresh-table-btn">
                             <span class="indicator-label">
@@ -117,7 +115,7 @@
                 <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4 w-100 chimox" id="chimox">
                     <thead>
                         <tr class="fw-bold text-muted fs-7 text-uppercase gs-0">                            
-                            @can('barang-masuk-massdelete')
+                            @can('barang-massdelete')
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox" data-kt-check="true"
@@ -125,21 +123,14 @@
                                     </div>
                                 </th>
                             @endcan
-                            <th class="min-w-125px">Kode</th>
-                           
-                            <th class="min-w-80px">Tanggal</th>
-                            <th class="min-w-100px">Supplier</th>
-                            <th class="min-w-100px">Catatan</th>
-
-                            <th class="min-w-80px">STatus</th>
-
-
-                            <th class="text-end min-w-100px">Total Item</th>
-                            <th class="text-end min-w-100px">Total Harga</th>
-                            
-
-
-                            @canany(['barang-masuk-show', 'barang-masuk-edit', 'barang-masuk-delete'])
+                            <th class="min-w-125px">Nama Item</th>
+                            <th class="min-w-70px">Kategori</th>
+                            <th class="min-w-100px">Brand</th>
+                            <th class="min-w-50px">Size</th>
+                            <th class="min-w-100px">Stok</th>
+                            <th class="text-end min-w-100px">Harga Jual</th>
+                            <th class="text-end min-w-100px">Harga Beli</th>
+                            @canany(['barang-show', 'barang-edit', 'barang-delete'])
                                 <th class="text-end min-w-100px">Action</th>
                             @endcanany
                         </tr>
@@ -158,9 +149,9 @@
 
 
     <!--begin::Modal - Add-->
-    <div class="modal fade" id="Modal_Tambah_Data" tabindex="-1" aria-hidden="true" data-bs-focus="false">
+    <div class="modal fade" id="Modal_Tambah_Data" tabindex="-1" aria-hidden="true">
         <!--begin::Modal dialog-->
-        <div class="modal-dialog modal-dialog-centered mw-550px">
+        <div class="modal-dialog modal-fullscreen">
             <!--begin::Modal content-->
             <div class="modal-content" id="tambah-modal-content">
                 <!--begin::Modal header-->
@@ -177,60 +168,91 @@
                 </div>
                 <!--end::Modal header-->
                 <!--begin::Modal body-->
-                <div class="modal-body ">
+                <div class="modal-body px-5 my-7">
                     <!--begin::Form-->
                     <form method="post" id="FormTambahModalID" class="form" enctype="multipart/form-data">
                         @csrf
                         <!--begin::Scroll-->
-                        <div class="d-flex flex-column " >
+                        <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll"
+                            data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto"
+                            data-kt-scroll-dependencies="#kt_modal_add_user_header"
+                            data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
 
-
-                            <div class="row mb-7">
-                                <div class="col-md-6 fv-row">
-                                    <!--begin::Label-->
-                                    <label class="required fw-semibold fs-6 mb-2">Tanggal</label>
-                                    <!--end::Label-->
-                                    <!--begin::Input-->
-                                    <input type="text" name="tanggal_masuk" id="tanggal_masuk"
-                                        class="form-control mb-3 mb-lg-0" placeholder="Tanggal" />
-                                    <span class="text-danger error-text tanggal_masuk_error_add"></span>
-                                    <!--end::Input-->
-                                </div>
-                                <!--end::Input group-->
-
+                    
                             
-
-                                <div class="col-md-6 fv-row">
-                                    <!--begin::Label-->
-                                    <label class="required fw-semibold fs-6 mb-2">Supplier</label>
-                                    <!--end::Label-->
-                                    <!--begin::Input-->
-                                    <select id="supplier_id" name="supplier_id"
-                                    class="form-select b-3 mb-lg-0" data-control="select2"
-                                    data-placeholder="pilih supplier" data-dropdown-parent="#Modal_Tambah_Data">
-                                </select>
-                                    <span class="text-danger error-text supplier_id_error_add"></span>
-                                    <!--end::Input-->
+                            <div id="repeater-barang">
+                                <!-- OUTER -->
+                                <div data-repeater-list="kelompok_barang">
+                                  <div data-repeater-item class="border rounded p-5 mb-5 bg-light">
+                              
+                                    <!-- KATEGORI & BRAND: HANYA DI SINI -->
+                                    <div class="row g-3 mb-4">
+                                      <div class="col-md-3">
+                                        <label class="form-label fw-bold">Kategori Item</label>
+                                        <select data-type="kategori" name="kategori_id" class="form-select form-select-sm kategori_id" data-kt-repeater="select2" data-placeholder="pilih kategori">
+                                        </select>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <label class="form-label fw-bold">Brand</label>
+                                            <select  data-type="brand" name="brand_id" class="form-select form-select-sm brand_id" data-kt-repeater="select2" data-placeholder="pilih brand">
+                                               
+                                            </select>
+                                      </div>
+                                      <div class="col-md-3 d-flex align-items-end">
+                                        <a href="javascript:;" data-repeater-delete class="btn btn-sm btn-light-danger">
+                                          Hapus Kategori & Brand Ini
+                                        </a>
+                                      </div>
+                                    </div>
+                              
+                                    <!-- INNER: daftar item (TANPA select kategori/brand) -->
+                                    <div class="inner-repeater">
+                                      <div data-repeater-list="barang">
+                                        <div data-repeater-item class="row g-3 align-items-center mb-3">
+                                            <div class="col-md-2">
+                                                <select data-type="tipe" name="tipe_id" class="form-select form-select-sm tipe_id" data-kt-repeater="select2" data-placeholder="pilih tipe/jenis brand">
+                                                </select>
+                                            </div>
+                                             <div class="col-md-2">
+                                            <input type="text"    name="kode"       class="form-control form-control-sm"           placeholder="Kode Item">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="text"    name="nama"       class="form-control form-control-sm"           placeholder="Nama Item">
+                                            </div>
+                                            <div class="col-md-1">
+                                                <input type="text"    name="size"       class="form-control form-control-sm"           placeholder="Size">
+                                            </div>
+                                            <div class="col-md-1">
+                                                <select data-type="satuan" name="satuan_id" class="form-select form-select-sm satuan_id" data-kt-repeater="select2" data-placeholder="pilih satuan">
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <input type="text"  name="harga_jual" class="form-control form-control-sm text-end format-rupiah"  placeholder="Harga Jual">
+                                            </div>
+                                            <div class="col-md-1">
+                                                <input type="text"  name="harga_beli" class="form-control form-control-sm text-end format-rupiah"  placeholder="Harga Beli">
+                                            </div>
+                                          <div class="col-md-1 text-center">
+                                            <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger"><i class="ki-outline ki-trash fs-2"></i></button>
+                                          </div>
+                                        </div>
+                                      </div>
+                              
+                                      <button type="button" data-repeater-create class="btn btn-sm btn-light-primary btn-sm">
+                                        + Tambah Item
+                                      </button>
+                                    </div>
+                              
+                                  </div>
                                 </div>
-                                <!--end::Input group-->
-                            </div>
-                            <!--end::Input group-->
-
-
-
-                            <div class="row mb-7 fv-row">
-                                    <!--begin::Label-->
-                                    <label for="catatantextarea" fw-semibold fs-6 mb-2">Catatan</label>
-                                    <!--end::Label-->
-                                    <!--begin::Input-->
-                                    <textarea class="form-control" name="catatan" id="catatantextarea" rows="2"></textarea>
-                                    <span class="text-danger error-text catatan_error_add"></span>
-                                    <!--end::Input-->
-                            </div>
-                                <!--end::Input group-->
-
-
-
+                              
+                                <div class="mt-5">
+                                  <button type="button" data-repeater-create class="btn btn-sm btn-light-success">
+                                    + Tambah Kategori & Brand
+                                  </button>
+                                </div>
+                              </div>
+                              
 
 
                         </div>
@@ -259,7 +281,7 @@
 
 
     <!-- Begin Modal Edit -->
-    <div class="modal fade" id="Modal_Edit_Data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" data-bs-focus="false"
+    <div class="modal fade" id="Modal_Edit_Data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered mw-750px">
             <div class="modal-content" id="edit-modal-content">
@@ -332,27 +354,6 @@
     <!--end modal hapus-->
 
 
-    <!-- Modal Detail Barang Masuk -->
-<div class="modal fade" id="modalShowBarangMasuk" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content rounded-3 shadow">
-        <div class="modal-header bg-light">
-          <h5 class="modal-title fw-bold">Detail Barang Masuk</h5>
-          <button type="button" class="btn btn-sm btn-icon btn-light" data-bs-dismiss="modal">
-            <i class="ki-outline ki-cross fs-2"></i>
-          </button>
-        </div>
-        <div class="modal-body" id="modalShowBarangMasukBody">
-          <div class="text-center py-10 text-muted">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-3">Memuat data barang masuk...</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-
     @push('stylesheets')
         <meta name="csrf-token" content="{{ csrf_token() }}" />
         <link rel="stylesheet" href="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.css') }}" />
@@ -379,51 +380,192 @@
 
     @push('scripts')
         <script src="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
+        <script src="{{ URL::to('assets/plugins/custom/formrepeater/formrepeater.bundle.js') }}"></script>
+
         <script>
             function resetForm() {
+
                 // Clear error messages
                 $(".error-text").text("");
             }
 
-            $("#tanggal_masuk").flatpickr();
         </script>
 <script>
-    $(document).ready(function() {
-        $(document).on('click', '.btn-show-barang-masuk', function(e) {
-            e.preventDefault();
+    "use strict";
     
-            let id = $(this).data('id');
-            let modal = new bootstrap.Modal(document.getElementById('modalShowBarangMasuk'));
-            let body = $('#modalShowBarangMasukBody');
+    $('#repeater-barang').repeater({
+        initEmpty: false,
     
-            // tampilkan modal + loading
-            body.html(`
-                <div class="text-center py-10 text-muted">
-                    <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-3">Memuat data barang masuk...</p>
-                </div>
-            `);
-            modal.show();
+        show: function () {
+            $(this).slideDown();
     
-            // load konten dari route show
-            $.ajax({
-                url: `/barang-masuk/${id}`,
-                type: 'GET',
-                success: function(res) {
-                    body.html(res);
-                },
-                error: function(xhr) {
-                    body.html(`
-                        <div class="alert alert-danger">
-                            Gagal memuat data.<br>${xhr.responseJSON?.message || 'Terjadi kesalahan server.'}
-                        </div>
-                    `);
+            // Re-init select2 di item baru
+            $(this).find('[data-kt-repeater="select2"]').each(function () {
+                let el = $(this);
+                let type = el.data('type');
+                initSelect2(el, type);
+            });
+
+            initFormatRupiah($(this)); 
+        },
+    
+        hide: function (del) {
+            $(this).slideUp(del);
+        },
+    
+        ready: function(){
+            // Init select2 untuk item pertama
+            $('[data-kt-repeater="select2"]').each(function () {
+                let el = $(this);
+                let type = el.data('type');
+                initSelect2(el, type);
+            });
+
+            initFormatRupiah($('#repeater-barang'));
+        },
+    
+        repeaters: [{
+            selector: '.inner-repeater',
+            initEmpty: false,
+            show: function () {
+                $(this).slideDown();
+    
+                // reinit select2 di inner repeater
+                $(this).find('[data-kt-repeater="select2"]').each(function () {
+                    let el = $(this);
+                    let type = el.data('type');
+                    initSelect2(el, type);
+                });
+                initFormatRupiah($(this));
+            },
+            hide: function (del) { $(this).slideUp(del); }
+        }]
+    });
+    
+    // === Helper untuk inisialisasi Select2 ===
+    function initSelect2(el, type) {
+    let config = {
+        dropdownParent: $('#Modal_Tambah_Data'),
+        ajax: {
+            dataType: 'json',
+            delay: 250,
+            processResults: data => ({
+                results: data.map(i => ({ id: i.id, text: i.nama }))
+            })
+        },
+        allowClear: true
+    };
+
+    switch (type) {
+        case 'kategori':
+            el.select2($.extend({}, config, {
+                placeholder: 'Pilih kategori',
+                ajax: $.extend({}, config.ajax, { url: "{{ route('kategori.select') }}" })
+            }));
+            break;
+
+        case 'brand':
+            el.select2($.extend({}, config, {
+                placeholder: 'Pilih brand',
+                ajax: $.extend({}, config.ajax, { url: "{{ route('brand.select') }}" })
+            }));
+
+            // Saat brand berubah ⇒ reset SEMUA select tipe di outer item ini
+            el.off('change.brand-reset').on('change.brand-reset', function () {
+                const outerItem = el.closest('[data-repeater-item]'); // brand ada di OUTER item
+                outerItem.find('select[data-type="tipe"]').each(function () {
+                    $(this).val(null).trigger('change');
+                });
+            });
+            break;
+
+        case 'tipe':
+            el.select2($.extend({}, config, {
+                placeholder: 'Pilih tipe',
+                ajax: $.extend({}, config.ajax, {
+                    url: "{{ route('tipe.select') }}",
+                    data: function (params) {
+                        // Ambil brand_id dari OUTER repeater item terdekat
+                        const outerItem = el.closest('[data-repeater-item]').parents('[data-repeater-item]').first();
+                        const brandID = outerItem.find('select[data-type="brand"]').val();
+
+                        return {
+                            q: params.term || '',
+                            brandID: brandID || '' // backend akan filter by brandID
+                        };
+                    }
+                })
+            }));
+
+            // Cegah buka dropdown tipe kalau brand belum dipilih
+            el.off('select2:opening.guard').on('select2:opening.guard', function (evt) {
+                const outerItem = el.closest('[data-repeater-item]').parents('[data-repeater-item]').first();
+                const brandID = outerItem.find('select[data-type="brand"]').val();
+                if (!brandID) {
+                    evt.preventDefault();
+                    if (typeof toastr !== 'undefined') {
+                        toastr.warning('Pilih brand terlebih dahulu');
+                    } else {
+                        alert('Pilih brand terlebih dahulu');
+                    }
                 }
             });
+            break;
+
+        case 'satuan':
+            el.select2($.extend({}, config, {
+                placeholder: 'Pilih satuan',
+                ajax: $.extend({}, config.ajax, { url: "{{ route('satuan.select') }}" })
+            }));
+            break;
+    }
+}
+
+
+
+    // === Format Rupiah Otomatis (tanpa hapus titik saat submit) ===
+    function initFormatRupiah(container) {
+    container.find('.format-rupiah').each(function () {
+        let input = $(this);
+
+        input.off('input').on('input', function (e) {
+            let cursorPos = this.selectionStart;
+            let raw = this.value.replace(/\D/g, ''); // ambil hanya angka
+            if (raw === '') {
+                this.value = '';
+                input.data('value', '');
+                return;
+            }
+
+            // Simpan nilai mentah di data-value (biar backend bisa akses kalau mau)
+            input.data('value', raw);
+
+            // Format tampilan
+            this.value = new Intl.NumberFormat('id-ID').format(parseInt(raw));
+
+            // Kembalikan kursor di akhir
+            this.setSelectionRange(this.value.length, this.value.length);
         });
+    });
+}
+
+    
+    // === FIX untuk modal: reinit select2 saat modal tampil ===
+    $('#Modal_Tambah_Data').on('shown.bs.modal', function () {
+        $('[data-kt-repeater="select2"]').each(function () {
+            let el = $(this);
+            let type = el.data('type');
+            if (!el.hasClass('select2-hidden-accessible')) {
+                initSelect2(el, type);
+            }
+        });
+
+        initFormatRupiah($('#repeater-barang'));
     });
     </script>
     
+    
+
 
         <script type="text/javascript">
             function debounce(func, wait) {
@@ -434,10 +576,10 @@
                 };
             }
             $(document).ready(function() {
-                var canShow = @json(auth()->user()->can('barang-masuk-show'));
-                var canEdit = @json(auth()->user()->can('barang-masuk-edit'));
-                var canDelete = @json(auth()->user()->can('barang-masuk-delete'));
-                var canMassDelete = @json(auth()->user()->can('barang-masuk-massdelete'));
+                var canShow = @json(auth()->user()->can('barang-show'));
+                var canEdit = @json(auth()->user()->can('barang-edit'));
+                var canDelete = @json(auth()->user()->can('barang-delete'));
+                var canMassDelete = @json(auth()->user()->can('barang-massdelete'));
 
                 var table = $('.chimox').DataTable({
                     processing: true,
@@ -451,7 +593,7 @@
                     serverSide: true,
                     order: false,
                     ajax: {
-                        url: "{{ route('get-barang-masuk') }}",
+                        url: "{{ route('get-barang') }}",
                         type: 'GET',
                         data: function(d) {}
                     },
@@ -470,57 +612,49 @@
                         } : null,
 
                         {
-                            data: 'kode_transaksi',
-                            name: 'kode_transaksi',
+                            data: 'nama',
+                            name: 'nama',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'tanggal_masuk',
-                            name: 'tanggal_masuk',
+                            data: 'kategori_id',
+                            name: 'kategori_id',
                             orderable: false,
                             searchable: false
                         },
-                        
-
                         {
-                            data: 'supplier_id',
-                            name: 'supplier_id',
-                            orderable: false,
-                            searchable: false
-                        },
-
-                        {
-                            data: 'catatan',
-                            name: 'catatan',
+                            data: 'brand_id',
+                            name: 'brand_id',
                             orderable: false,
                             searchable: false
                         },
 
                         {
-                            data: 'status',
-                            name: 'status',
+                            data: 'size',
+                            name: 'size',
                             orderable: false,
                             searchable: false
                         },
-
                         {
-                            data: 'total_item',
-                            name: 'total_item',
+                            data: 'stok',
+                            name: 'stok',
                             orderable: false,
                             searchable: false
                         },
-
                         {
-                            data: 'total_harga',
-                            name: 'total_harga',
+                            data: 'harga_jual',
+                            name: 'harga_jual',
                             orderable: false,
                             searchable: false
                         },
-
-                       
-                        
-                       
+                        {
+                            data: 'harga_beli',
+                            name: 'harga_beli',
+                            orderable: false,
+                            searchable: false
+                        },
+                     
                         // Kondisi untuk menampilkan kolom Action
                         (canShow || canEdit || canDelete) ? {
                             data: 'action',
@@ -593,7 +727,7 @@
                         }
                     });
                     $.ajax({
-                        url: "{{ route('barang-masuk.store') }}",
+                        url: "{{ route('barang.store') }}",
                         method: 'post',
                         data: new FormData(this),
                         contentType: false,
@@ -687,7 +821,7 @@
 
                     id = $(this).data('id');
                     $.ajax({
-                        url: "barang-masuk/" + id + "/edit",
+                        url: "barang/" + id + "/edit",
                         dataType: "json",
                         success: function(result) {
                             console.log(result);
@@ -711,7 +845,7 @@
                         }
                     });
                     $.ajax({
-                        url: "barang-masuk/" + id,
+                        url: "barang/" + id,
                         method: "POST",
                         data: new FormData(this),
                         contentType: false,
@@ -821,7 +955,7 @@
                         }
                     });
                     $.ajax({
-                        url: "barang-masuk/" + id,
+                        url: "barang/" + id,
                         method: 'DELETE',
                         success: function(result) {
                             if (result.error) {
@@ -959,7 +1093,7 @@
                             if (result.isConfirmed) {
                                 // Make an AJAX call to mass delete the users
                                 $.ajax({
-                                    url: "{{ route('barang-masuk.mass-delete') }}", // Pastikan route ini ada
+                                    url: "{{ route('barang.mass-delete') }}", // Pastikan route ini ada
                                     type: 'POST',
                                     data: {
                                         ids: selectedIds,
@@ -1059,34 +1193,5 @@
                 }
             });
         </script>
-
-
-<script>
-    $(document).ready(function() {
-
-        //  select province:start
-        $('#supplier_id').select2({
-          
-            ajax: {
-                url: "{{ route('supplier.select') }}",
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    return {
-                        results: $.map(data, function(item) {
-                            return {
-                                text: item.nama,
-                                id: item.id
-                            }
-                        })
-                    };
-                }
-            }
-        });
-
-
-
-    });
-</script>
     @endpush
 @endsection

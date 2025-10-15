@@ -39,6 +39,9 @@ use App\Http\Controllers\Backend\Master\CustomerController;
 use App\Http\Controllers\Backend\Apps\BarangController;
 use App\Http\Controllers\Backend\Apps\BarangMasukController;
 use App\Http\Controllers\Backend\Apps\BarangMasukDetailController;
+use App\Http\Controllers\Backend\Apps\BarangKeluarController;
+use App\Http\Controllers\Backend\Apps\BarangKeluarDetailController;
+
 
 //END CHIMOX
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
@@ -109,7 +112,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // BEGIN CHIMOX
     Route::resource('supplier', SupplierController::class);
-    Route::get('get-supplier', [SupplierController::class, 'getDataRoles'])->name('get-supplier');
+    Route::get('get-supplier', [SupplierController::class, 'getData'])->name('get-supplier');
     Route::post('/supplier/mass-delete', [SupplierController::class, 'massDelete'])->name('supplier.mass-delete');
     Route::get('/select/supplier', [SupplierController::class, 'select'])->name('supplier.select');
 
@@ -148,6 +151,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/barang/mass-delete', [BarangController::class, 'massDelete'])->name('barang.mass-delete');
     Route::get('/select/barang', [BarangController::class, 'select'])->name('barang.select');
 
+    Route::post('/barang/update-inline', [BarangController::class, 'updateInline'])
+    ->name('barang.update-inline');
+
+
     // Route::resource('barang-masuk', BarangMasukController::class);
     // Route::get('get-barang-masuk', [BarangMasukController::class, 'getData'])->name('get-barang-masuk');
     // Route::post('barang-masuk/mass-delete', [BarangMasukController::class, 'massDelete'])->name('barang-masuk.mass-delete');
@@ -181,10 +188,39 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('barang-masuk/{id}/finalize', [BarangMasukController::class, 'finalize'])
     ->name('barang-masuk.finalize');
     Route::get('/barang-masuk/{id}/print', [BarangMasukController::class, 'print'])->name('barang-masuk.print');
-
+    Route::post('/barang-masuk/detail/update-price', [BarangMasukController::class, 'updatePrice'])
+    ->name('barang-masuk.detail.update-price');
 
     
 
+
+
+    Route::prefix('barang-keluar')->group(function () {
+        Route::get('/', [BarangKeluarController::class, 'index'])->name('barang-keluar.index');
+        Route::get('/create', [BarangKeluarController::class, 'create'])->name('barang-keluar.create');
+        Route::post('/', [BarangKeluarController::class, 'store'])->name('barang-keluar.store');
+        Route::get('/{id}', [BarangKeluarController::class, 'show'])->name('barang-keluar.show');
+        Route::get('/{id}/edit', [BarangKeluarController::class, 'edit'])->name('barang-keluar.edit');
+        Route::put('/{id}', [BarangKeluarController::class, 'update'])->name('barang-keluar.update');
+        Route::delete('/{id}', [BarangKeluarController::class, 'destroy'])->name('barang-keluar.destroy');
+    
+        
+        // detail gabung
+        Route::get('/{id}/detail/list', [BarangKeluarController::class, 'getDetailList'])->name('barang-keluar.detail.list');
+        Route::post('/{id}/detail/add', [BarangKeluarController::class, 'addDetail'])->name('barang-keluar.detail.add');
+        Route::delete('/detail/{detailId}', [BarangKeluarController::class, 'deleteDetail'])->name('barang-keluar.detail.delete');
+    });
+
+    Route::get('get-barang-keluar', [BarangKeluarController::class, 'getData'])->name('get-barang-keluar');
+    Route::post('barang-keluar/mass-delete', [BarangKeluarController::class, 'massDelete'])->name('barang-keluar.mass-delete');
+    Route::get('select/barang-keluar', [BarangKeluarController::class, 'select'])->name('barang-keluar.select');
+    Route::post('barang-keluar/{id}/finalize', [BarangKeluarController::class, 'finalize'])
+    ->name('barang-keluar.finalize');
+    Route::get('/barang-keluar/{id}/print', [BarangKeluarController::class, 'print'])->name('barang-keluar.print');
+
+
+    
+  
 
 // Route::prefix('barang-masuk')->group(function () {
 //     // resource utama
@@ -208,7 +244,7 @@ Route::group(['middleware' => ['auth']], function () {
 // });
 
 
-
+ 
 
     //END CHIMOX
 

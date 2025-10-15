@@ -51,44 +51,6 @@ class BarangController extends Controller
                 $query->where('kode_barang', 'LIKE', "%{$searchValue}%");
             });
         }
-
-        if ($request->filled('kategori_id')) {
-            $postsQuery->where('kategori_id', $request->kategori_id);
-        }
-        
-        if ($request->filled('brand_id')) {
-            $postsQuery->where('brand_id', $request->brand_id);
-        }
-        
-        if ($request->filled('tipe_id')) {
-            $postsQuery->where('tipe_id', $request->tipe_id);
-        }
-        
-        if ($request->filled('size')) {
-            $postsQuery->where('size', 'LIKE', "%{$request->size}%");
-        }
-        
-        if ($request->filled('stok')) {
-            if ($request->stok == '0') {
-                $postsQuery->where('stok', '=', 0);
-            } elseif ($request->stok == '1') {
-                $postsQuery->where('stok', '>', 0);
-            }
-        }
-        
-        if ($request->filled('min_jual')) {
-            $postsQuery->where('harga_jual', '>=', (int) $request->min_jual);
-        }
-        if ($request->filled('max_jual')) {
-            $postsQuery->where('harga_jual', '<=', (int) $request->max_jual);
-        }
-        if ($request->filled('min_beli')) {
-            $postsQuery->where('harga_beli', '>=', (int) $request->min_beli);
-        }
-        if ($request->filled('max_beli')) {
-            $postsQuery->where('harga_beli', '<=', (int) $request->max_beli);
-        }
-        
         $data = $postsQuery->select('*');
 
         return \DataTables::of($data)
@@ -163,53 +125,34 @@ class BarangController extends Controller
 
 
             ->addColumn('stok', function ($row) {
+                $stok = $row->stok ?? 0;
                 $satuan = $row->satuan->singkatan ?? '-';
+
                 return '
-                    <div class="d-flex align-items-center">
-                        <input 
-                            type="number" 
-                            class="form-control form-control-sm text-end inline-edit" 
-                            data-id="' . $row->id . '" 
-                            data-field="stok"
-                            value="' . e($row->stok) . '" 
-                            style="width:80px"
-                        />
-                        <span class="ms-2 text-muted fs-8">' . e($satuan) . '</span>
-                    </div>
-                ';
+                <div class="d-flex flex-column align-items-start">
+                    <span class="fw-semibold text-gray-800">' . number_format($stok, 0, ',', '.') . ' ' . e($satuan) . '</span>
+                </div>
+            ';
             })
-            
+
             ->addColumn('harga_jual', function ($row) {
-                return '
-                    <div class="text-end">
-                        <input 
-                            type="text" 
-                            class="form-control form-control-sm text-end inline-edit format-rupiah" 
-                            data-id="' . $row->id . '" 
-                            data-field="harga_jual"
-                            value="' . number_format($row->harga_jual ?? 0, 0, ',', '.') . '"
-                            style="width:110px; display:inline-block; text-align:right;"
-                        />
-                    </div>
-                ';
-            })
-            
-            
-            ->addColumn('harga_beli', function ($row) {
+                $harga = $row->harga_jual ?? 0;
                 return '
                 <div class="text-end">
-                    <input 
-                        type="text" 
-                        class="form-control form-control-sm text-end inline-edit format-rupiah" 
-                        data-id="' . $row->id . '" 
-                        data-field="harga_beli"
-                        value="' . number_format($row->harga_beli ?? 0, 0, ',', '.') . '"
-                        style="width:110px; display:inline-block; text-align:right;"
-                    />
-                    </div>
-                ';
+                    <span class="fw-bold text-success">Rp ' . number_format($harga, 0, ',', '.') . '</span>
+                </div>
+            ';
             })
-            
+
+            ->addColumn('harga_beli', function ($row) {
+                $harga = $row->harga_beli ?? 0;
+                return '
+                <div class="text-end">
+                    <span class="fw-semibold text-danger">Rp ' . number_format($harga, 0, ',', '.') . '</span>
+                </div>
+            ';
+            })
+
 
 
 
@@ -225,190 +168,118 @@ class BarangController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function updateInline(Request $request)
+
+
+    public function store(Request $request)
     {
-        $request->validate([
-            'id' => 'required|uuid|exists:barang,id',
-            'field' => 'required|string|in:stok,harga_beli,harga_jual',
-            'value' => 'required'
+        $formattedTime = Carbon::now()->diffForHumans();
+
+        $validator = Validator::make($request->all(), [
+            'kelompok_barang' => 'required|array|min:1',
+            'kelompok_barang.*.kategori_id' => 'required|uuid',
+            'kelompok_barang.*.brand_id'    => 'required|uuid',
+            'kelompok_barang.*.barang'      => 'required|array|min:1',
+            'kelompok_barang.*.barang.*.kode' => 'required|string|max:100',
+            'kelompok_barang.*.barang.*.nama' => [
+                'required',
+                'string',
+                'max:150',
+                // validasi unik hanya berdasarkan brand & kategori
+                function ($attribute, $value, $fail) use ($request) {
+                    foreach ($request->kelompok_barang as $kelompok) {
+                        $exists = \App\Models\Barang::where('nama', $value)
+                            ->where('brand_id', $kelompok['brand_id'])
+                            ->where('kategori_id', $kelompok['kategori_id'])
+                            ->exists();
+                        if ($exists) {
+                            $fail("Nama barang '{$value}' sudah ada pada brand dan kategori tersebut.");
+                        }
+                    }
+                },
+            ],
+            'kelompok_barang.*.barang.*.tipe_id' => 'required|uuid',
+            'kelompok_barang.*.barang.*.satuan_id' => 'required|uuid',
+            'kelompok_barang.*.barang.*.harga_beli' => 'required|min:0',
+            'kelompok_barang.*.barang.*.harga_jual' => 'required|min:0',
+            'kelompok_barang.*.barang.*.size' => 'nullable|string|max:50',
+        ], [
+            'kelompok_barang.required' => 'Minimal 1 kelompok barang harus diisi.',
+            'kelompok_barang.*.kategori_id.required' => 'Kategori wajib dipilih.',
+            'kelompok_barang.*.brand_id.required' => 'Brand wajib dipilih.',
+            'kelompok_barang.*.barang.*.nama.required' => 'Nama Item wajib diisi.',
+            'kelompok_barang.*.barang.*.tipe_id.required' => 'Tipe wajib dipilih.',
+            'kelompok_barang.*.barang.*.satuan_id.required' => 'Satuan wajib dipilih.',
+            'kelompok_barang.*.barang.*.harga_beli.required' => 'Harga beli wajib diisi.',
+            'kelompok_barang.*.barang.*.harga_jual.required' => 'Harga jual wajib diisi.',
+            'kelompok_barang.*.barang.*.size.string' => 'Ukuran harus berupa teks.',
+            'kelompok_barang.*.barang.*.size.max'    => 'Ukuran maksimal 50 karakter.',
         ]);
-    
+
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()]);
+        }
+
         try {
-            $barang = Barang::findOrFail($request->id);
-    
-            $value = $request->value;
-    
-            // Bersihkan format rupiah
-            if (in_array($request->field, ['harga_beli', 'harga_jual'])) {
-                $value = (int) str_replace(['.', ',', 'Rp', ' '], '', $value);
+            DB::beginTransaction();
+
+            $savedCount = 0;
+
+            // Loop kelompok (kategori + brand)
+            foreach ($request->kelompok_barang as $kelompok) {
+                $kategoriId = $kelompok['kategori_id'];
+                $brandId = $kelompok['brand_id'];
+
+                // Loop inner barang
+                foreach ($kelompok['barang'] as $item) {
+                    // 🧹 Bersihkan format harga (hapus titik dan koma)
+                    $hargaBeli = (int) str_replace(['.', ','], '', $item['harga_beli']);
+                    $hargaJual = (int) str_replace(['.', ','], '', $item['harga_jual']);
+
+                    Barang::create([
+                        'id'          => (string) Str::uuid(),
+                        'kode_barang' => $item['kode'],
+                        'nama'        => $item['nama'],
+                        'kategori_id' => $kategoriId,
+                        'brand_id'    => $brandId,
+                        'tipe_id'     => $item['tipe_id'],
+                        'satuan_id'   => $item['satuan_id'],
+                        'stok'        => 0,
+                        'harga_beli'  => $hargaBeli,
+                        'harga_jual'  => $hargaJual,
+                        'size'        => $item['size'] ?? null,
+                    ]);
+
+                    $savedCount++;
+                }
             }
-    
-            $barang->update([
-                $request->field => $value
-            ]);
-    
-            activity('update-inline-barang')
-                ->causedBy(auth()->user())
-                ->performedOn($barang)
+
+            // ✅ Activity log (Spatie)
+            activity('tambah barang')
+                ->causedBy(Auth::user() ?? null)
                 ->withProperties([
-                    'field' => $request->field,
-                    'value' => $value
+                    'jumlah_data' => $savedCount,
+                    'input' => $request->kelompok_barang
                 ])
-                ->log("Update inline {$request->field} barang {$barang->nama}");
-    
-            return response()->json(['success' => true, 'message' => 'Data berhasil diperbarui']);
-        } catch (\Throwable $e) {
+                ->log('Menambahkan ' . $savedCount . ' data barang baru');
+
+            DB::commit();
+
             return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan',
-                'error'   => $e->getMessage()
-            ], 500);
+                'success' => 'Berhasil menyimpan ' . $savedCount . ' data barang.',
+                'time'    => $formattedTime,
+                'judul'   => 'Berhasil',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error'        => 'Terjadi kesalahan di aplikasi, hubungi developer.',
+                'judul'        => 'Aplikasi Error',
+                'time'         => $formattedTime,
+                'errorMessage' => $e->getMessage(),
+            ]);
         }
     }
-    
-
-     public function store(Request $request)
-     {
-         $formattedTime = Carbon::now()->diffForHumans();
-     
-         // 🧩 Validasi utama
-         $validator = Validator::make($request->all(), [
-             'kelompok_barang' => 'required|array|min:1',
-             'kelompok_barang.*.kategori_id' => 'required|uuid',
-             'kelompok_barang.*.brand_id'    => 'required|uuid',
-             'kelompok_barang.*.barang'      => 'required|array|min:1',
-             'kelompok_barang.*.barang.*.tipe_id' => 'required|uuid',
-             'kelompok_barang.*.barang.*.satuan_id' => 'required|uuid',
-             'kelompok_barang.*.barang.*.nama' => 'required|string|max:150',
-             'kelompok_barang.*.barang.*.harga_beli' => 'required|min:0',
-             'kelompok_barang.*.barang.*.harga_jual' => 'required|min:0',
-             'kelompok_barang.*.barang.*.kode' => 'required|string|max:100',
-             'kelompok_barang.*.barang.*.variasi' => 'nullable|array',
-         ], [
-             'kelompok_barang.required' => 'Minimal 1 kelompok barang harus diisi.',
-             'kelompok_barang.*.kategori_id.required' => 'Kategori wajib dipilih.',
-             'kelompok_barang.*.brand_id.required' => 'Brand wajib dipilih.',
-             'kelompok_barang.*.barang.*.nama.required' => 'Nama Item wajib diisi.',
-             'kelompok_barang.*.barang.*.tipe_id.required' => 'Tipe wajib dipilih.',
-             'kelompok_barang.*.barang.*.satuan_id.required' => 'Satuan wajib dipilih.',
-             'kelompok_barang.*.barang.*.harga_beli.required' => 'Harga beli wajib diisi.',
-             'kelompok_barang.*.barang.*.harga_jual.required' => 'Harga jual wajib diisi.',
-             'kelompok_barang.*.barang.*.kode.required' => 'Kode item wajib diisi.',
-         ]);
-     
-         // 🧠 Validasi tambahan untuk variasi
-         if ($request->has('kelompok_barang')) {
-             foreach ($request->kelompok_barang as $kKey => $kelompok) {
-                 if (!empty($kelompok['barang'])) {
-                     foreach ($kelompok['barang'] as $bKey => $barang) {
-                         if (!empty($barang['variasi'])) {
-                             foreach ($barang['variasi'] as $vKey => $variasi) {
-                                 // Kalau user isi variasi tapi tidak isi kode
-                                 if (!empty($variasi) && empty($variasi['kode_variasi'])) {
-                                     $validator->errors()->add(
-                                         "kelompok_barang.{$kKey}.barang.{$bKey}.variasi.{$vKey}.kode_variasi",
-                                         'Kode variasi wajib diisi jika variasi ditambahkan.'
-                                     );
-                                 }
-                             }
-                         }
-                     }
-                 }
-             }
-         }
-     
-         if ($validator->fails()) {
-             return response()->json(['errors' => $validator->errors()]);
-         }
-     
-         try {
-             DB::beginTransaction();
-             $savedCount = 0;
-     
-             // 🚀 Loop kelompok utama
-             foreach ($request->kelompok_barang as $kelompok) {
-                 $kategoriId = $kelompok['kategori_id'];
-                 $brandId = $kelompok['brand_id'];
-     
-                 // Loop setiap barang di dalam kelompok
-                 foreach ($kelompok['barang'] as $item) {
-                     // 🧹 Bersihkan harga dari titik/koma
-                     $hargaBeli = (int) str_replace(['.', ','], '', $item['harga_beli']);
-                     $hargaJual = (int) str_replace(['.', ','], '', $item['harga_jual']);
-     
-                     // sebelum create:
-                    $sizeUtama = isset($item['size']) ? $item['size'] : ($item['size_main'] ?? null);
-
-                    // SIMPAN BARANG UTAMA
-                    if (!empty($item['kode'])) {
-                        Barang::create([
-                            'id'          => (string) Str::uuid(),
-                            'kode_barang' => trim($item['kode']),
-                            'nama'        => $item['nama'],
-                            'kategori_id' => $kategoriId,
-                            'brand_id'    => $brandId,
-                            'tipe_id'     => $item['tipe_id'],
-                            'satuan_id'   => $item['satuan_id'],
-                            'stok'        => 0,
-                            'harga_beli'  => $hargaBeli,
-                            'harga_jual'  => $hargaJual,
-                            'size'        => $sizeUtama,   // <-- di sini
-                        ]);
-                        $savedCount++;
-                    }
-     
-                     // ✅ SIMPAN VARIASI JIKA ADA
-                     if (!empty($item['variasi'])) {
-                         foreach ($item['variasi'] as $variasi) {
-                             // lewati jika kode variasi kosong
-                             if (empty($variasi['kode_variasi'])) continue;
-     
-                             Barang::create([
-                                 'id'          => (string) Str::uuid(),
-                                 'kode_barang' => trim($variasi['kode_variasi']),
-                                 'nama'        => $item['nama'],
-                                 'kategori_id' => $kategoriId,
-                                 'brand_id'    => $brandId,
-                                 'tipe_id'     => $item['tipe_id'],
-                                 'satuan_id'   => $item['satuan_id'],
-                                 'stok'        => 0,
-                                 'harga_beli'  => $hargaBeli,
-                                 'harga_jual'  => $hargaJual,
-                                 'size'        => $variasi['size'] ?? null,
-                             ]);
-                             $savedCount++;
-                         }
-                     }
-                 }
-             }
-     
-             // 🪶 Activity log
-             activity('tambah barang')
-                 ->causedBy(Auth::user() ?? null)
-                 ->withProperties([
-                     'jumlah_data' => $savedCount,
-                     'input' => $request->kelompok_barang,
-                 ])
-                 ->log('Menambahkan ' . $savedCount . ' data barang (termasuk variasi)');
-     
-             DB::commit();
-     
-             return response()->json([
-                 'success' => "Berhasil menyimpan {$savedCount} data barang.",
-                 'time'    => $formattedTime,
-                 'judul'   => 'Berhasil',
-             ]);
-         } catch (\Throwable $e) {
-             DB::rollBack();
-             return response()->json([
-                 'error'        => 'Terjadi kesalahan di aplikasi, hubungi developer.',
-                 'judul'        => 'Aplikasi Error',
-                 'time'         => $formattedTime,
-                 'errorMessage' => $e->getMessage(),
-             ]);
-         }
-     }
-     
 
 
     /**

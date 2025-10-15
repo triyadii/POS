@@ -1,7 +1,8 @@
 @extends('layouts.backend.index')
 @section('title', 'Kasir Penjualan')
 @section('content')
-
+<div class="position-relative" 
+style="left:50%; width:99vw; margin-left:-50vw; padding-left:2vw; padding-right:2vw;">
 <div id="kt_app_content" class="app-content flex-column flex-row-fluid">
     <div class="row gx-6 gx-xl-9">
         <!-- Kolom Kiri -->
@@ -280,7 +281,7 @@
         </div>
     </div>
 </div>
-
+</div>
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>

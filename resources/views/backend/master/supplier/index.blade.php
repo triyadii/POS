@@ -120,10 +120,9 @@
                                 </th>
                             @endcan
                             <th class="min-w-125px">Nama Supplier</th>
-                            <th class="min-w-125px">Jumlah Resource</th>
-                            <th class="min-w-100px">Dibuat Oleh</th>
-                            <th class="min-w-100px">Created At</th>
-                            <th class="min-w-100px">Updated At</th>
+                            <th class="min-w-125px">Kontak</th>
+                            <th class="min-w-100px">Alamat</th>
+                            <th class="min-w-100px">Keterangan</th>
                             @canany(['supplier-show', 'supplier-edit', 'supplier-delete'])
                                 <th class="text-end min-w-100px">Action</th>
                             @endcanany
@@ -404,29 +403,24 @@
                             searchable: false
                         },
                         {
-                            data: 'jumlah_program',
-                            name: 'jumlah_program',
+                            data: 'no_telp',
+                            name: 'no_telp',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'user_id',
-                            name: 'user_id',
+                            data: 'alamat',
+                            name: 'alamat',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'created_at',
-                            name: 'created_at',
+                            data: 'keterangan',
+                            name: 'keterangan',
                             orderable: false,
                             searchable: false
                         },
-                        {
-                            data: 'updated_at',
-                            name: 'updated_at',
-                            orderable: false,
-                            searchable: false
-                        },
+                       
                      
                         // Kondisi untuk menampilkan kolom Action
                         (canShow || canEdit || canDelete) ? {

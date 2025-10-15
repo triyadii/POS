@@ -20,13 +20,17 @@
         </div>
         <!--end:Menu item-->
 
-        @canany(['barang-list'])
+        @canany(['barang-list','barang-keluar-list'])
         <!--begin:Menu item-->
         <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
             class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
             <!--begin:Menu link-->
             <span class="menu-link py-3 {{ request()->routeIs(
                         'barang.index',
+                        'barang-masuk.index',
+                        'barang-keluar.index',
+                        'penjualan.daftar',
+                        'stok.index'
                     )
                         ? 'active '
                         : '' }}">
@@ -69,15 +73,15 @@
                     @endcan
 
 
-                    @can('kategori-list')
-                        <div class="menu-item">
+                    @can('barang-keluar-list')
+                        <div class="menu-item {{ request()->routeIs('barang-keluar.index') ? 'here show ' : '' }}">
                             <!--begin:Menu link-->
-                            <a class="menu-link py-3" href="#">
+                            <a class="menu-link py-3" href="{{ route('barang-keluar.index') }}">
                                 <span class="menu-icon">
                                     <i class="ki-outline ki-truck fs-2"></i>
                                 </span>
                                 <span class="menu-title">Barang Keluar</span>
-                                <span class="badge badge-info">progres</span>
+                                <span class="badge badge-success">Done</span>
 
                 
 
@@ -95,7 +99,7 @@
                             <i class="ki-outline ki-notepad-edit fs-2"></i>
                         </span>
                         <span class="menu-title">Daftar Penjualan</span>
-                        <span class="badge badge-info">progres</span>
+                        <span class="badge badge-success">Done</span>
 
                     </a>
                     <!--end:Menu link-->
@@ -105,36 +109,124 @@
                 @can('brand-list')
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link py-3" href="#">
+                    <a class="menu-link py-3" href="{{ route('stok.index') }}">
                         <span class="menu-icon">
                             <i class="ki-outline ki-cube-3 fs-2"></i>
                         </span>
                         <span class="menu-title">Stok</span>
-                        <span class="badge badge-danger">soon</span>
+                        <span class="badge badge-success">Done</span>
 
                     </a>
                     <!--end:Menu link-->
                 </div>
                 @endcan
 
+                @can('tipe-list')
+                 <!--begin:Menu item-->
+                 <div data-kt-menu-trigger="{default:'click', lg: 'hover'}" data-kt-menu-placement="right-start"
+                 class="menu-item menu-lg-down-accordion">
+                 <!--begin:Menu link-->
+                 <span
+                     class="menu-link py-3 {{ request()->routeIs(
+                         
+                         'laporan-penjualan.index',
+                         'laporan-penjualan-supplier.index',
+                         'laporan-penjualan-kategori.index',
+                         'laporan-penjualan-brand.index',
+                         'laporan-laba-rugi.index'
+                     )
+                         ? 'active '
+                         : '' }}">
+                     <span class="menu-icon">
+                         <i class="ki-outline ki-pointers fs-2"></i>
+                     </span>
+                     <span class="menu-title">Laporan</span>
+                     <span class="menu-arrow"></span>
+                 </span>
+                 <!--end:Menu link-->
+                 <!--begin:Menu sub-->
+                 <div
+                     class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown menu-active-bg px-lg-2 py-lg-4 w-lg-225px">
 
-                
+                     <!--begin:Menu item-->
+                    
+                         <div
+                             class="menu-item {{ request()->routeIs('laporan-penjualan.index') ? 'here show ' : '' }}">
+                             <!--begin:Menu link-->
+                             <a class="menu-link py-3" href="{{ route('laporan-penjualan.index') }}">
+                                 <span class="menu-bullet">
+                                     <span class="bullet bullet-dot"></span>
+                                 </span>
+                                 <span class="menu-title">Global</span>
+                                 <span class="badge badge-success">Done</span>
+                             </a>
+                             <!--end:Menu link-->
+                         </div>
+                    
+                     <!--end:Menu item-->
+                     <!--begin:Menu item-->
+                         <div
+                             class="menu-item {{ request()->routeIs('laporan-penjualan-supplier.index') ? 'here show ' : '' }}">
+                             <!--begin:Menu link-->
+                             <a class="menu-link py-3" href="{{ route('laporan-penjualan-supplier.index') }}">
+                                 <span class="menu-bullet">
+                                     <span class="bullet bullet-dot"></span>
+                                 </span>
+                                 <span class="menu-title">By Supplier</span>
+                                 <span class="badge badge-success">Done</span>
+                             </a>
+                             <!--end:Menu link-->
+                         </div>
+                     <!--end:Menu item-->
+                     <!--begin:Menu item-->
+                         <div
+                             class="menu-item {{ request()->routeIs('laporan-penjualan-kategori.index') ? 'here show ' : '' }}">
+                             <!--begin:Menu link-->
+                             <a class="menu-link py-3" href="{{ route('laporan-penjualan-kategori.index') }}">
+                                 <span class="menu-bullet">
+                                     <span class="bullet bullet-dot"></span>
+                                 </span>
+                                 <span class="menu-title">By Kategori</span>
+                                 <span class="badge badge-success">Done</span>
+                             </a>
+                             <!--end:Menu link-->
+                         </div>
+                     <!--end:Menu item-->
+                     <!--begin:Menu item-->
+                         <div
+                             class="menu-item {{ request()->routeIs('laporan-penjualan-brand.index') ? 'here show ' : '' }}">
+                             <!--begin:Menu link-->
+                             <a class="menu-link py-3" href="{{ route('laporan-penjualan-brand.index') }}">
+                                 <span class="menu-bullet">
+                                     <span class="bullet bullet-dot"></span>
+                                 </span>
+                                 <span class="menu-title">By Brand</span>
+                                 <span class="badge badge-success">Done</span>
+                             </a>
+                             <!--end:Menu link-->
+                         </div>
+                     <!--end:Menu item-->
 
-                    @can('tipe-list')
-                        <div class="menu-item">
-                            <!--begin:Menu link-->
-                            <a class="menu-link py-3" href="#">
-                                <span class="menu-icon">
-                                    <i class="ki-outline ki-tablet-book fs-2"></i>
-                                </span>
-                                <span class="menu-title">Laporan</span>
-                                <span class="badge badge-info">progres</span>
 
-                            </a>
-                        </div>
-                    @endcan
-
-
+                      <!--begin:Menu item-->
+                      <div
+                      class="menu-item {{ request()->routeIs('laporan-laba-rugi.index') ? 'here show ' : '' }}">
+                      <!--begin:Menu link-->
+                      <a class="menu-link py-3" href="{{ route('laporan-laba-rugi.index') }}">
+                          <span class="menu-bullet">
+                              <span class="bullet bullet-dot"></span>
+                          </span>
+                          <span class="menu-title">Laba Rugi</span>
+                          <span class="badge badge-success">Done</span>
+                      </a>
+                      <!--end:Menu link-->
+                  </div>
+              <!--end:Menu item-->
+                 </div>
+                 <!--end:Menu sub-->
+             </div>
+         @endcanany
+         <!--end:Menu item-->
 
             </div>
             <!--end:Menu sub-->
