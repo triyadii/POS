@@ -13,6 +13,15 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanLabaRugiController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware(['auth']);
+        $this->middleware('permission:laporan-laba-rugi-list', ['only' => ['index', 'getProfitLossData','exportLabaRugiPdf']]);
+    }
+
+
+
     public function index(Request $request)
     {
         // Ganti path view jika berbeda, sesuaikan dengan error sebelumnya

@@ -12,7 +12,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class StokController extends Controller
+
 {
+
+
+    function __construct()
+    {
+        $this->middleware(['auth']);
+        $this->middleware('permission:stok-list', ['only' => ['index', 'getStokData']]);
+    }
+
+
+
     // ... method index() dan getStokData() tidak berubah ...
     public function index()
     {
@@ -48,27 +59,27 @@ class StokController extends Controller
             ->make(true);
     }
 
-    // ===================================
-    // UBAH FUNGSI DI BAWAH INI
-    // ===================================
-    public function getChartData(Request $request)
-    {
-        $query = Barang::query();
-        if ($request->filled('filter_kategori') && $request->filter_kategori != 'all') {
-            $query->where('kategori_id', $request->filter_kategori);
-        }
-        if ($request->filled('filter_brand') && $request->filter_brand != 'all') {
-            $query->where('brand_id', $request->filter_brand);
-        }
+    // // ===================================
+    // // UBAH FUNGSI DI BAWAH INI
+    // // ===================================
+    // public function getChartData(Request $request)
+    // {
+    //     $query = Barang::query();
+    //     if ($request->filled('filter_kategori') && $request->filter_kategori != 'all') {
+    //         $query->where('kategori_id', $request->filter_kategori);
+    //     }
+    //     if ($request->filled('filter_brand') && $request->filter_brand != 'all') {
+    //         $query->where('brand_id', $request->filter_brand);
+    //     }
 
-        // PERUBAHAN: Urutkan berdasarkan apakah stok > 0, lalu urutkan berdasarkan stok
-        $data = $query->orderByRaw('stok > 0 DESC, stok ASC')
-            ->take(10)
-            ->get(['nama', 'stok'])
-            ->pluck('stok', 'nama');
+    //     // PERUBAHAN: Urutkan berdasarkan apakah stok > 0, lalu urutkan berdasarkan stok
+    //     $data = $query->orderByRaw('stok > 0 DESC, stok ASC')
+    //         ->take(10)
+    //         ->get(['nama', 'stok'])
+    //         ->pluck('stok', 'nama');
 
-        return response()->json($data);
-    }
+    //     return response()->json($data);
+    // }
 
     public function export(Request $request)
     {

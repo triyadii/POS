@@ -13,6 +13,18 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanPenjualanController extends Controller
 {
+
+
+    function __construct()
+    {
+        $this->middleware(['auth']);
+        $this->middleware('permission:laporan-global-list', ['only' => ['index', 'getLaporanData','export']]);
+    }
+
+
+
+
+
     public function index(Request $request)
     {
         return view('backend.laporan.laporan_penjualan.index');
