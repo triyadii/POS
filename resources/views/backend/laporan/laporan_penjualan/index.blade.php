@@ -42,25 +42,25 @@
                 <div class="row g-5 g-xl-8">
                     <div class="col-xl-4 d-none" id="statistik-total-transaksi-wrapper">
                         <div class="card bg-light-info hoverable card-xl-stretch">
-                            <div class="card-body">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="text-info fw-bold fs-2 mb-2 mt-5" id="stat-total-transaksi">-</div>
-                                <div class="fw-semibold text-info">Total Transaksi</div>
+                                <div class="fw-semibold text-info mb-5">Total Transaksi</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4 d-none" id="statistik-total-penjualan-wrapper">
                         <div class="card bg-light-success hoverable card-xl-stretch">
-                            <div class="card-body">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="text-success fw-bold fs-2 mb-2 mt-5" id="stat-total-penjualan">-</div>
-                                <div class="fw-semibold text-success">Total Penjualan</div>
+                                <div class="fw-semibold text-success mb-5">Total Penjualan</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4 d-none" id="statistik-total-produk-wrapper">
                         <div class="card bg-light-primary hoverable card-xl-stretch">
-                            <div class="card-body">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="text-primary fw-bold fs-2 mb-2 mt-5" id="stat-total-produk">-</div>
-                                <div class="fw-semibold text-primary">Jumlah Produk Terjual</div>
+                                <div class="fw-semibold text-primary mb-5">Jumlah Produk Terjual</div>
                             </div>
                         </div>
                     </div>

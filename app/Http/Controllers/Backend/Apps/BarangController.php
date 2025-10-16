@@ -30,6 +30,9 @@ class BarangController extends Controller
         $this->middleware('permission:barang-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:barang-delete', ['only' => ['destroy']]);
         $this->middleware('permission:barang-massdelete', ['only' => ['massDelete']]);
+
+
+        $this->middleware('permission:cari-barang-list', ['only' => ['pencarianBarang', 'pencarianBarangList']]);
     }
 
     /**
@@ -41,6 +44,8 @@ class BarangController extends Controller
     {
         return view('backend.apps.barang.index');
     }
+
+    
     public function pencarianBarang(Request $request)
     {
         return view('backend.apps.barang.pencarian');

@@ -19,6 +19,8 @@ class PenjualanController extends Controller
     function __construct()
     {
         $this->middleware(['auth']);
+        $this->middleware('permission:kasir-list', ['only' => ['index', 'getData','store','historyData']]);
+        $this->middleware('permission:daftar-penjualan-list', ['only' => ['daftarPenjualan','dataPenjualan']]);
     }
     public function index(Request $request)
     {
