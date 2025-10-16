@@ -12,6 +12,15 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanPembelianSupplierController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware(['auth']);
+        $this->middleware('permission:laporan-pembelian-supplier-list', ['only' => ['index', 'getLaporanData','export']]);
+    }
+
+
+
     /**
      * Hapus pengambilan data brand & kategori karena filter dihilangkan.
      */

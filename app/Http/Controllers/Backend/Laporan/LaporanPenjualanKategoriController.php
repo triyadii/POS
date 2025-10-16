@@ -14,6 +14,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanPenjualanKategoriController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware(['auth']);
+        $this->middleware('permission:laporan-penjualan-kategori-list', ['only' => ['index', 'getLaporanData','export']]);
+    }
     /**
      * Menampilkan halaman laporan dan mengirim data kategori untuk filter.
      */
