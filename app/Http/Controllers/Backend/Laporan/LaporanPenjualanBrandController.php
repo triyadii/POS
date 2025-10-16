@@ -14,6 +14,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanPenjualanBrandController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware(['auth']);
+        $this->middleware('permission:laporan-penjualan-brand-list', ['only' => ['index', 'getLaporanData','export']]);
+    }
     /**
      * Menampilkan halaman laporan dan mengirim data brand untuk filter.
      */

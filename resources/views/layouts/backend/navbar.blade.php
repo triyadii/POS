@@ -1,10 +1,12 @@
 <div class="app-navbar flex-shrink-0">
     <!--begin::Notifications-->
     <div class="app-navbar-item">
+        @can('kasir-list')
         <a href="{{ route('penjualan.index') }}" class="btn btn-icon-primary btn-sm ">
             <i class="ki-outline ki-finance-calculator fs-1"></i>
             KASIR
         </a>
+        @endcan
         <!--begin::Menu- wrapper-->
         <div class="btn btn-icon btn-icon-gray-600 btn-active-color-primary"
             data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"

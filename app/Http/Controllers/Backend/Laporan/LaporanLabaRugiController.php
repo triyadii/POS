@@ -7,11 +7,21 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
+use Illuminate\Support\Facades\Auth;
 use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanLabaRugiController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware(['auth']);
+        $this->middleware('permission:laporan-laba-rugi-list', ['only' => ['index', 'getProfitLossData','exportLabaRugiPdf']]);
+    }
+
+
+
     public function index(Request $request)
     {
         // Ganti path view jika berbeda, sesuaikan dengan error sebelumnya
@@ -41,16 +51,16 @@ class LaporanLabaRugiController extends Controller
 
         $periode = $this->_calculateProfitLossData($start, $end);
 
-        // Ukuran dan orientasi
         $paperSize = $request->ukuran_kertas ?? 'A4';
         $orientation = $request->orientasi_kertas ?? 'portrait';
 
-        // Anda perlu membuat view blade baru untuk tampilan PDF
-        // contoh: resources/views/backend/laporan/laporan-laba-rugi/laba_rugi_pdf.blade.php
+        // 2. Modifikasi data yang akan dikirim ke view
         $pdf = Pdf::loadView('backend.laporan.laporan_laba_rugi.laba_rugi_pdf', [
             'periode' => $periode,
-            'start' => $start->format('d-m-Y'),
-            'end' => $end->format('d-m-Y')
+            'start' => $start, // Kirim sebagai objek Carbon
+            'end' => $end,     // Kirim sebagai objek Carbon
+            'namaUser' => Auth::user()->name,       // Ambil nama user yang login
+            'tanggalCetak' => Carbon::now()         // Ambil waktu saat ini
         ])->setPaper($paperSize, $orientation);
 
         return $pdf->stream('laporan-laba-rugi.pdf');
