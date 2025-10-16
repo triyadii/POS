@@ -88,8 +88,8 @@
                                         <th class="min-w-125px">No. Transaksi</th>
                                         <th class="min-w-125px">Customer</th>
                                         <th class="min-w-125px">Kasir</th>
-                                        <th class="min-w-350px">Detail Barang</th>
                                         <th class="min-w-125px">Total</th>
+                                        <th class="min-w-350px">Detail Barang</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-gray-600 fw-semibold"></tbody>
@@ -159,6 +159,28 @@
         </div>
     </div>
 
+    {{-- Letakkan kode ini sebelum @push('scripts') --}}
+    <div class="modal fade" tabindex="-1" id="kt_modal_detail_penjualan">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title"></h3>
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                        aria-label="Close">
+                        <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    {{-- Konten detail akan dimasukkan di sini oleh JavaScript --}}
+                    <div id="detail-content-container"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('stylesheets')
         <link rel="stylesheet" href="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.css') }}">
     @endpush
@@ -213,14 +235,15 @@
                             name: 'user.name'
                         },
                         {
-                            data: 'detail_barang',
-                            name: 'detail_barang',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
                             data: 'total',
                             name: 'total_harga'
+                        },
+                        { // Ganti kolom 'detail_barang' dengan 'action'
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-center'
                         },
                     ]
                 });
@@ -251,6 +274,49 @@
                     $('#chart-wrapper, #table-wrapper, .btn-export').removeClass('d-none');
                     table.ajax.reload();
                     fetchChart(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                });
+
+                $('#kt_modal_detail_penjualan').on('show.bs.modal', function(event) {
+                    const button = $(event.relatedTarget); // Tombol yang diklik
+                    const transactionCode = button.data('kode'); // Ambil kode transaksi dari data-kode
+                    const details = button.data('details'); // Ambil JSON detail dari data-details
+
+                    const modal = $(this);
+                    modal.find('.modal-title').text('Detail Transaksi: ' + transactionCode);
+
+                    let contentHtml = `<div class="table-responsive">
+                                    <table class="table table-row-dashed table-row-gray-300 gy-4">
+                                        <thead>
+                                            <tr class="fw-bold fs-6 text-gray-800">
+                                                <th>Nama Barang</th>
+                                                <th>Qty</th>
+                                                <th class="text-end">Harga Jual</th>
+                                                <th class="text-end">Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
+
+                    if (Array.isArray(details) && details.length > 0) {
+                        details.forEach(item => {
+                            contentHtml += `<tr>
+                                            <td>
+                                                <div class="d-flex flex-column">
+                                                    <span class="text-gray-800 fw-bold">${item.nama_barang}</span>
+                                                    <small class="text-muted">${item.kode_barang}</small>
+                                                </div>
+                                            </td>
+                                            <td>${item.qty}</td>
+                                            <td class="text-end">${formatRupiah(item.harga_jual)}</td>
+                                            <td class="text-end fw-semibold">${formatRupiah(item.subtotal)}</td>
+                                        </tr>`;
+                        });
+                    } else {
+                        contentHtml +=
+                            '<tr><td colspan="4" class="text-center">Tidak ada data detail.</td></tr>';
+                    }
+
+                    contentHtml += `</tbody></table></div>`;
+                    modal.find('#detail-content-container').html(contentHtml);
                 });
 
                 // ===================================

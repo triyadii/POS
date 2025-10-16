@@ -1,286 +1,289 @@
 @extends('layouts.backend.index')
 @section('title', 'Kasir Penjualan')
 @section('content')
-<div class="position-relative" 
-style="left:50%; width:99vw; margin-left:-50vw; padding-left:2vw; padding-right:2vw;">
-<div id="kt_app_content" class="app-content flex-column flex-row-fluid">
-    <div class="row gx-6 gx-xl-9">
-        <!-- Kolom Kiri -->
-        <div class="col-lg-7">
-            <div class="card card-flush h-lg-100">
-                <div class="card-header align-items-center py-5 bg-primary">
-                    <div class="card-title flex-column">
-                        <h3 class="fw-bold mb-1 text-white">Kasir Penjualan</h3>
+<div class="position-relative" style="left:50%; width:99vw; margin-left:-50vw; padding-left:2vw; padding-right:2vw;">
+    <div id="kt_app_content" class="app-content flex-column flex-row-fluid">
+        <div class="row gx-6 gx-xl-9">
+            <!-- Kolom Kiri -->
+            <div class="col-lg-7">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header align-items-center py-5 bg-primary">
+                        <div class="card-title flex-column">
+                            <h3 class="fw-bold mb-1 text-white">Kasir Penjualan</h3>
+                        </div>
+                        <div class="card-toolbar d-flex gap-2">
+                            <a href="#" class="btn btn-light-info btn-sm">History Penjualan</a>
+                        </div>
                     </div>
-                    <div class="card-toolbar d-flex gap-2">
-                        <a href="#" class="btn btn-light-info btn-sm">History Penjualan</a>
+
+                    <div class="card-body p-9 pt-5">
+                        <form id="form-penjualan">
+                            @csrf
+                            <div class="row gx-6 gx-xl-9 mb-2">
+                                <div class="col-lg-6 mb-2">
+                                    <input type="date" class="form-control" name="tanggal" id="tanggal"
+                                        value="{{ date('Y-m-d') }}" disabled />
+                                </div>
+                                <div class="col-lg-6 mb-2">
+                                    <input type="text" class="form-control form-control-solid" name="no_penjualan"
+                                        id="no_penjualan" value="{{ $no_penjualan }}" readonly />
+                                </div>
+                            </div>
+
+                            <div class="row gx-6 gx-xl-9 align-items-end mb-6">
+                                <div class="col-lg-10 mb-2">
+                                    <label for="customer_id" class="form-label fw-semibold text-gray-700 mb-1">
+                                        <i class="ki-duotone ki-user fs-3 me-1 text-primary"></i> Customer
+                                    </label>
+                                    <select class="form-select form-select-solid" id="customer_id" name="customer_id"
+                                        data-control="select2" data-placeholder="🔍 Cari atau pilih customer..."
+                                        data-allow-clear="true">
+                                        <option value="">Pilih Customer</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-lg-2 mb-2 d-flex align-items-end justify-content-end">
+                                    <button type="button"
+                                        class="btn btn-light-success w-100 d-flex align-items-center justify-content-center gap-1"
+                                        id="btnTambahCustomer" data-bs-toggle="modal"
+                                        data-bs-target="#modalTambahCustomer">
+                                        <i class="ki-duotone ki-user-plus fs-3"></i>
+                                        <span class="fw-semibold">Baru</span>
+                                    </button>
+                                </div>
+                            </div>
+
+
+                            <div class="cart-payment mb-5">
+                                <div class="table-responsive mb-6">
+                                    <table class="table table-bordered align-middle">
+                                        <thead class="bg-secondary">
+                                            <tr>
+                                                <th>Nama Produk</th>
+                                                <th>SKU</th>
+                                                <th>Harga</th>
+                                                <th>Qty</th>
+                                                <th>Sub Total</th>
+                                                <th class="text-end">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="purchase_cart_list"></tbody>
+                                    </table>
+                                </div>
+                                <hr>
+                            </div>
+
+                            <div class="row gx-6 gx-xl-9 mb-6">
+                                <div class="col-lg-6">
+                                    <label>Uang Diterima</label>
+                                    <input type="text" class="form-control" id="uang-diterima-penjualan"
+                                        placeholder="0">
+                                    <label class="mt-3">Kembalian</label>
+                                    <input type="text" class="form-control form-control-solid" id="kembalian-penjualan"
+                                        readonly>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Total</label>
+                                    <input type="text" class="form-control form-control-solid" id="total-penjualan"
+                                        readonly>
+                                    <label class="mt-3">Pembayaran</label>
+                                    <select class="form-select" id="pembayaran-penjualan" name="pembayaran">
+                                        <option value="">Pilih Metode Pembayaran</option>
+                                        @foreach($pembayaran as $p)
+                                        <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label>Catatan</label>
+                            <textarea class="form-control mb-3" id="catatan" rows="2"></textarea>
+
+                            <div class="row gx-6 gx-xl-9">
+                                <div class="col-lg-6 mb-2">
+                                    <button type="button" class="btn btn-light-danger w-100"
+                                        id="btn-batal-penjualan">Batal</button>
+                                </div>
+                                <div class="col-lg-6 mb-2">
+                                    <button type="submit" class="btn btn-light-primary w-100"
+                                        id="btn-simpan-penjualan">Simpan</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
+            </div>
 
-                <div class="card-body p-9 pt-5">
-                    <form id="form-penjualan">
-                        @csrf
-                        <div class="row gx-6 gx-xl-9 mb-2">
-                            <div class="col-lg-6 mb-2">
-                                <input type="date" class="form-control" name="tanggal" id="tanggal"
-                                    value="{{ date('Y-m-d') }}" disabled />
+            <!-- Kolom Kanan -->
+            <div class="col-lg-5">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header align-items-center bg-primary">
+                        <div class="row gx-2 w-100 align-items-center">
+                            <div class="col-6">
+                                <input type="text" class="form-control form-control-sm" id="filter-cari-daftar-produk"
+                                    placeholder="Cari Produk" />
                             </div>
-                            <div class="col-lg-6 mb-2">
-                                <input type="text" class="form-control form-control-solid" name="no_penjualan"
-                                    id="no_penjualan" value="{{ $no_penjualan }}" readonly />
-                            </div>
-                        </div>
-
-                        <div class="row gx-6 gx-xl-9 align-items-end mb-6">
-                            <div class="col-lg-10 mb-2">
-                                <label for="customer_id" class="form-label fw-semibold text-gray-700 mb-1">
-                                    <i class="ki-duotone ki-user fs-3 me-1 text-primary"></i> Customer
-                                </label>
-                                <select class="form-select form-select-solid" id="customer_id" name="customer_id"
-                                    data-control="select2" data-placeholder="🔍 Cari atau pilih customer..."
-                                    data-allow-clear="true">
-                                    <option value="">Pilih Customer</option>
-                                </select>
-                            </div>
-
-                            <div class="col-lg-2 mb-2 d-flex align-items-end justify-content-end">
-                                <button type="button"
-                                    class="btn btn-light-success w-100 d-flex align-items-center justify-content-center gap-1"
-                                    id="btnTambahCustomer" data-bs-toggle="modal" data-bs-target="#modalTambahCustomer">
-                                    <i class="ki-duotone ki-user-plus fs-3"></i>
-                                    <span class="fw-semibold">Baru</span>
-                                </button>
-                            </div>
-                        </div>
-
-
-                        <div class="cart-payment mb-5">
-                            <div class="table-responsive mb-6">
-                                <table class="table table-bordered align-middle">
-                                    <thead class="bg-secondary">
-                                        <tr>
-                                            <th>Nama Produk</th>
-                                            <th>SKU</th>
-                                            <th>Harga</th>
-                                            <th>Qty</th>
-                                            <th>Sub Total</th>
-                                            <th class="text-end">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="purchase_cart_list"></tbody>
-                                </table>
-                            </div>
-                            <hr>
-                        </div>
-
-                        <div class="row gx-6 gx-xl-9 mb-6">
-                            <div class="col-lg-6">
-                                <label>Uang Diterima</label>
-                                <input type="text" class="form-control" id="uang-diterima-penjualan" placeholder="0">
-                                <label class="mt-3">Kembalian</label>
-                                <input type="text" class="form-control form-control-solid" id="kembalian-penjualan"
-                                    readonly>
-                            </div>
-                            <div class="col-lg-6">
-                                <label>Total</label>
-                                <input type="text" class="form-control form-control-solid" id="total-penjualan"
-                                    readonly>
-                                <label class="mt-3">Pembayaran</label>
-                                <select class="form-select" id="pembayaran-penjualan" name="pembayaran">
-                                    <option value="">Pilih Metode Pembayaran</option>
-                                    @foreach($pembayaran as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                            <div class="col-5">
+                                <select class="form-select form-select-sm" id="filter-kategori-daftar-produk">
+                                    <option value="">Semua Kategori</option>
+                                    @php
+                                    $kategoriUnik = $produk->pluck('kategori.nama')->unique()->filter()->values();
+                                    @endphp
+                                    @foreach($kategoriUnik as $k)
+                                    <option value="{{ $k }}">{{ $k }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-
-                        <label>Catatan</label>
-                        <textarea class="form-control mb-3" id="catatan" rows="2"></textarea>
-
-                        <div class="row gx-6 gx-xl-9">
-                            <div class="col-lg-6 mb-2">
-                                <button type="button" class="btn btn-light-danger w-100"
-                                    id="btn-batal-penjualan">Batal</button>
+                            <div class="col-1 text-end">
+                                <a id="btnFullscreen" class="btn btn-sm fs-2 w-100">
+                                    <i class="fas fa-expand text-white"></i>
+                                </a>
                             </div>
-                            <div class="col-lg-6 mb-2">
-                                <button type="submit" class="btn btn-light-primary w-100"
-                                    id="btn-simpan-penjualan">Simpan</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Kolom Kanan -->
-        <div class="col-lg-5">
-            <div class="card card-flush h-lg-100">
-                <div class="card-header align-items-center bg-primary">
-                    <div class="row gx-2 w-100 align-items-center">
-                        <div class="col-6">
-                            <input type="text" class="form-control form-control-sm" id="filter-cari-daftar-produk"
-                                placeholder="Cari Produk" />
-                        </div>
-                        <div class="col-5">
-                            <select class="form-select form-select-sm" id="filter-kategori-daftar-produk">
-                                <option value="">Semua Kategori</option>
-                                @php
-                                $kategoriUnik = $produk->pluck('kategori.nama')->unique()->filter()->values();
-                                @endphp
-                                @foreach($kategoriUnik as $k)
-                                <option value="{{ $k }}">{{ $k }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-1 text-end">
-                            <a id="btnFullscreen" class="btn btn-sm fs-2 w-100">
-                                <i class="fas fa-expand text-white"></i>
-                            </a>
                         </div>
                     </div>
-                </div>
 
-                <div class="card-body p-9 pt-3">
-                    <div class="row daftar-produk"></div>
+                    <div class="card-body p-9 pt-3">
+                        <div class="row daftar-produk"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal Transaksi Selesai -->
-<div class="modal fade" id="modalPenjualanSelesai" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered mw-350px">
-        <div class="modal-content rounded-3 overflow-hidden">
-            <div class="modal-body text-center p-5">
-                <div class="mb-4">
-                    <div class="rounded-circle bg-light-success d-inline-flex align-items-center justify-content-center"
-                        style="width:60px;height:60px;">
-                        <i class="fas fa-check text-success fs-2x"></i>
+    <!-- Modal Transaksi Selesai -->
+    <div class="modal fade" id="modalPenjualanSelesai" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered mw-350px">
+            <div class="modal-content rounded-3 overflow-hidden">
+                <div class="modal-body text-center p-5">
+                    <div class="mb-4">
+                        <div class="rounded-circle bg-light-success d-inline-flex align-items-center justify-content-center"
+                            style="width:60px;height:60px;">
+                            <i class="fas fa-check text-success fs-2x"></i>
+                        </div>
+                        <h4 class="mt-3 fw-bold">Transaksi Sukses!</h4>
                     </div>
-                    <h4 class="mt-3 fw-bold">Transaksi Sukses!</h4>
-                </div>
 
-                <div class="text-start bg-light p-3 rounded">
-                    <div class="d-flex justify-content-between"><span>Total</span><span id="modal-total"></span></div>
-                    <div class="d-flex justify-content-between"><span>Tunai</span><span id="modal-uang-diterima"></span>
+                    <div class="text-start bg-light p-3 rounded">
+                        <div class="d-flex justify-content-between"><span>Total</span><span id="modal-total"></span>
+                        </div>
+                        <div class="d-flex justify-content-between"><span>Tunai</span><span
+                                id="modal-uang-diterima"></span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold"><span>Kembalian</span><span
+                                id="modal-kembalian"></span></div>
                     </div>
-                    <hr>
-                    <div class="d-flex justify-content-between fw-bold"><span>Kembalian</span><span
-                            id="modal-kembalian"></span></div>
-                </div>
 
-                <div class="d-flex flex-column gap-2">
-                    <button class="btn btn-success w-100" id="btn-cetak-struk">
-                        <i class="fas fa-print me-2"></i>Cetak Struk
-                    </button>
-                    <button class="btn btn-secondary w-100" data-bs-dismiss="modal">Selesai</button>
+                    <div class="d-flex flex-column gap-2">
+                        <button class="btn btn-success w-100" id="btn-cetak-struk">
+                            <i class="fas fa-print me-2"></i>Cetak Struk
+                        </button>
+                        <button class="btn btn-secondary w-100" data-bs-dismiss="modal">Selesai</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Modal History Penjualan -->
-<div class="modal fade" id="modalHistoryPenjualan" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">History Penjualan</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <!-- Modal History Penjualan -->
+    <div class="modal fade" id="modalHistoryPenjualan" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">History Penjualan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle" id="table-history">
+                            <thead class="bg-secondary text-white">
+                                <tr>
+                                    <th>Kode Transaksi</th>
+                                    <th>Tanggal</th>
+                                    <th>Customer</th>
+                                    <th>Metode Pembayaran</th>
+                                    <th>Total Item</th>
+                                    <th>Total Harga</th>
+                                    <th>Catatan</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+                </div>
             </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered align-middle" id="table-history">
-                        <thead class="bg-secondary text-white">
+        </div>
+    </div>
+
+    <!-- Modal Detail Penjualan -->
+    <div class="modal fade" id="modalDetailPenjualan" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-secondary text-white">
+                    <h5 class="modal-title">Detail Penjualan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <th>Kode Transaksi</th>
-                                <th>Tanggal</th>
-                                <th>Customer</th>
-                                <th>Metode Pembayaran</th>
-                                <th>Total Item</th>
-                                <th>Total Harga</th>
-                                <th>Catatan</th>
-                                <th>Aksi</th>
+                                <th>Nama Barang</th>
+                                <th>Qty</th>
+                                <th>Harga</th>
+                                <th>Subtotal</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody id="detail-body"></tbody>
                     </table>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
-            </div>
         </div>
     </div>
-</div>
 
-<!-- Modal Detail Penjualan -->
-<div class="modal fade" id="modalDetailPenjualan" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-secondary text-white">
-                <h5 class="modal-title">Detail Penjualan</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Nama Barang</th>
-                            <th>Qty</th>
-                            <th>Harga</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody id="detail-body"></tbody>
-                </table>
-            </div>
+    <!-- Template Struk (disembunyikan, hanya untuk dicetak) -->
+    <div id="print-area" style="display:none;font-family:monospace;">
+        <div style="text-align:center;">
+            <h4 style="margin-bottom:0;">TOKO MAJU JAYA</h4>
+            <small>Jl. Contoh No. 123, Deli Serdang</small>
+            <hr>
         </div>
-    </div>
-</div>
-
-<!-- Template Struk (disembunyikan, hanya untuk dicetak) -->
-<div id="print-area" style="display:none;font-family:monospace;">
-    <div style="text-align:center;">
-        <h4 style="margin-bottom:0;">TOKO MAJU JAYA</h4>
-        <small>Jl. Contoh No. 123, Deli Serdang</small>
+        <div id="print-detail"></div>
         <hr>
+        <div style="text-align:center;">Terima Kasih 😊<br>--- Struk Non Pajak ---</div>
     </div>
-    <div id="print-detail"></div>
-    <hr>
-    <div style="text-align:center;">Terima Kasih 😊<br>--- Struk Non Pajak ---</div>
-</div>
 
-<!-- Modal Tambah Customer -->
-<div class="modal fade" id="modalTambahCustomer" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered mw-500px">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Tambah Customer Baru</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formTambahCustomer">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label">Nama Customer</label>
-                        <input type="text" class="form-control" name="nama" placeholder="Masukkan nama customer"
-                            required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nomor WhatsApp</label>
-                        <input type="text" class="form-control" name="no_wa" placeholder="08xxxxxxxxxx" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary" id="btnSimpanCustomer">Simpan</button>
+    <!-- Modal Tambah Customer -->
+    <div class="modal fade" id="modalTambahCustomer" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered mw-500px">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Tambah Customer Baru</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formTambahCustomer">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label">Nama Customer</label>
+                            <input type="text" class="form-control" name="nama" placeholder="Masukkan nama customer"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nomor WhatsApp</label>
+                            <input type="text" class="form-control" name="no_wa" placeholder="08xxxxxxxxxx" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="btnSimpanCustomer">Simpan</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 @push('scripts')
@@ -635,7 +638,10 @@ style="left:50%; width:99vw; margin-left:-50vw; padding-left:2vw; padding-right:
                 `
             <td>${produk.nama}</td>
             <td>${produk.kode_barang}</td>
-            <td>Rp ${parseInt(produk.harga_jual).toLocaleString('id-ID')}</td>
+            <td>
+            Rp ${parseInt(produk.harga_jual).toLocaleString('id-ID')}
+                    <input type="hidden" class="harga-beli" value="${produk.harga_beli ?? 0}">
+            </td>
             <td><input type="number" class="form-control qty" value="1" min="1" style="width:80px"></td>
             <td class="subtotal">Rp ${parseInt(produk.harga_jual).toLocaleString('id-ID')}</td>
             <td class="text-end"><button class="btn btn-sm text-danger hapus-item"><i class="fas fa-trash"></i></button></td>`;
@@ -767,11 +773,13 @@ style="left:50%; width:99vw; margin-left:-50vw; padding-left:2vw; padding-right:
                 const qty = parseInt($(this).find('.qty').val());
                 const harga = parseInt($(this).find('td:nth-child(3)').text().replace(/[^\d]/g,
                     ''));
+                const hargaBeli = parseInt($(this).find('.harga-beli').val()) || 0;
                 const subtotal = harga * qty;
                 items.push({
                     barang_id: id,
                     barang_nama: nama,
                     qty,
+                    harga_beli: hargaBeli,
                     harga_jual: harga,
                     subtotal
                 });
@@ -787,7 +795,7 @@ style="left:50%; width:99vw; margin-left:-50vw; padding-left:2vw; padding-right:
                 uang: `Rp ${uangDiterima.toLocaleString('id-ID')}`,
                 kembalian: `Rp ${kembalian.toLocaleString('id-ID')}`,
                 catatan: $('#catatan').val(),
-                pembayaran: $('#pembayaran-penjualan option:selected').text(),
+                pembayaran: $('#pembayaran-penjualan').val(),
                 items: items
             };
 

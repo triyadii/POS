@@ -17,7 +17,7 @@ class LaporanLabaRugiController extends Controller
     function __construct()
     {
         $this->middleware(['auth']);
-        $this->middleware('permission:laporan-laba-rugi-list', ['only' => ['index', 'getProfitLossData','exportLabaRugiPdf']]);
+        $this->middleware('permission:laporan-laba-rugi-list', ['only' => ['index', 'getProfitLossData', 'exportLabaRugiPdf']]);
     }
 
 
@@ -82,12 +82,14 @@ class LaporanLabaRugiController extends Controller
 
         // 2. Ambil total PENGELUARAN (HPP/COGS)
         // SUM dari (qty * harga_beli_barang) pada setiap item penjualan
+        // KODE BARU (Mengambil harga_beli langsung dari 'penjualan_detail')
         $pengeluaran = PenjualanDetail::select(
             DB::raw('DATE(penjualan.tanggal_penjualan) as tanggal'),
-            DB::raw('SUM(penjualan_detail.qty * barang.harga_beli) as total')
+            // Menggunakan harga_beli dari penjualan_detail, bukan dari barang
+            DB::raw('SUM(penjualan_detail.qty * penjualan_detail.harga_beli) as total')
         )
             ->join('penjualan', 'penjualan.id', '=', 'penjualan_detail.penjualan_id')
-            ->join('barang', 'barang.id', '=', 'penjualan_detail.barang_id')
+            // Join ke tabel 'barang' sudah tidak diperlukan lagi untuk kalkulasi ini
             ->whereBetween('penjualan.tanggal_penjualan', [$start, $end])
             ->groupBy('tanggal')
             ->pluck('total', 'tanggal');
