@@ -18,7 +18,7 @@ class LaporanPenjualanController extends Controller
     function __construct()
     {
         $this->middleware(['auth']);
-        $this->middleware('permission:laporan-global-list', ['only' => ['index', 'getLaporanData','export']]);
+        $this->middleware('permission:laporan-global-list', ['only' => ['index', 'getLaporanData', 'export']]);
     }
 
 
@@ -106,22 +106,34 @@ class LaporanPenjualanController extends Controller
             ->addColumn('total', function ($data) {
                 return 'Rp ' . number_format($data->total_harga, 0, ',', '.');
             })
-            ->addColumn('detail_barang', function ($data) {
-                $details = '<ul class="list-unstyled mb-0">';
-                foreach ($data->detail as $item) {
-                    $details .= '<li class="border-bottom py-2">';
-                    $details .= '<div class="fw-bold">' . e($item->barang->nama ?? 'N/A') . ' (' . e($item->barang->kode_barang ?? 'N/A') . ')</div>';
-                    $details .= '<small class="text-muted">Tipe: ' . e($item->barang->tipe->nama ?? '-') . ' | Brand: ' . e($item->barang->brand->nama ?? '-') . '</small><br>';
-                    $details .= '<span>Qty: ' . $item->qty . ' x Rp ' . number_format($item->harga_jual, 0, ',', '.') . '</span>';
-                    // CATATAN: Model Anda belum memiliki 'harga_potongan'. Jika ada, tambahkan di sini.
-                    // $details .= ' | Potongan: Rp ' . number_format($item->potongan_harga, 0, ',', '.');
-                    $details .= '<span class="float-end fw-semibold">Rp ' . number_format($item->subtotal, 0, ',', '.') . '</span>';
-                    $details .= '</li>';
-                }
-                $details .= '</ul>';
-                return $details;
+            // KODE BARU
+            ->addColumn('action', function ($data) {
+                // 1. Siapkan data detail dalam format array yang bersih
+                $detailsArray = $data->detail->map(function ($item) {
+                    return [
+                        'nama_barang' => $item->barang->nama ?? 'N/A',
+                        'kode_barang' => $item->barang->kode_barang ?? 'N/A',
+                        'qty' => $item->qty,
+                        'harga_jual' => $item->harga_jual,
+                        'subtotal' => $item->subtotal,
+                    ];
+                });
+
+                // 2. Ubah array menjadi JSON dan escape agar aman di HTML
+                $detailsJson = htmlspecialchars(json_encode($detailsArray));
+
+                // 3. Buat tombol dengan atribut data-* untuk menyimpan JSON dan kode transaksi
+                $button = '<button type="button" class="btn btn-sm btn-light-primary" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#kt_modal_detail_penjualan" 
+                    data-kode="' . e($data->kode_transaksi) . '"
+                    data-details="' . $detailsJson . '">
+                    Lihat Detail
+                </button>';
+
+                return $button;
             })
-            ->rawColumns(['detail_barang'])
+            ->rawColumns(['action']) // Pastikan rawColumns diubah ke 'action'
             ->with([
                 'total_transaksi' => $totalTransaksi,
                 'total_penjualan' => $totalPendapatan,
