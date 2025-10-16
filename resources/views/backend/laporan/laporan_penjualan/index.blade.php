@@ -88,8 +88,8 @@
                                         <th class="min-w-125px">No. Transaksi</th>
                                         <th class="min-w-125px">Customer</th>
                                         <th class="min-w-125px">Kasir</th>
-                                        <th class="min-w-350px">Detail Barang</th>
                                         <th class="min-w-125px">Total</th>
+                                        <th class="min-w-350px">Detail Barang</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-gray-600 fw-semibold"></tbody>
