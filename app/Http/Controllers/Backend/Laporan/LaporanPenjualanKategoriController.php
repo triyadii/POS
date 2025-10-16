@@ -18,7 +18,7 @@ class LaporanPenjualanKategoriController extends Controller
     function __construct()
     {
         $this->middleware(['auth']);
-        $this->middleware('permission:laporan-penjualan-kategori-list', ['only' => ['index', 'getLaporanData','export']]);
+        $this->middleware('permission:laporan-penjualan-kategori-list', ['only' => ['index', 'getLaporanData', 'export']]);
     }
     /**
      * Menampilkan halaman laporan dan mengirim data kategori untuk filter.
@@ -74,31 +74,39 @@ class LaporanPenjualanKategoriController extends Controller
                 $total = $kategoriId ? $data->detail->filter(fn($item) => $item->barang->kategori_id == $kategoriId)->sum('subtotal') : $data->total_harga;
                 return 'Rp ' . number_format($total, 0, ',', '.');
             })
-            ->addColumn('detail_barang', function ($data) use ($kategoriId) {
-                $details = '<ul class="list-unstyled mb-0">';
-                foreach ($data->detail as $item) {
-                    if ($kategoriId && optional($item->barang)->kategori_id != $kategoriId) {
-                        continue;
-                    }
+            // KODE BARU
+            ->addColumn('action', function ($data) use ($kategoriId) {
+                // 1. Filter detail HANYA untuk kategori yang relevan jika ada filter
+                $filteredDetails = $data->detail->when($kategoriId, function ($collection) use ($kategoriId) {
+                    return $collection->filter(fn($item) => optional($item->barang)->kategori_id == $kategoriId);
+                });
 
-                    $details .= '<li class="border-bottom py-2">';
-                    $details .= '<div class="fw-bold">' . e($item->barang->nama ?? 'N/A') . ' (' . e($item->barang->kode_barang ?? 'N/A') . ')</div>';
-                    $details .= '<small class="text-muted">Kategori: ' . e(optional($item->barang->kategori)->nama ?? '-') . ' | Tipe: ' . e(optional($item->barang->tipe)->nama ?? '-') . ' | Brand: ' . e(optional($item->barang->brand)->nama ?? '-') . '</small>';
+                // 2. Siapkan data detail dalam format array yang bersih
+                $detailsArray = $filteredDetails->map(function ($item) {
+                    return [
+                        'nama_barang' => $item->barang->nama ?? 'N/A',
+                        'kode_barang' => $item->barang->kode_barang ?? 'N/A',
+                        'qty' => $item->qty,
+                        'harga_jual' => $item->harga_jual,
+                        'subtotal' => $item->subtotal,
+                    ];
+                })->values(); // Gunakan ->values() untuk reset key array
 
-                    // ===================================
-                    // PERUBAHAN DI SINI
-                    // ===================================
-                    $details .= '<div class="d-flex justify-content-between">
-                                    <span>Qty: ' . $item->qty . ' x Rp ' . number_format($item->harga_jual, 0, ',', '.') . '</span>
-                                    <span class="fw-semibold">Rp ' . number_format($item->subtotal, 0, ',', '.') . '</span>
-                                 </div>';
+                // 3. Ubah array menjadi JSON dan escape agar aman di HTML
+                $detailsJson = htmlspecialchars(json_encode($detailsArray));
 
-                    $details .= '</li>';
-                }
-                $details .= '</ul>';
-                return $details;
+                // 4. Buat tombol dengan atribut data-* untuk menyimpan JSON dan kode transaksi
+                $button = '<button type="button" class="btn btn-sm btn-light-primary" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modal_detail_penjualan_kategori" 
+                    data-kode="' . e($data->kode_transaksi) . '"
+                    data-details="' . $detailsJson . '">
+                    Lihat Detail
+                </button>';
+
+                return $button;
             })
-            ->rawColumns(['detail_barang'])
+            ->rawColumns(['action']) // Pastikan rawColumns diubah ke 'action'
             ->with(['total_transaksi' => $totalTransaksi, 'total_penjualan' => $totalPendapatan, 'jumlah_produk_terjual' => $jumlahProdukTerjual,])
             ->make(true);
     }
