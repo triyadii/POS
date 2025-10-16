@@ -19,8 +19,8 @@ class PenjualanController extends Controller
     function __construct()
     {
         $this->middleware(['auth']);
-        $this->middleware('permission:kasir-list', ['only' => ['index', 'getData','store','historyData']]);
-        $this->middleware('permission:daftar-penjualan-list', ['only' => ['daftarPenjualan','dataPenjualan']]);
+        $this->middleware('permission:kasir-list', ['only' => ['index', 'getData', 'store', 'historyData']]);
+        $this->middleware('permission:daftar-penjualan-list', ['only' => ['daftarPenjualan', 'dataPenjualan']]);
     }
     public function index(Request $request)
     {
@@ -43,7 +43,7 @@ class PenjualanController extends Controller
                 'id' => $penjualanId,
                 'kode_transaksi' => $request->no_penjualan,
                 'tanggal_penjualan' => $request->tanggal,
-                'customer_nama' => $request->customer_nama,
+                'customer_nama' => $request->customer,
                 'jenis_pembayaran_id' => $request->pembayaran,
                 'user_id' => auth()->id() ?? 'dummy-user',
                 'total_item' => $request->total_item,
@@ -59,6 +59,7 @@ class PenjualanController extends Controller
                     'penjualan_id' => $penjualanId, // 👈 gunakan ID yang sudah dibuat
                     'barang_id' => $item['barang_id'],
                     'qty' => $item['qty'],
+                    'harga_beli' => $item['harga_beli'],
                     'harga_jual' => $item['harga_jual'],
                     'subtotal' => $item['subtotal'],
                     'keterangan' => $item['keterangan'] ?? null,
