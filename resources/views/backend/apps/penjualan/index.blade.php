@@ -584,41 +584,119 @@
             });
         });
 
-        // Render produk dari database
+        // // Render produk dari database
+        // function renderProduk(data) {
+        //     const container = document.querySelector('.daftar-produk');
+        //     container.innerHTML = '';
+        //     data.forEach(p => {
+        //         const stok = parseInt(p.stok ?? 0);
+        //         const habis = stok <= 0;
+
+        //         const card = document.createElement('div');
+        //         card.className = 'col-lg-6 mb-3';
+        //         card.innerHTML = `
+        //     <div class="card card-flush p-2 text-center produk-item ${habis ? 'bg-light-secondary' : ''}" 
+        //          data-id="${p.id}" style="cursor:${habis ? 'not-allowed' : 'pointer'};opacity:${habis ? 0.5 : 1}">
+        //         <div class="fw-bold">${p.nama}</div>
+        //         <div class="text-muted">${p.kategori ? p.kategori.nama : '-'}</div>
+        //         <div class="text-success">Rp ${parseInt(p.harga_jual).toLocaleString('id-ID')}</div>
+        //         <div class="mt-1 ${habis ? 'text-danger fw-bold' : 'text-muted small'}">
+        //             ${habis ? 'Stok Habis' : 'Stok: ' + stok}
+        //         </div>
+        //     </div>`;
+        //         container.appendChild(card);
+        //     });
+
+        //     document.querySelectorAll('.produk-item').forEach(item => {
+        //         item.addEventListener('click', function() {
+        //             const produk = produkData.find(p => p.id == this.dataset.id);
+        //             const stok = parseInt(produk.stok ?? 0);
+        //             if (stok <= 0) {
+        //                 Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
+        //                 return;
+        //             }
+        //             tambahKeTabel(produk);
+        //         });
+        //     });
+        // }
+
         function renderProduk(data) {
-            const container = document.querySelector('.daftar-produk');
-            container.innerHTML = '';
-            data.forEach(p => {
-                const stok = parseInt(p.stok ?? 0);
-                const habis = stok <= 0;
+    const container = document.querySelector('.daftar-produk');
+    container.innerHTML = '';
 
-                const card = document.createElement('div');
-                card.className = 'col-lg-6 mb-3';
-                card.innerHTML = `
-            <div class="card card-flush p-2 text-center produk-item ${habis ? 'bg-light-secondary' : ''}" 
-                 data-id="${p.id}" style="cursor:${habis ? 'not-allowed' : 'pointer'};opacity:${habis ? 0.5 : 1}">
-                <div class="fw-bold">${p.nama}</div>
-                <div class="text-muted">${p.kategori ? p.kategori.nama : '-'}</div>
-                <div class="text-success">Rp ${parseInt(p.harga_jual).toLocaleString('id-ID')}</div>
-                <div class="mt-1 ${habis ? 'text-danger fw-bold' : 'text-muted small'}">
-                    ${habis ? 'Stok Habis' : 'Stok: ' + stok}
-                </div>
+    if (!data || data.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-10">
+                <i class="fas fa-box-open fs-2hx mb-3 d-block text-gray-400"></i>
+                <div class="fw-semibold fs-5">Tidak ada produk ditemukan</div>
             </div>`;
-                container.appendChild(card);
-            });
+        return;
+    }
 
-            document.querySelectorAll('.produk-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const produk = produkData.find(p => p.id == this.dataset.id);
-                    const stok = parseInt(produk.stok ?? 0);
-                    if (stok <= 0) {
-                        Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
-                        return;
-                    }
-                    tambahKeTabel(produk);
-                });
-            });
-        }
+    data.forEach(p => {
+        const stok = parseInt(p.stok ?? 0);
+        const habis = stok <= 0;
+
+        const card = document.createElement('div');
+        card.className = 'col-xl-3 col-lg-4 col-md-6 mb-4';
+        card.innerHTML = `
+        <div class="card shadow-sm produk-item border-0 h-100 ${habis ? 'bg-light-secondary' : ''}"
+             data-id="${p.id}"
+             style="cursor:${habis ? 'not-allowed' : 'pointer'};opacity:${habis ? 0.6 : 1};
+                    transition: all 0.2s ease-in-out;">
+            <div class="card-body p-3 d-flex flex-column align-items-center justify-content-between">
+
+                <div class="text-center">
+                    <div class="fw-bold fs-6 text-dark mb-1">${p.nama ?? '-'}</div>
+                    <div class="text-muted small mb-1">
+                        ${p.kategori ? p.kategori.nama : '-'}
+                    </div>
+                    <div class="badge badge-light-primary fw-semibold mb-2 px-3 py-1">
+                        <i class="fas fa-barcode me-1"></i> ${p.kode_barang ?? '-'}
+                    </div>
+                </div>
+
+                <div class="mt-2 text-center">
+                    <div class="fw-bold text-success fs-6">
+                        Rp ${parseInt(p.harga_jual ?? 0).toLocaleString('id-ID')}
+                    </div>
+                    <div class="small mt-1 ${habis ? 'text-danger fw-bold' : 'text-muted'}">
+                        ${habis ? 'Stok Habis' : 'Stok: ' + stok}
+                    </div>
+                </div>
+
+            </div>
+        </div>`;
+
+        container.appendChild(card);
+    });
+
+    // ✨ Efek hover (zoom-in ringan)
+    document.querySelectorAll('.produk-item').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            if (!item.classList.contains('bg-light-secondary')) {
+                item.style.transform = 'scale(1.03)';
+                item.style.boxShadow = '0 6px 12px rgba(0,0,0,0.1)';
+            }
+        });
+        item.addEventListener('mouseleave', () => {
+            item.style.transform = 'scale(1)';
+            item.style.boxShadow = '';
+        });
+
+        // 🛒 Klik produk
+        item.addEventListener('click', function() {
+            const produk = produkData.find(p => p.id == this.dataset.id);
+            const stok = parseInt(produk.stok ?? 0);
+            if (stok <= 0) {
+                Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
+                return;
+            }
+            tambahKeTabel(produk);
+        });
+    });
+}
+
 
 
         // fungsi-fungsi perhitungan
@@ -755,12 +833,29 @@
             const uangDiterima = parseInt($('#uang-diterima-penjualan').val().replace(/[^\d]/g, '')) || 0;
             const kembalian = uangDiterima - total;
 
+            const customer = $('#customer_id').val();
+            const pembayaran = $('#pembayaran-penjualan').val();
+
             if (kembalian < 0) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Uang Kurang!',
                     text: 'Nominal uang yang diterima tidak mencukupi untuk membayar total pembelian.'
                 });
+                btn.prop('disabled', false).html('Simpan');
+                return;
+            }
+
+            // ✅ Validasi: Customer harus dipilih
+            if (!customer || customer === '') {
+                Swal.fire('Oops!', 'Silakan pilih customer terlebih dahulu.', 'warning');
+                btn.prop('disabled', false).html('Simpan');
+                return;
+            }
+
+            // ✅ Validasi: Jenis pembayaran harus dipilih
+            if (!pembayaran || pembayaran === '') {
+                Swal.fire('Oops!', 'Silakan pilih jenis pembayaran terlebih dahulu.', 'warning');
                 btn.prop('disabled', false).html('Simpan');
                 return;
             }

@@ -146,31 +146,36 @@
                 <tr>
                     <th>Tanggal</th>
                     <th class="text-right">Pendapatan</th>
-                    <th class="text-right">Pengeluaran (HPP)</th>
+                    <th class="text-right">Pembelian Barang</th>
+                    <th class="text-right">Biaya Operasional</th>
                     <th class="text-right">Laba Bersih</th>
                 </tr>
             </thead>
             <tbody>
                 @php
                     $totalPendapatan = 0;
+                    $totalPembelian = 0;
                     $totalPengeluaran = 0;
                     $totalLaba = 0;
                 @endphp
                 @forelse ($periode as $item)
                     <tr>
-                        <td>{{ \Carbon\Carbon::parse($item['tanggal'])->format('d-m-Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item['tanggal'])->format('d M Y') }}</td>
                         <td class="text-right">Rp {{ number_format($item['total_pendapatan'], 0, ',', '.') }}</td>
-                        <td class="text-right">Rp {{ number_format($item['pengeluaran'], 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($item['pembelian_barang'], 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($item['pengeluaran_operasional'], 0, ',', '.') }}
+                        </td>
                         <td class="text-right">Rp {{ number_format($item['laba_bersih'], 0, ',', '.') }}</td>
                     </tr>
                     @php
                         $totalPendapatan += $item['total_pendapatan'];
-                        $totalPengeluaran += $item['pengeluaran'];
+                        $totalPembelian += $item['pembelian_barang'];
+                        $totalPengeluaran += $item['pengeluaran_operasional'];
                         $totalLaba += $item['laba_bersih'];
                     @endphp
                 @empty
                     <tr>
-                        <td colspan="4" style="text-align: center;">Tidak ada data pada rentang tanggal ini.</td>
+                        <td colspan="5" style="text-align: center;">Tidak ada data.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -178,6 +183,7 @@
                 <tr class="total-row">
                     <td><strong>Total</strong></td>
                     <td class="text-right"><strong>Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</strong></td>
+                    <td class="text-right"><strong>Rp {{ number_format($totalPembelian, 0, ',', '.') }}</strong></td>
                     <td class="text-right"><strong>Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</strong></td>
                     <td class="text-right"><strong>Rp {{ number_format($totalLaba, 0, ',', '.') }}</strong></td>
                 </tr>

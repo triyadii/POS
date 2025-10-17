@@ -40,27 +40,35 @@
             <div class="card-body py-4">
                 {{-- Statistik Box --}}
                 <div class="row g-5 g-xl-8">
-                    <div class="col-xl-4 d-none" id="statistik-pendapatan-wrapper">
-                        <div class="card bg-light-info hoverable card-xl-stretch mb-xl-8">
+                    <div class="col-xl-3 d-none" id="statistik-pendapatan-wrapper">
+                        <div class="card bg-light-success hoverable card-xl-stretch">
                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                <div class="text-info fw-bold fs-2 mb-2 mt-5" id="stat-pendapatan">-</div>
-                                <div class="fw-semibold text-info mb-5">Total Pendapatan</div>
+                                <div class="text-success fw-bold fs-2 mb-3" id="stat-pendapatan">-</div>
+                                <div class="fw-semibold text-success">Total Pendapatan</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-4 d-none" id="statistik-pengeluaran-wrapper">
-                        <div class="card bg-light-danger hoverable card-xl-stretch mb-xl-8">
+                    <div class="col-xl-3 d-none" id="statistik-pembelian-wrapper">
+                        <div class="card bg-light-warning hoverable card-xl-stretch">
                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                <div class="text-danger fw-bold fs-2 mb-2 mt-5" id="stat-pengeluaran">-</div>
-                                <div class="fw-semibold text-danger mb-5">Total Pengeluaran (HPP)</div>
+                                <div class="text-warning fw-bold fs-2 mb-3" id="stat-pembelian">-</div>
+                                <div class="fw-semibold text-warning">Total Pembelian Barang</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-4 d-none" id="statistik-laba-bersih-wrapper">
-                        <div class="card bg-light-primary hoverable card-xl-stretch mb-5 mb-xl-8">
+                    <div class="col-xl-3 d-none" id="statistik-pengeluaran-wrapper">
+                        <div class="card bg-light-danger hoverable card-xl-stretch">
                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                <div class="text-primary fw-bold fs-2 mb-2 mt-5" id="stat-laba-bersih">-</div>
-                                <div class="fw-semibold text-primary mb-5">Profit / Laba Bersih</div>
+                                <div class="text-danger fw-bold fs-2 mb-3" id="stat-pengeluaran">-</div>
+                                <div class="fw-semibold text-danger">Total Biaya Operasional</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 d-none" id="statistik-laba-bersih-wrapper">
+                        <div class="card bg-light-primary hoverable card-xl-stretch">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <div class="text-primary fw-bold fs-2 mb-3" id="stat-laba-bersih">-</div>
+                                <div class="fw-semibold text-primary">Profit / Laba Bersih</div>
                             </div>
                         </div>
                     </div>
@@ -78,18 +86,18 @@
                         <thead>
                             <tr class="fw-bold text-muted">
                                 <th>Tanggal</th>
-                                <th>Total Pendapatan</th>
-                                <th>Pengeluaran (HPP)</th>
-                                <th>Laba Bersih</th>
+                                <th class="text-end">Pendapatan</th>
+                                <th class="text-end">Pembelian Barang</th>
+                                <th class="text-end">Biaya Operasional</th>
+                                <th class="text-end">Laba Bersih</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {{-- Body akan diisi oleh DataTables --}}
-                        </tbody>
+                        <tbody></tbody>
                         <tfoot class="fw-semibold">
                             <tr>
                                 <th>Total</th>
                                 <th class="text-end" id="tfoot-total-pendapatan">Rp0</th>
+                                <th class="text-end" id="tfoot-total-pembelian">Rp0</th>
                                 <th class="text-end" id="tfoot-total-pengeluaran">Rp0</th>
                                 <th class="text-end" id="tfoot-total-laba">Rp0</th>
                             </tr>
@@ -131,6 +139,26 @@
                         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-sm btn-primary" id="btn-print-laporan">Print</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" tabindex="-1" id="modal_detail_laporan">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title"></h3>
+                        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"><i
+                                class="ki-duotone ki-cross fs-1"><span class="path1"></span><span
+                                    class="path2"></span></i></div>
+                    </div>
+                    <div class="modal-body" id="detail-content-container">
+                        <div class="text-center py-10"><span
+                                class="spinner-border spinner-border-sm align-middle ms-2"></span>Loading...</div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-light"
+                            data-bs-dismiss="modal">Tutup</button></div>
                 </div>
             </div>
         </div>
@@ -181,32 +209,34 @@
                             filter_tanggal_start: startDate,
                             filter_tanggal_end: endDate
                         },
-                        success: function(response) {
-                            renderData(response);
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Gagal mengambil data.', 'error');
-                        }
+                        success: (response) => renderData(response),
+                        error: () => Swal.fire('Error', 'Gagal mengambil data.', 'error')
                     });
                 }
 
                 function renderData(data) {
-                    $('#statistik-pendapatan-wrapper, #statistik-pengeluaran-wrapper, #statistik-laba-bersih-wrapper')
+                    // Tampilkan semua wrapper
+                    $('#statistik-pendapatan-wrapper, #statistik-pembelian-wrapper, #statistik-pengeluaran-wrapper, #statistik-laba-bersih-wrapper')
                         .removeClass('d-none');
                     $('#chart-wrapper, #table-wrapper').removeClass('d-none');
 
+                    // Kalkulasi total (pastikan nama properti sudah benar)
                     let totalPendapatan = data.reduce((sum, item) => sum + Number(item.total_pendapatan), 0);
-                    let totalPengeluaran = data.reduce((sum, item) => sum + Number(item.pengeluaran), 0);
+                    let totalPembelian = data.reduce((sum, item) => sum + Number(item.pembelian_barang), 0);
+                    let totalPengeluaran = data.reduce((sum, item) => sum + Number(item.pengeluaran_operasional),
+                    0); // Pastikan ini benar
                     let totalLaba = data.reduce((sum, item) => sum + Number(item.laba_bersih), 0);
 
+                    // Update statistik & footer (pastikan ID elemen sudah benar)
                     $('#tfoot-total-pendapatan, #stat-pendapatan').text(formatRupiah(totalPendapatan));
+                    $('#tfoot-total-pembelian, #stat-pembelian').text(formatRupiah(totalPembelian));
                     $('#tfoot-total-pengeluaran, #stat-pengeluaran').text(formatRupiah(totalPengeluaran));
                     $('#tfoot-total-laba, #stat-laba-bersih').text(formatRupiah(totalLaba));
 
+                    // Inisialisasi DataTables (tidak ada perubahan di sini)
                     if ($.fn.DataTable.isDataTable('#laba_rugi_datatable')) {
                         datatable.destroy();
                     }
-
                     datatable = $('#laba_rugi_datatable').DataTable({
                         data: data,
                         columns: [{
@@ -215,20 +245,42 @@
                                 data: 'total_pendapatan'
                             },
                             {
-                                data: 'pengeluaran'
+                                data: 'pembelian_barang'
                             }, {
+                                data: 'pengeluaran_operasional'
+                            },
+                            {
                                 data: 'laba_bersih'
                             }
                         ],
                         columnDefs: [{
                                 targets: 0,
-                                render: (data) => moment(data).format('DD-MM-YYYY')
+                                render: (data) => moment(data).format('DD MMMM YYYY')
                             },
                             {
-                                targets: [1, 2, 3],
+                                targets: [3, 4],
                                 className: 'text-end',
                                 render: (data) => formatRupiah(data)
+                            },
+                            {
+                                targets: 1,
+                                className: 'text-end',
+                                render: function(data, type, row) {
+                                    if (data > 0)
+                                    return `<button class="btn btn-link p-0 btn-show-detail" data-tipe="pendapatan" data-tanggal="${row.tanggal}">${formatRupiah(data)}</button>`;
+                                    return formatRupiah(data);
+                                }
+                            },
+                            {
+                                targets: 2,
+                                className: 'text-end',
+                                render: function(data, type, row) {
+                                    if (data > 0)
+                                    return `<button class="btn btn-link p-0 btn-show-detail" data-tipe="pembelian" data-tanggal="${row.tanggal}">${formatRupiah(data)}</button>`;
+                                    return formatRupiah(data);
+                                }
                             }
+                            // Anda bisa menambahkan render button untuk kolom pengeluaran jika perlu
                         ],
                         searching: false,
                         paging: false,
@@ -239,6 +291,7 @@
                         ]
                     });
 
+                    // Inisialisasi Chart (dengan perbaikan)
                     const chartElement = document.getElementById('labaRugiChart');
                     if (chart) chart.destroy();
                     const options = {
@@ -250,7 +303,7 @@
                             {
                                 name: 'Pengeluaran',
                                 type: 'column',
-                                data: data.map(item => item.pengeluaran)
+                                data: data.map(item => item.pengeluaran_operasional) // <-- PERBAIKAN DI SINI
                             },
                             {
                                 name: 'Laba Bersih',
@@ -281,7 +334,7 @@
                         },
                         stroke: {
                             show: true,
-                            width: [0, 0, 2],
+                            width: [0, 0, 2, 2],
                             curve: 'smooth'
                         },
                         xaxis: {
@@ -355,6 +408,131 @@
                     chart = new ApexCharts(chartElement, options);
                     chart.render();
                 }
+
+                $('#laba_rugi_datatable tbody').on('click', '.btn-show-detail', function() {
+                    // Mengambil data dari tombol yang diklik
+                    const tipe = $(this).data('tipe');
+                    const tanggal = $(this).data('tanggal');
+                    const modal = $('#modal_detail_laporan');
+
+                    // Mengatur judul modal dan menampilkan spinner loading
+                    modal.find('.modal-title').text(
+                        `Detail ${tipe.charAt(0).toUpperCase() + tipe.slice(1)} - ${moment(tanggal).format('DD MMMM YYYY')}`
+                    );
+                    modal.find('#detail-content-container').html(
+                        '<div class="text-center py-10"><span class="spinner-border spinner-border-sm"></span> Loading...</div>'
+                    );
+                    modal.modal('show');
+
+                    // Mengambil data detail dari server via AJAX
+                    $.ajax({
+                        url: "{{ route('laporan.laba-rugi.detail') }}",
+                        data: {
+                            tanggal: tanggal,
+                            tipe: tipe
+                        },
+                        success: function(response) {
+                            let html =
+                                '<div class="alert alert-secondary text-center">Tidak ada data detail untuk tanggal ini.</div>';
+
+                            if (response && response.length > 0) {
+
+                                // ==========================================================
+                                //  LOGIKA UNTUK MENAMPILKAN DETAIL PENDAPATAN (PENJUALAN)
+                                // ==========================================================
+                                if (tipe === 'pendapatan') {
+                                    html = `<div class="table-responsive">
+                                <table class="table table-sm table-row-dashed fs-6 gy-4">
+                                    <thead>
+                                        <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                            <th>Barang</th>
+                                            <th class="text-center">Qty</th>
+                                            <th class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+                                    response.forEach(d => {
+                                        html += `<tr>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-800 fw-bold">${d.barang?.nama ?? 'N/A'}</span>
+                                            <small class="text-muted">${d.barang?.kode_barang ?? ''}</small>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">${d.qty}</td>
+                                    <td class="text-end">${formatRupiah(d.subtotal)}</td>
+                                 </tr>`;
+                                    });
+                                    html += '</tbody></table></div>';
+                                }
+
+                                // ==========================================================
+                                //  LOGIKA UNTUK MENAMPILKAN DETAIL PEMBELIAN (BARANG MASUK)
+                                // ==========================================================
+                                else if (tipe === 'pembelian') {
+                                    html = ''; // Reset html
+                                    response.forEach(trx => {
+                                        html += `<div class="mb-5">
+                                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                                        <span class="fw-bold fs-6 text-gray-800">${trx.kode_transaksi}</span>
+                                        <span class="text-muted fs-7">Supplier: ${trx.supplier?.nama ?? 'N/A'}</span>
+                                    </div>
+                                    <table class="table table-sm fs-6">
+                                        <tbody>`;
+                                        trx.detail.forEach(item => {
+                                            html += `<tr>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-gray-800">${item.barang?.nama ?? 'N/A'}</span>
+                                                <small class="text-muted">${item.qty} Pcs</small>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">${formatRupiah(item.subtotal)}</td>
+                                     </tr>`;
+                                        });
+                                        html += `</tbody></table></div>`;
+                                    });
+                                }
+
+                                // ==========================================================
+                                //  LOGIKA UNTUK MENAMPILKAN DETAIL BIAYA OPERASIONAL
+                                // ==========================================================
+                                else if (tipe === 'pengeluaran') {
+                                    html = ''; // Reset html
+                                    response.forEach(trx => {
+                                        html += `<div class="mb-5">
+                                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                                        <span class="fw-bold fs-6 text-gray-800">${trx.kode_transaksi}</span>
+                                        <span class="text-muted fs-7">${trx.catatan ?? ''}</span>
+                                    </div>
+                                    <table class="table table-sm fs-6">
+                                        <tbody>`;
+                                        trx.details.forEach(detail => {
+                                            html += `<tr>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-gray-800">${detail.nama}</span>
+                                                <small class="text-muted">Kategori: ${detail.kategori?.nama ?? 'N/A'}</small>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">${formatRupiah(detail.jumlah)}</td>
+                                     </tr>`;
+                                        });
+                                        html += `</tbody></table></div>`;
+                                    });
+                                }
+                            }
+                            // Masukkan HTML yang sudah dibuat ke dalam modal
+                            modal.find('#detail-content-container').html(html);
+                        },
+                        error: function() {
+                            // Tampilkan pesan error jika AJAX gagal
+                            modal.find('#detail-content-container').html(
+                                '<div class="alert alert-danger text-center">Gagal memuat data detail.</div>'
+                            );
+                        }
+                    });
+                });
 
                 $('#btn-print-laporan').on('click', function() {
                     const ukuran = $('#ukuran_kertas').val();

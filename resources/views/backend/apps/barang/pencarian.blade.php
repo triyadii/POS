@@ -57,6 +57,7 @@
                             <th>Nama Barang</th>
                             <th>Kategori</th>
                             <th>Brand</th>
+                            <th>Size</th>
                             <th class="text-center">Stok</th>
                         </tr>
                     </thead>
@@ -129,6 +130,7 @@
                                 <td>${item.nama ?? '-'}</td>
                                 <td>${item.kategori ?? '-'}</td>
                                 <td>${item.brand ?? '-'}</td>
+                                <td>${item.size ?? '-'}</td>
                                 <td class="text-center">${item.stok ?? 0}</td>
                             </tr>`;
                         });

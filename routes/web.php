@@ -35,12 +35,15 @@ use App\Http\Controllers\Backend\Master\TipeController;
 use App\Http\Controllers\Backend\Master\SatuanController;
 use App\Http\Controllers\Backend\Master\JenisPembayaranController;
 use App\Http\Controllers\Backend\Master\CustomerController;
+use App\Http\Controllers\Backend\Master\KategoriPengeluaranController;
+
 //APPS
 use App\Http\Controllers\Backend\Apps\BarangController;
 use App\Http\Controllers\Backend\Apps\BarangMasukController;
 use App\Http\Controllers\Backend\Apps\BarangMasukDetailController;
 use App\Http\Controllers\Backend\Apps\BarangKeluarController;
 use App\Http\Controllers\Backend\Apps\BarangKeluarDetailController;
+use App\Http\Controllers\Backend\Apps\PengeluaranController;
 
 
 //END CHIMOX
@@ -120,6 +123,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('get-brand', [BrandController::class, 'getData'])->name('get-brand');
     Route::post('/brand/mass-delete', [BrandController::class, 'massDelete'])->name('brand.mass-delete');
     Route::get('/select/brand', [BrandController::class, 'select'])->name('brand.select');
+
+    Route::resource('kategori-pengeluaran', KategoriPengeluaranController::class);
+    Route::get('get-kategori-pengeluaran', [KategoriPengeluaranController::class, 'getData'])->name('get-kategori-pengeluaran');
+    Route::post('/kategori-pengeluaran/mass-delete', [KategoriPengeluaranController::class, 'massDelete'])->name('kategori-pengeluaran.mass-delete');
+    Route::get('/select/kategori-pengeluaran', [KategoriPengeluaranController::class, 'select'])->name('kategori-pengeluaran.select');
 
     Route::resource('kategori', KategoriController::class);
     Route::get('get-kategori', [KategoriController::class, 'getData'])->name('get-kategori');
@@ -245,7 +253,9 @@ Route::group(['middleware' => ['auth']], function () {
     //     Route::delete('/detail/{detailId}', [BarangMasukController::class, 'deleteDetail'])->name('barang-masuk.detail.delete');
     // });
 
-
+    Route::resource('pengeluaran', PengeluaranController::class);
+    Route::get('get-pengeluaran', [PengeluaranController::class, 'getData'])->name('get-pengeluaran');
+    Route::post('/pengeluaran/mass-delete', [PengeluaranController::class, 'massDelete'])->name('pengeluaran.mass-delete');
 
 
     //END CHIMOX
@@ -284,6 +294,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('laporan-laba-rugi/chart', [LaporanLabaRugiController::class, 'getProfitLossData'])->name('laporan.laba-rugi.chart');
     Route::get('/laporan/laba-rugi/export-pdf', [LaporanLabaRugiController::class, 'exportLabaRugiPdf'])->name('laporan.laba-rugi.export-pdf');
+    Route::get('/laporan/laba-rugi/detail', [LaporanLabaRugiController::class, 'getDetailData'])->name('laporan.laba-rugi.detail');
     Route::resource('laporan-laba-rugi', LaporanLabaRugiController::class);
 
     Route::get('stok-data', [StokController::class, 'getStokData'])->name('stok.data');

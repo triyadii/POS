@@ -34,6 +34,37 @@ class PenjualanController extends Controller
     }
     public function store(Request $request)
     {
+
+        $validator = \Validator::make($request->all(), [
+            'no_penjualan' => 'required|string|max:50',
+            'tanggal'      => 'required|date',
+            'customer'     => 'required|string|max:150', 
+            'pembayaran'   => 'required|uuid|exists:jenis_pembayaran,id',
+            'items'        => 'required|array|min:1',
+            'items.*.barang_id' => 'required|uuid|exists:barang,id',
+            'items.*.qty'       => 'required|numeric|min:1',
+        ], [
+            'no_penjualan.required' => 'Nomor penjualan wajib diisi.',
+            'tanggal.required'      => 'Tanggal penjualan wajib diisi.',
+            'customer.required'     => 'Nama customer wajib diisi.',
+            'pembayaran.required'   => 'Jenis pembayaran wajib dipilih.',
+            'pembayaran.exists'     => 'Jenis pembayaran tidak valid.',
+            'items.required'        => 'Daftar produk tidak boleh kosong.',
+            'items.min'             => 'Minimal 1 produk harus dipilih.',
+            'items.*.barang_id.required' => 'Setiap item wajib memiliki barang.',
+            'items.*.barang_id.exists'   => 'Barang tidak ditemukan di database.',
+            'items.*.qty.required'       => 'Jumlah qty wajib diisi.',
+            'items.*.qty.min'            => 'Qty minimal 1.',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+
         DB::beginTransaction();
         try {
             // ✅ Buat ID baru manual
@@ -73,7 +104,6 @@ class PenjualanController extends Controller
 
 
             DB::commit();
-            // ✅ Generate kode transaksi berikutnya
             $nextNo = $this->generateNextNoPenjualan();
             return response()->json([
                 'status' => 'success',

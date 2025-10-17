@@ -62,34 +62,29 @@
                 <div class="row g-5 g-xl-8">
                     <div class="col-xl-4">
                         <div class="card bg-light-primary hoverable card-xl-stretch">
-                            <div class="card-body">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="text-primary fw-bold fs-2 mb-2 mt-5" id="stat-total-stok">-</div>
-                                <div class="fw-semibold text-primary">Total Stok</div>
+                                <div class="fw-semibold text-primary mb-5">Total Stok</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4">
                         <div class="card bg-light-info hoverable card-xl-stretch">
-                            <div class="card-body">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="text-info fw-bold fs-2 mb-2 mt-5" id="stat-total-barang">-</div>
-                                <div class="fw-semibold text-info">Total Jenis Barang</div>
+                                <div class="fw-semibold text-info mb-5">Total Jenis Barang</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4">
                         <div class="card bg-light-danger hoverable card-xl-stretch">
-                            <div class="card-body">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="text-danger fw-bold fs-2 mb-2 mt-5" id="stat-stok-kritis">-</div>
-                                <div class="fw-semibold text-danger">Stok Hampir Habis (<= 10)</div>
+                                <div class="fw-semibold text-danger mb-5">Stok Hampir Habis (<= 10)</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    {{-- Chart --}}
-                    {{-- <div class="row my-10">
-                        <div id="stokChart" style="height: 350px;"></div>
-                    </div> --}}
 
                     {{-- Tabel Data --}}
                     <div class="table-responsive mt-5">
@@ -151,7 +146,7 @@
             <script src="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
             <script>
                 $(document).ready(function() {
-                    let table, chart;
+                    let table;
 
                     table = $('#stok_table').DataTable({
                         processing: true,
@@ -208,74 +203,11 @@
 
                     function reloadData() {
                         table.ajax.reload();
-                        fetchChart();
                     }
 
                     $('#filter_kategori, #filter_brand').on('change', function() {
                         reloadData();
                     });
-
-                    function fetchChart() {
-                        $.get("{{ route('stok.chart') }}", {
-                            filter_kategori: $('#filter_kategori').val(),
-                            filter_brand: $('#filter_brand').val(),
-                        }, function(data) {
-                            renderApexChart(data);
-                        });
-                    }
-
-                    function renderApexChart(data) {
-                        const chartElement = document.getElementById('stokChart');
-                        if (!chartElement) return;
-                        if (chart) chart.destroy();
-                        const options = {
-                            series: [{
-                                name: 'Stok',
-                                data: Object.values(data)
-                            }],
-                            chart: {
-                                type: 'bar',
-                                height: 350,
-                                toolbar: {
-                                    show: false
-                                }
-                            },
-                            plotOptions: {
-                                bar: {
-                                    borderRadius: 4,
-                                    horizontal: true,
-                                }
-                            },
-                            dataLabels: {
-                                enabled: true,
-                                formatter: val => val,
-                                style: {
-                                    colors: ['#fff']
-                                }
-                            },
-                            xaxis: {
-                                categories: Object.keys(data),
-                                labels: {
-                                    show: false
-                                }
-                            },
-                            colors: [KTUtil.getCssVariableValue('--bs-danger')],
-                            title: {
-                                text: '10 Barang dengan Stok Terendah',
-                                align: 'center'
-                            },
-                            tooltip: {
-                                y: {
-                                    formatter: (val) => val + ' Pcs'
-                                }
-                            }
-                        };
-                        chart = new ApexCharts(chartElement, options);
-                        chart.render();
-                    }
-
-                    fetchChart(); // Load chart for the first time
-
                     // index.blade.php
 
                     // Ganti dengan fungsi 'async' untuk menunggu proses pembuatan gambar chart
@@ -297,8 +229,6 @@
                             window.open(url.toString(), '_blank');
 
                         } catch (error) {
-                            console.error("Gagal membuat gambar chart:", error);
-                            // Anda bisa menambahkan notifikasi error di sini jika perlu
                             Swal.fire('Error', 'Gagal memproses laporan.', 'error');
                         } finally {
                             // Hapus indikator loading setelah selesai (baik berhasil maupun gagal)
