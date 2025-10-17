@@ -71,6 +71,18 @@ class LaporanPenjualanBrandController extends Controller
             ->addColumn('tanggal', fn($data) => Carbon::parse($data->tanggal_penjualan)->translatedFormat('d F Y, H:i'))
             ->addColumn('user', fn($data) => $data->user->name ?? '-')
             ->addColumn('customer', fn($data) => $data->customer_nama ?? 'Umum')
+            ->addColumn('jenis_pembayaran', function ($data) {
+                if (!$data->pembayaran) {
+                    return '-';
+                }
+                $nama = e($data->pembayaran->nama);
+                $rekening = e($data->pembayaran->no_rekening);
+                // Membuat HTML dengan nama dan no rekening di bawahnya
+                return "<div>
+                            <span class='fw-bold'>{$nama}</span><br>
+                            <small class='text-muted'>{$rekening}</small>
+                        </div>";
+            })
             ->addColumn('total', function ($data) use ($brandId) {
                 // ... Logika addColumn('total') tidak berubah ...
                 $total = $brandId ? $data->detail->filter(fn($item) => $item->barang->brand_id == $brandId)->sum('subtotal') : $data->total_harga;
@@ -108,7 +120,7 @@ class LaporanPenjualanBrandController extends Controller
 
                 return $button;
             })
-            ->rawColumns(['action']) // Pastikan rawColumns diubah ke 'action'
+            ->rawColumns(['action', 'jenis_pembayaran'])
             ->with(['total_transaksi' => $totalTransaksi, 'total_penjualan' => $totalPendapatan, 'jumlah_produk_terjual' => $jumlahProdukTerjual])
             ->make(true);
     }
@@ -166,7 +178,8 @@ class LaporanPenjualanBrandController extends Controller
             'detail.barang:id,kode_barang,nama,brand_id,kategori_id',
             'detail.barang.tipe:id,nama',
             'detail.barang.brand:id,nama',
-            'detail.barang.kategori:id,nama'
+            'detail.barang.kategori:id,nama',
+            'pembayaran'
         ])
             ->whereBetween('tanggal_penjualan', [$start, $end])
             ->orderBy('tanggal_penjualan', 'asc');
