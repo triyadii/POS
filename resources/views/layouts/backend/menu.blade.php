@@ -21,7 +21,8 @@
         <!--end:Menu item-->
 
         @canany(['barang-list', 'barang-keluar-list','barang-masuk-list','daftar-penjualan-list','stok-list','cari-barang-list',
-        'laporan-global-list','laporan-pembelian-supplier-list','laporan-penjualan-kategori-list','laporan-penjualan-brand-list','laporan-penjualan-brand-list'])
+        'laporan-global-list','laporan-pembelian-supplier-list','laporan-penjualan-kategori-list','laporan-penjualan-brand-list','laporan-penjualan-brand-list',
+        'pengeluaran-list'])
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
                 class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
@@ -41,7 +42,8 @@
                         'laporan-pembelian-supplier.index',
                         'laporan-penjualan-kategori.index',
                         'laporan-penjualan-brand.index',
-                        'laporan-laba-rugi.index'
+                        'laporan-laba-rugi.index',
+                        'pengeluaran.index'
                     )
                         ? 'active '
                         : '' }}">
@@ -115,6 +117,21 @@
                                     <i class="ki-outline ki-notepad-edit fs-2"></i>
                                 </span>
                                 <span class="menu-title">Daftar Penjualan</span>
+
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                @endcan
+
+
+                @can('pengeluaran-list')
+                        <div class="menu-item {{ request()->routeIs('pengeluaran.index') ? 'here show ' : '' }}">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="{{ route('pengeluaran.index') }}">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-cheque fs-2"></i>
+                                </span>
+                                <span class="menu-title">Pengeluaran</span>
 
                     </a>
                     <!--end:Menu link-->
@@ -248,7 +265,7 @@
 
 
         @canany(['supplier-list', 'brand-list', 'kategori-list', 'tipe-list', 'satuan-list', 'jenis-pembayaran-list',
-            'customer-list'])
+            'customer-list','kategori-pengeluaran'])
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
                 class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
@@ -262,6 +279,7 @@
                         'tipe.index',
                         'satuan.index',
                         'jenis-pembayaran.index',
+                        'kategori-pengeluaran.index',
                     )
                         ? 'active '
                         : '' }}">
@@ -362,6 +380,20 @@
                                     <i class="ki-outline ki-credit-cart fs-2"></i>
                                 </span>
                                 <span class="menu-title">Jenis Pembayaran</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
+
+
+                    @can('kategori-pengeluaran-list')
+                        <div class="menu-item {{ request()->routeIs('kategori-pengeluaran.index') ? 'here show ' : '' }}">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="{{ route('kategori-pengeluaran.index') }}">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-element-12 fs-2"></i>
+                                </span>
+                                <span class="menu-title">Kategori Pengeluaran</span>
                             </a>
                             <!--end:Menu link-->
                         </div>
