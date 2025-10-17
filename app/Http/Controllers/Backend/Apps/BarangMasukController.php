@@ -428,13 +428,10 @@ public function print($id)
     // return $pdf->stream('BarangMasuk-'.$data->kode_transaksi.'.pdf');
 }
 
-
-
 public function store(Request $request)
 {
     $formattedTime = Carbon::now()->diffForHumans();
 
-    // 🧩 Validasi input header saja
     $validator = Validator::make($request->all(), [
         'tanggal_masuk' => 'required|date',
         'supplier_id'   => 'required|exists:suppliers,id',
@@ -451,17 +448,26 @@ public function store(Request $request)
     try {
         DB::beginTransaction();
 
-        // 🔢 Generate kode transaksi unik
-        $today = Carbon::now()->format('Ymd');
-        $lastKode = BarangMasuk::whereDate('created_at', Carbon::today())
-            ->orderBy('kode_transaksi', 'desc')
-            ->first();
-        $nextNumber = $lastKode
-            ? intval(substr($lastKode->kode_transaksi, -4)) + 1
-            : 1;
-        $kodeTransaksi = 'BM-' . $today . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        // ✅ Gunakan tanggal_masuk sebagai dasar
+        $tanggal = Carbon::parse($request->tanggal_masuk)->format('Ymd');
+        $prefix = 'BM-' . $tanggal . '-';
 
-        // ✅ Simpan data header
+        // Ambil kode terakhir pada tanggal yang sama
+        $last = BarangMasuk::whereDate('tanggal_masuk', $request->tanggal_masuk)
+            ->where('kode_transaksi', 'like', $prefix . '%')
+            ->orderBy('kode_transaksi', 'desc')
+            ->lockForUpdate() // cegah race condition
+            ->first();
+
+        if ($last) {
+            $lastNumber = (int) substr($last->kode_transaksi, -4);
+            $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $nextNumber = '0001';
+        }
+
+        $kodeTransaksi = $prefix . $nextNumber;
+
         $data = BarangMasuk::create([
             'kode_transaksi' => $kodeTransaksi,
             'tanggal_masuk'  => $request->tanggal_masuk,
@@ -481,7 +487,6 @@ public function store(Request $request)
             'time'    => $formattedTime,
             'judul'   => 'Berhasil',
         ]);
-
     } catch (\Exception $e) {
         DB::rollBack();
 
@@ -493,7 +498,7 @@ public function store(Request $request)
         ]);
     }
 }
-    
+
     
     /**
      * Show the form for editing the specified resource.
