@@ -102,6 +102,7 @@
                                         <th class="min-w-125px">No. Transaksi</th>
                                         <th class="min-w-125px">Customer</th>
                                         <th class="min-w-125px">Kasir</th>
+                                        <th class="min-w-150px">Jenis Pembayaran</th> {{-- KOLOM BARU --}}
                                         <th class="min-w-125px text-end">Total</th>
                                         <th class="min-w-100px text-center">Aksi</th> {{-- Perubahan di sini --}}
                                     </tr>
@@ -232,6 +233,12 @@
                         {
                             data: 'user',
                             name: 'user.name'
+                        },
+                        {
+                            data: 'jenis_pembayaran',
+                            name: 'jenis_pembayaran',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             data: 'total',
