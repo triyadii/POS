@@ -49,6 +49,7 @@
                         <th>No Transaksi</th>
                         <th>Tanggal</th>
                         <th>Customer</th>
+                        <th>Metode Pembayaran</th>
                         <th>Total Item</th>
                         <th>Total Harga</th>
                         <th>Catatan</th>
@@ -129,6 +130,13 @@
                 {
                     data: 'customer_nama',
                     defaultContent: '-'
+                },
+                {
+                    data: 'jenis_pembayaran.nama',
+                    defaultContent: '-',
+                    render: function(data) {
+                        return data ? data : '<span class="text-muted">-</span>';
+                    }
                 },
                 {
                     data: 'total_item'

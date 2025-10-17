@@ -60,4 +60,8 @@ class Penjualan extends Model
     {
         return $this->belongsTo(JenisPembayaran::class, 'jenis_pembayaran_id', 'id');
     }
+    public function jenis_pembayaran()
+    {
+        return $this->belongsTo(JenisPembayaran::class, 'jenis_pembayaran_id');
+    }
 }
