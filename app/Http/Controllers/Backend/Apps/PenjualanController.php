@@ -38,7 +38,7 @@ class PenjualanController extends Controller
         $validator = \Validator::make($request->all(), [
             'no_penjualan' => 'required|string|max:50',
             'tanggal'      => 'required|date',
-            'customer'     => 'required|string|max:150', 
+            'customer'     => 'required|string|max:150',
             'pembayaran'   => 'required|uuid|exists:jenis_pembayaran,id',
             'items'        => 'required|array|min:1',
             'items.*.barang_id' => 'required|uuid|exists:barang,id',
@@ -56,7 +56,7 @@ class PenjualanController extends Controller
             'items.*.qty.required'       => 'Jumlah qty wajib diisi.',
             'items.*.qty.min'            => 'Qty minimal 1.',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -200,13 +200,15 @@ class PenjualanController extends Controller
         // Ambil data penjualan dengan relasi detail & barang
         $penjualan = Penjualan::with([
             'detail.barang:id,nama',
-            'user:id,name'
+            'user:id,name',
+            'jenis_pembayaran:id,nama'
         ])
             ->select(
                 'id',
                 'kode_transaksi',
                 'tanggal_penjualan',
                 'customer_nama',
+                'jenis_pembayaran_id',
                 'total_item',
                 'total_harga',
                 'catatan',
