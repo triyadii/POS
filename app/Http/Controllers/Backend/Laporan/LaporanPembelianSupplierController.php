@@ -16,7 +16,7 @@ class LaporanPembelianSupplierController extends Controller
     function __construct()
     {
         $this->middleware(['auth']);
-        $this->middleware('permission:laporan-pembelian-supplier-list', ['only' => ['index', 'getLaporanData','export']]);
+        $this->middleware('permission:laporan-pembelian-supplier-list', ['only' => ['index', 'getLaporanData', 'export']]);
     }
 
 
@@ -26,7 +26,8 @@ class LaporanPembelianSupplierController extends Controller
      */
     public function index()
     {
-        return view('backend.laporan.laporan_pembelian_supplier.index');
+        $suppliers = Supplier::orderBy('nama', 'asc')->get();
+        return view('backend.laporan.laporan_pembelian_supplier.index', compact('suppliers'));
     }
 
     /**
@@ -51,6 +52,11 @@ class LaporanPembelianSupplierController extends Controller
             ->join('barang_masuk_detail as bmd', 'bm.id', '=', 'bmd.barang_masuk_id')
             ->whereBetween('bm.tanggal_masuk', [$startDate, $endDate])
             ->groupBy('suppliers.id', 'suppliers.nama');
+
+        // TAMBAHKAN BLOK INI untuk filter supplier
+        if ($request->filled('filter_supplier') && $request->filter_supplier != 'all') {
+            $query->where('suppliers.id', $request->filter_supplier);
+        }
 
         // Kalkulasi statistik baru.
         $statsData = (clone $query)->get();
@@ -103,6 +109,7 @@ class LaporanPembelianSupplierController extends Controller
             'tipe' => 'required|in:datatable',
             'start' => 'required|date',
             'end' => 'required|date',
+            'supplier_id' => 'nullable|string', // Tambahkan validasi opsional
         ]);
 
         $start = Carbon::parse($request->start)->startOfDay();
@@ -118,7 +125,16 @@ class LaporanPembelianSupplierController extends Controller
             ->whereBetween('bm.tanggal_masuk', [$start, $end])
             ->groupBy('suppliers.id', 'suppliers.nama');
 
+        // TAMBAHKAN BLOK INI untuk filter supplier saat export
+        $supplierId = $request->supplier_id;
+        if ($supplierId && $supplierId != 'all') {
+            $query->where('suppliers.id', $supplierId);
+        }
+
         $dataSupplier = $query->orderBy('total_harga_beli', 'desc')->get();
+
+        // Mengambil nama supplier untuk judul PDF
+        $namaSupplierFilter = ($supplierId && $supplierId != 'all') ? Supplier::find($supplierId)->nama : 'Semua Supplier';
 
         // Ganti nama variabel statistik.
         $totalPembelian = $dataSupplier->sum('total_harga_beli');
@@ -133,7 +149,8 @@ class LaporanPembelianSupplierController extends Controller
             'start',
             'end',
             'namaUser',
-            'tanggalCetak'
+            'tanggalCetak',
+            'namaSupplierFilter' // Kirim nama supplier ke view PDF
         );
 
         $viewPath = 'backend.laporan.laporan_pembelian_supplier.';

@@ -30,6 +30,17 @@
                         <button type="button" class="btn btn-sm btn-primary btn-export d-none" data-bs-toggle="modal"
                             data-bs-target="#modal_export_laporan"><i class="ki-outline ki-printer fs-2 me-2"></i>
                             Export</button>
+
+                        <div class="position-relative min-w-150px">
+                            <select class="form-select form-select-sm" data-control="select2" data-hide-search="true"
+                                id="filter_supplier" data-placeholder="Pilih Supplier">
+                                <option></option>
+                                <option value="all" selected>Semua Supplier</option>
+                                @foreach ($suppliers as $item)
+                                    <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="position-relative">
                             <input type="text" class="form-control form-control-sm" placeholder="Pilih Tanggal"
                                 name="filter_tanggal" id="filter_tanggal" autocomplete="off" />
@@ -176,6 +187,8 @@
                                 d.filter_tanggal_end = $('#filter_tanggal').data('daterangepicker').endDate
                                     .format('YYYY-MM-DD');
                             }
+                            // 2. Kirim data filter supplier ke server
+                            d.filter_supplier = $('#filter_supplier').val();
                         },
                         dataSrc: function(json) {
                             $('#stat-total-pembelian').text(formatRupiah(json.total_pembelian));
@@ -218,6 +231,11 @@
                     }
                 }
 
+                // 3. Tambahkan event listener untuk filter supplier baru
+                $('#filter_supplier').on('change', function() {
+                    reloadData();
+                });
+
                 // ======================================================
                 // PERBAIKAN 1: Tambahkan Opsi 'ranges' pada Date Picker
                 // ======================================================
@@ -258,6 +276,7 @@
                     url.searchParams.set('tipe', $('input[name="tipe_laporan"]:checked').val());
                     url.searchParams.set('start', start);
                     url.searchParams.set('end', end);
+                    url.searchParams.set('supplier_id', $('#filter_supplier').val());
                     window.open(url.toString(), '_blank');
                 });
             });
