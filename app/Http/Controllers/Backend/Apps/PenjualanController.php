@@ -195,7 +195,7 @@ class PenjualanController extends Controller
         return view('backend.apps.penjualan.daftar');
     }
 
-    public function dataPenjualan()
+    public function dataPenjualan(Request $request)
     {
         // Ambil data penjualan dengan relasi detail & barang
         $penjualan = Penjualan::with([
@@ -236,5 +236,38 @@ class PenjualanController extends Controller
             ->get();
 
         return response()->json($produk);
+    }
+    public function getJenisPembayaran()
+    {
+        $list = JenisPembayaran::select('id', 'nama')->orderBy('nama')->get();
+        return response()->json($list);
+    }
+    // Ambil daftar penjualan (untuk DataTable + filter)
+    public function getData(Request $request)
+    {
+        $query = Penjualan::with('jenis_pembayaran');
+
+        if ($request->filled('metode_pembayaran')) {
+            $query->whereHas('jenis_pembayaran', function ($q) use ($request) {
+                $q->where('nama', $request->metode_pembayaran);
+            });
+        }
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tanggal_penjualan', [$request->start_date, $request->end_date]);
+        } elseif ($request->filled('start_date')) {
+            $query->whereDate('tanggal_penjualan', '>=', $request->start_date);
+        } elseif ($request->filled('end_date')) {
+            $query->whereDate('tanggal_penjualan', '<=', $request->end_date);
+        }
+
+        return response()->json($query->latest()->get());
+    }
+
+    // Detail penjualan by ID
+    public function getDetail(Request $request)
+    {
+        $penjualan = Penjualan::with(['detail.barang'])->find($request->id);
+        return response()->json($penjualan);
     }
 }

@@ -43,6 +43,25 @@
         </div>
 
         <div class="card-body py-4">
+            <!-- FILTER -->
+            <div class="row mb-5">
+                <div class="col-md-4">
+                    <label for="filter-pembayaran" class="form-label fw-semibold">Metode Pembayaran</label>
+                    <select id="filter-pembayaran" class="form-select form-select-sm">
+                        <option value="">Semua Metode</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="filter-start" class="form-label fw-semibold">Dari Tanggal</label>
+                    <input type="date" id="filter-start" class="form-control form-control-sm" />
+                </div>
+                <div class="col-md-4">
+                    <label for="filter-end" class="form-label fw-semibold">Sampai Tanggal</label>
+                    <input type="date" id="filter-end" class="form-control form-control-sm" />
+                </div>
+            </div>
+
+            <!-- TABLE -->
             <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4 w-100" id="tabel-penjualan">
                 <thead>
                     <tr class="fw-bold text-muted fs-7 text-uppercase gs-0">
@@ -105,14 +124,19 @@
 <script src="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 <script>
     $(function() {
-        // Pastikan variabel global untuk DataTable
+        // === 1️⃣ Inisialisasi DataTable ===
         window.penjualanTable = $('#tabel-penjualan').DataTable({
             processing: true,
             ajax: {
                 url: "{{ route('penjualan.daftar.data') }}",
                 type: "GET",
+                data: function(d) {
+                    d.metode_pembayaran = $('#filter-pembayaran').val();
+                    d.start_date = $('#filter-start').val();
+                    d.end_date = $('#filter-end').val();
+                    console.log("Filter dikirim:", d); // DEBUG
+                },
                 dataSrc: function(json) {
-                    // Pastikan array dikembalikan, bukan objek
                     return Array.isArray(json) ? json : json.data ?? [];
                 }
             },
@@ -164,22 +188,41 @@
             ],
             language: {
                 zeroRecords: "Tidak ada data penjualan",
-                processing: "Memuat data...",
+                processing: "Memuat data..."
             }
         });
 
-        // ✅ Fungsi Pencarian
+        // === 2️⃣ Ambil daftar metode pembayaran ===
+        $.ajax({
+            url: "{{ route('jenis-pembayaran.list') }}",
+            type: "GET",
+            success: function(res) {
+                if (Array.isArray(res)) {
+                    res.forEach(jp => {
+                        $('#filter-pembayaran').append(
+                            `<option value="${jp.nama}">${jp.nama}</option>`);
+                    });
+                }
+            }
+        });
+
+        // === 3️⃣ Event Filter ===
+        $('#filter-pembayaran, #filter-start, #filter-end').on('change', function() {
+            console.log('Filter berubah, reload DataTable...');
+            window.penjualanTable.ajax.reload(null, false); // false = tetap di halaman aktif
+        });
+
+        // === 4️⃣ Pencarian ===
         $('#search').on('keyup', function() {
             window.penjualanTable.search(this.value).draw();
         });
 
-        // ✅ Tombol Refresh (FIXED)
+        // === 5️⃣ Refresh Button ===
         $('#refresh-table-btn').on('click', function() {
             const btn = $(this);
             btn.prop('disabled', true);
             const originalHTML = btn.html();
             btn.html(`<span class="spinner-border spinner-border-sm me-2"></span> Memuat...`);
-
             window.penjualanTable.ajax.reload(function() {
                 btn.prop('disabled', false);
                 btn.html(originalHTML);
@@ -187,22 +230,23 @@
         });
     });
 
-
-    // ✅ Fungsi untuk menampilkan detail transaksi
+    // === 6️⃣ Detail Penjualan ===
     function lihatDetail(id) {
         $('#detail-body').html('<tr><td colspan="4" class="text-center">Memuat...</td></tr>');
 
         $.ajax({
-            url: "{{ route('penjualan.daftar.data') }}",
+            url: "{{ route('penjualan.detail') }}", // buat route baru untuk ambil detail by ID
             type: "GET",
+            data: {
+                id
+            },
             success: function(res) {
-                const data = res.find(p => p.id === id);
-                if (!data || !data.detail || !data.detail.length) {
+                if (!res || !res.detail || !res.detail.length) {
                     $('#detail-body').html(
                         '<tr><td colspan="4" class="text-center text-muted">Tidak ada detail barang</td></tr>'
                     );
                 } else {
-                    let rows = data.detail.map(d => `
+                    let rows = res.detail.map(d => `
                     <tr>
                         <td>${d.barang?.nama ?? '-'}</td>
                         <td>${d.qty}</td>
