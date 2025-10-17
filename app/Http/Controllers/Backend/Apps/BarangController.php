@@ -677,6 +677,7 @@ class BarangController extends Controller
                 'barang.kode_barang',
                 'barang.nama',
                 'barang.stok',
+                'barang.size',
                 'kategori.nama as kategori',
                 'brands.nama as brand'
             )
@@ -689,6 +690,7 @@ class BarangController extends Controller
                     'kode'     => $item->kode_barang,
                     'nama'     => $item->nama,
                     'stok'     => $item->stok,
+                    'size'     => $item->size,
                     'kategori' => $item->kategori ?? '-',
                     'brand'    => $item->brand ?? '-',
                 ];
