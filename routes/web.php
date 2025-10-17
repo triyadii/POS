@@ -294,6 +294,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('laporan-laba-rugi/chart', [LaporanLabaRugiController::class, 'getProfitLossData'])->name('laporan.laba-rugi.chart');
     Route::get('/laporan/laba-rugi/export-pdf', [LaporanLabaRugiController::class, 'exportLabaRugiPdf'])->name('laporan.laba-rugi.export-pdf');
+    Route::get('/laporan/laba-rugi/detail', [LaporanLabaRugiController::class, 'getDetailData'])->name('laporan.laba-rugi.detail');
     Route::resource('laporan-laba-rugi', LaporanLabaRugiController::class);
 
     Route::get('stok-data', [StokController::class, 'getStokData'])->name('stok.data');
