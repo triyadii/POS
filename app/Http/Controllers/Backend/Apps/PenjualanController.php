@@ -117,6 +117,7 @@ class PenjualanController extends Controller
     }
     public function historyData()
     {
+        $today = Carbon::today()->toDateString();
         $penjualan = Penjualan::with([
             'detail.barang:id,nama',
             'pembayaran:id,nama' // ✅ relasi jenis_pembayaran
@@ -131,6 +132,7 @@ class PenjualanController extends Controller
                 'total_harga',
                 'catatan'
             )
+            ->whereDate('tanggal_penjualan', $today)
             ->orderBy('tanggal_penjualan', 'desc')
             ->get();
 
@@ -245,29 +247,219 @@ class PenjualanController extends Controller
     // Ambil daftar penjualan (untuk DataTable + filter)
     public function getData(Request $request)
     {
-        $query = Penjualan::with('jenis_pembayaran');
+        $query = Penjualan::with([
+            'jenis_pembayaran:id,nama',
+            'detail.barang:id,nama,kode_barang'
+        ]);
 
-        if ($request->filled('metode_pembayaran')) {
+        // Filter metode pembayaran (tidak wajib)
+        if (!empty($request->metode_pembayaran)) {
             $query->whereHas('jenis_pembayaran', function ($q) use ($request) {
                 $q->where('nama', $request->metode_pembayaran);
             });
         }
 
-        if ($request->filled('start_date') && $request->filled('end_date')) {
+        // Filter nama barang
+        if (!empty($request->barang)) {
+            $keyword = strtolower($request->barang);
+            $query->whereHas('detail.barang', function ($q) use ($keyword) {
+                $q->whereRaw('LOWER(nama) LIKE ?', ["%{$keyword}%"]);
+            });
+        }
+
+        // Filter tanggal
+        if (!empty($request->start_date) && !empty($request->end_date)) {
             $query->whereBetween('tanggal_penjualan', [$request->start_date, $request->end_date]);
-        } elseif ($request->filled('start_date')) {
+        } elseif (!empty($request->start_date)) {
             $query->whereDate('tanggal_penjualan', '>=', $request->start_date);
-        } elseif ($request->filled('end_date')) {
+        } elseif (!empty($request->end_date)) {
             $query->whereDate('tanggal_penjualan', '<=', $request->end_date);
         }
 
-        return response()->json($query->latest()->get());
+        // Pencarian global (bisa berdiri sendiri)
+        if (!empty($request->search)) {
+            $search = strtolower($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(kode_transaksi) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(customer_nama) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(catatan) LIKE ?', ["%{$search}%"])
+                    ->orWhereHas('jenis_pembayaran', fn($sub) => $sub->whereRaw('LOWER(nama) LIKE ?', ["%{$search}%"]))
+                    ->orWhereHas('detail.barang', fn($sub) => $sub->whereRaw('LOWER(nama) LIKE ?', ["%{$search}%"]));
+            });
+        }
+
+        $data = $query->latest()->get();
+
+        // Tambahkan nama barang
+        $data->transform(function ($p) {
+            $p->nama_barang = $p->detail
+                ->map(fn($d) => $d->barang->nama ?? $d->barang->kode_barang ?? '-')
+                ->unique()
+                ->join(', ');
+            return $p;
+        });
+
+        return response()->json(['data' => $data]);
     }
+
 
     // Detail penjualan by ID
     public function getDetail(Request $request)
     {
         $penjualan = Penjualan::with(['detail.barang'])->find($request->id);
         return response()->json($penjualan);
+    }
+    public function update(Request $request)
+    {
+        $request->validate([
+            'id'                   => 'required|uuid|exists:penjualan,id',
+            'customer'             => 'nullable|string|max:150',
+            'jenis_pembayaran_id'  => 'nullable|uuid|exists:jenis_pembayaran,id',
+            'catatan'              => 'nullable|string|max:500',
+            'items'                => 'array',
+            'items.*.id'           => 'nullable|string', // uuid untuk existing, "new-xxx" untuk baru
+            'items.*.barang_id'    => 'nullable|uuid|exists:barang,id',
+            'items.*.qty'          => 'required|integer|min:1',
+            'items.*.harga_jual'   => 'nullable|integer|min:0',
+            'items.*.hapus'        => 'nullable' // <-- jangan boolean keras; kita normalize manual
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $penjualan = Penjualan::with('detail')->lockForUpdate()->findOrFail($request->id);
+
+            // Normalisasi items
+            $items = collect($request->input('items', []))->map(function ($row) {
+                $row['qty']        = (int)($row['qty'] ?? 0);
+                $row['harga_jual'] = isset($row['harga_jual']) ? (int)$row['harga_jual'] : null;
+                // konversi "hapus" ke boolean aman
+                $row['hapus'] = filter_var($row['hapus'] ?? false, FILTER_VALIDATE_BOOLEAN);
+                return $row;
+            });
+
+            // index detail lama by id
+            $oldDetails = $penjualan->detail->keyBy('id');
+
+            foreach ($items as $row) {
+                $detailId  = $row['id'] ?? null;
+                $barangId  = $row['barang_id'] ?? null;
+                $qtyBaru   = max(1, (int)$row['qty']);
+
+                // ==== A) UPDATE / HAPUS detail existing ====
+                if ($detailId && Str::isUuid($detailId) && $oldDetails->has($detailId)) {
+                    /** @var PenjualanDetail $detail */
+                    $detail = $oldDetails[$detailId];
+
+                    if ($row['hapus'] === true) {
+                        // kembalikan stok lama, lalu hapus detail
+                        Barang::where('id', $detail->barang_id)->increment('stok', $detail->qty);
+                        $detail->delete();
+                        continue;
+                    }
+
+                    // update qty & stok via delta
+                    $delta = $detail->qty - $qtyBaru; // + berarti stok dikembalikan, - berarti stok dikurangi lagi
+                    if ($delta !== 0) {
+                        Barang::where('id', $detail->barang_id)->increment('stok', $delta);
+                    }
+
+                    $harga = $detail->harga_jual; // harga existing dipakai jika tidak diubah
+                    if (!is_null($row['harga_jual'])) {
+                        $harga = (int)$row['harga_jual'];
+                    }
+
+                    $detail->qty      = $qtyBaru;
+                    $detail->harga_jual = $harga;
+                    $detail->subtotal = $harga * $qtyBaru;
+                    $detail->save();
+                    continue;
+                }
+
+                // ==== B) TAMBAH detail baru ====
+                if ($barangId) {
+                    $barang = Barang::findOrFail($barangId);
+                    $harga  = !is_null($row['harga_jual']) ? (int)$row['harga_jual'] : (int)$barang->harga_jual;
+
+                    if ($barang->stok < $qtyBaru) {
+                        throw new \RuntimeException("Stok {$barang->nama} tidak cukup.");
+                    }
+
+                    $barang->decrement('stok', $qtyBaru);
+
+                    PenjualanDetail::create([
+                        'id'           => (string) Str::uuid(),
+                        'penjualan_id' => $penjualan->id,
+                        'barang_id'    => $barang->id,
+                        'qty'          => $qtyBaru,
+                        'harga_beli'   => 0,
+                        'harga_jual'   => $harga,
+                        'subtotal'     => $harga * $qtyBaru,
+                    ]);
+                }
+                // Catatan penting: kita TIDAK menghapus detail yang tidak disebut di payload.
+            }
+
+            // Update header penjualan
+            if ($request->filled('customer')) {
+                $penjualan->customer_nama = $request->customer;
+            }
+            if ($request->filled('jenis_pembayaran_id')) {
+                $penjualan->jenis_pembayaran_id = $request->jenis_pembayaran_id;
+            }
+            if ($request->filled('catatan')) {
+                $penjualan->catatan = $request->catatan;
+            }
+
+            // Recalculate total
+            $penjualan->load('detail');
+            $penjualan->total_item  = (int)$penjualan->detail->sum('qty');
+            $penjualan->total_harga = (int)$penjualan->detail->sum('subtotal');
+            $penjualan->save();
+
+            DB::commit();
+            return response()->json(['status' => 'success', 'message' => 'Penjualan berhasil diperbarui']);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+        }
+    }
+    public function hapus(Request $request)
+    {
+        $penjualan = Penjualan::with('detail.barang')->find($request->id);
+
+        if (!$penjualan) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data penjualan tidak ditemukan.'
+            ]);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Kembalikan stok barang
+            foreach ($penjualan->detail as $detail) {
+                if ($detail->barang) {
+                    $detail->barang->stok += $detail->qty;
+                    $detail->barang->save();
+                }
+            }
+
+            // Hapus detail & penjualan
+            $penjualan->detail()->delete();
+            $penjualan->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data penjualan berhasil dihapus dan stok dikembalikan.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ]);
+        }
     }
 }
