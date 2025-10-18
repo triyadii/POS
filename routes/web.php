@@ -274,6 +274,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/penjualan/produk/data', [PenjualanController::class, 'produkData'])->name('penjualan.produk.data');
     Route::get('/penjualan/no-otomatis', [PenjualanController::class, 'generateNoTransaksi'])
         ->name('penjualan.no_otomatis');
+    Route::post('/penjualan/update', [PenjualanController::class, 'update'])->name('penjualan.updateBarang');
+    Route::post('/penjualan/hapus', [PenjualanController::class, 'hapus'])->name('penjualan.hapus');
+
 
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
     Route::get('laporan-penjualan/chart', [LaporanPenjualanController::class, 'getChartData'])->name('laporan.penjualan.chart');
