@@ -274,6 +274,9 @@
                     <!--end::Close-->
                 </div>
                 <!--end::Modal header-->
+
+                 <form method="post" id="FormTambahModalID" class="form" enctype="multipart/form-data">
+                        @csrf
                 <!--begin::Modal body-->
                 <div class="modal-body px-5 my-7">
                     <!--begin::Form-->
@@ -286,30 +289,26 @@
                             data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
 
                     
-                            
-                            <div id="repeater-barang">
+               <div id="repeater-barang">
   <!-- OUTER -->
   <div data-repeater-list="kelompok_barang">
-    <div data-repeater-item class="border rounded p-5 mb-5 bg-light">
-
+    <div data-repeater-item class="border rounded p-5 mb-5 bg-light" data-scope="kelompok_barang">
       <!-- KATEGORI & BRAND -->
       <div class="row g-3 mb-4">
         <div class="col-md-3">
           <label class="form-label fw-bold">Kategori Item</label>
           <select data-type="kategori" name="kategori_id"
-            class="form-select form-select-sm kategori_id"
-            data-kt-repeater="select2" data-placeholder="pilih kategori">
-          </select>
-<span class="text-danger error-text"></span>
+                  class="form-select form-select-sm kategori_id"
+                  data-kt-repeater="select2" data-placeholder="pilih kategori"></select>
+          <span class="text-danger error-text" data-error-field="kategori_id"></span>
         </div>
 
         <div class="col-md-3">
           <label class="form-label fw-bold">Brand</label>
           <select data-type="brand" name="brand_id"
-            class="form-select form-select-sm brand_id"
-            data-kt-repeater="select2" data-placeholder="pilih brand">
-          </select>
-          <span class="text-danger error-text kelompok_barang_0_brand_id_error_add"></span>
+                  class="form-select form-select-sm brand_id"
+                  data-kt-repeater="select2" data-placeholder="pilih brand"></select>
+          <span class="text-danger error-text" data-error-field="brand_id"></span>
         </div>
 
         <div class="col-md-3 d-flex align-items-end">
@@ -322,122 +321,99 @@
       <!-- INNER REPEATER: daftar barang -->
       <div class="inner-repeater">
         <div data-repeater-list="barang">
-          <div data-repeater-item class="p-4 mb-5 border rounded bg-light-subtle">
-
+          <div data-repeater-item class="p-4 mb-5 border rounded bg-light-subtle" data-scope="barang">
             <div class="row g-3 align-items-start">
               <!-- TIPE -->
               <div class="col-md-2">
                 <select data-type="tipe" name="tipe_id"
-                  class="form-select form-select-sm tipe_id"
-                  data-kt-repeater="select2"
-                  data-placeholder="pilih tipe/jenis brand">
-                </select>
-                <span class="text-danger error-text kelompok_barang_0_barang_0_tipe_id_error_add"></span>
+                        class="form-select form-select-sm tipe_id"
+                        data-kt-repeater="select2" data-placeholder="pilih tipe/jenis brand"></select>
+                <span class="text-danger error-text" data-error-field="tipe_id"></span>
               </div>
 
               <!-- KODE + SUB REPEATER VARIASI -->
               <div class="col-md-2">
-                <input type="text" name="kode"
-                  class="form-control form-control-sm mb-2"
-                  placeholder="Kode Item">
-                <span class="text-danger error-text kelompok_barang_0_barang_0_kode_error_add"></span>
+                <input type="text" name="kode" class="form-control form-control-sm mb-2" placeholder="Kode Item">
+                <span class="text-danger error-text" data-error-field="kode"></span>
 
                 <!-- SUB REPEATER: variasi kode & size -->
                 <div class="sub-repeater ms-2">
-                  <div data-repeater-list="variasi">
-                    <div data-repeater-item class="row g-2 align-items-center mb-2">
-                      <div class="col-7">
-                        <input type="text" name="kode_variasi"
-                          class="form-control form-control-sm"
-                          placeholder="Kode Variasi">
-                        <span class="text-danger error-text kelompok_barang_0_barang_0_variasi_0_kode_variasi_error_add"></span>
-                      </div>
-                      <div class="col-4">
-                        <input type="text" name="size"
-                          class="form-control form-control-sm"
-                          placeholder="Size">
-                      </div>
-                      <div class="col-1 text-center">
-                        <button type="button" data-repeater-delete
-                          class="btn btn-icon btn-light-danger btn-sm">
-                          <i class="ki-outline ki-trash fs-2"></i>
+                 <div data-repeater-list="variasi">
+                    <div data-repeater-item class="row g-2 align-items-center mb-2" data-scope="variasi">
+                        <div class="col-7">
+                        <input type="text" name="kode_variasi" class="form-control form-control-sm" placeholder="Kode Variasi">
+                        <span class="text-danger error-text" data-error-field="kode_variasi"></span>
+                        </div>
+                        <div class="col-4">
+                        <input type="text" name="size" class="form-control form-control-sm" placeholder="Size">
+                        <span class="text-danger error-text" data-error-field="size"></span>
+                        </div>
+                        <div class="col-1 text-center">
+                        <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger btn-sm">
+                            <i class="ki-outline ki-trash fs-2"></i>
                         </button>
-                      </div>
+                        </div>
                     </div>
-                  </div>
-                  <button type="button" data-repeater-create
-                    class="btn btn-light-primary btn-sm w-100 mt-1">+ Tambah Variasi</button>
+                    </div>
+
+
+                  <button type="button" data-repeater-create class="btn btn-light-primary btn-sm w-100 mt-1">+ Tambah Variasi</button>
                 </div>
               </div>
 
               <!-- NAMA ITEM -->
               <div class="col-md-2">
-                <input type="text" name="nama"
-                  class="form-control form-control-sm"
-                  placeholder="Nama Item">
-                <span class="text-danger error-text kelompok_barang_0_barang_0_nama_error_add"></span>
+                <input type="text" name="nama" class="form-control form-control-sm" placeholder="Nama Item">
+                <span class="text-danger error-text" data-error-field="nama"></span>
               </div>
 
               <!-- SIZE UTAMA -->
               <div class="col-md-1">
-                <input type="text" name="size_main"
-                  class="form-control form-control-sm"
-                  placeholder="Size">
+                <input type="text" name="size_main" class="form-control form-control-sm" placeholder="Size">
+                <span class="text-danger error-text" data-error-field="size_main"></span>
               </div>
 
               <!-- SATUAN -->
               <div class="col-md-1">
                 <select data-type="satuan" name="satuan_id"
-                  class="form-select form-select-sm satuan_id"
-                  data-kt-repeater="select2"
-                  data-placeholder="pilih satuan">
-                </select>
-                <span class="text-danger error-text kelompok_barang_0_barang_0_satuan_id_error_add"></span>
+                        class="form-select form-select-sm satuan_id"
+                        data-kt-repeater="select2" data-placeholder="pilih satuan"></select>
+                <span class="text-danger error-text" data-error-field="satuan_id"></span>
               </div>
 
               <!-- HARGA JUAL -->
               <div class="col-md-1">
-                <input type="text" name="harga_jual"
-                  class="form-control form-control-sm text-end format-rupiah"
-                  placeholder="Harga Jual">
-                <span class="text-danger error-text kelompok_barang_0_barang_0_harga_jual_error_add"></span>
+                <input type="text" name="harga_jual" class="form-control form-control-sm text-end format-rupiah" placeholder="Harga Jual">
+                <span class="text-danger error-text" data-error-field="harga_jual"></span>
               </div>
 
               <!-- HARGA BELI -->
               <div class="col-md-1">
-                <input type="text" name="harga_beli"
-                  class="form-control form-control-sm text-end format-rupiah"
-                  placeholder="Harga Beli">
-                <span class="text-danger error-text kelompok_barang_0_barang_0_harga_beli_error_add"></span>
+                <input type="text" name="harga_beli" class="form-control form-control-sm text-end format-rupiah" placeholder="Harga Beli">
+                <span class="text-danger error-text" data-error-field="harga_beli"></span>
               </div>
 
               <!-- DELETE -->
               <div class="col-md-1 text-center">
-                <button type="button" data-repeater-delete
-                  class="btn btn-icon btn-light-danger btn-sm">
+                <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger btn-sm">
                   <i class="ki-outline ki-trash fs-2"></i>
                 </button>
               </div>
             </div>
-
           </div>
         </div>
 
-        <button type="button" data-repeater-create class="btn btn-sm btn-light-primary">
-          + Tambah Item
-        </button>
+        <button type="button" data-repeater-create class="btn btn-sm btn-light-primary">+ Tambah Item</button>
       </div>
       <!-- END INNER REPEATER -->
-
     </div>
   </div>
 
   <div class="mt-5">
-    <button type="button" data-repeater-create class="btn btn-sm btn-light-success">
-      + Tambah Kategori & Brand
-    </button>
+    <button type="button" data-repeater-create class="btn btn-sm btn-light-success">+ Tambah Kategori & Brand</button>
   </div>
 </div>
+
 
 
 
@@ -985,23 +961,20 @@ $(document).on('input', '.format-rupiah', function() {
               
 
 
-
-
-                // SHOW MODAL TAMBAH DATA
-                // === SHOW MODAL TAMBAH DATA ===
+// === TAMPILKAN MODAL ===
 $('#btn_tambah_data').on('click', function () {
     $('#Modal_Tambah_Data').modal('show');
 });
 
-// === CEGAH ENTER MENGIRIM FORM / PINDAH FIELD ===
+// === CEGAH ENTER KIRIM FORM ===
 $(document).on('keypress', 'form input', function (e) {
     if (e.which === 13) e.preventDefault();
 });
 
+// === ENTER DI KODE LANJUT KE KOLOM NAMA ===
 $(document).on('keypress', 'input[name="kode"], input[name="kode_variasi"]', function (e) {
     if (e.which === 13) {
         e.preventDefault();
-        // pindahkan fokus ke nama item (kalau ada)
         $(this).closest('.row').find('input[name="nama"]').focus();
     }
 });
@@ -1012,33 +985,93 @@ const blockUI = new KTBlockUI(target, {
     message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> <span class="text-white">Please Wait ...</span></div>',
     overlayClass: "bg-dark bg-opacity-50",
 });
+// =======================================================
+// 🔁 REINDEX REPEATER (final fix - support sub repeater)
+// =======================================================
+function reIndexRepeater() {
+    $('#repeater-barang [data-repeater-item]').each(function () {
+        const $kelompok = $(this);
+        const scope = $kelompok.attr('data-scope');
 
-// === FORM SUBMIT AJAX ===
+        // cari index outer (kelompok_barang)
+        const kIndex = $kelompok.closest('[data-repeater-list="kelompok_barang"]').find('> [data-repeater-item]').index($kelompok);
+
+        if (scope === 'kelompok_barang') {
+            // kategori & brand
+            $kelompok.find('> .row span.error-text').each(function () {
+                const base = $(this).data('error-field');
+                $(this)
+                    .removeAttr('class')
+                    .addClass('text-danger error-text kelompok_barang_' + kIndex + '_' + base + '_error_add');
+            });
+
+            // barang di dalam kelompok ini
+            $kelompok.find('[data-repeater-list="barang"] > [data-repeater-item]').each(function (bIndex) {
+                const $barang = $(this);
+
+                // error span di barang
+                $barang.find('> .row span.error-text').each(function () {
+                    const base = $(this).data('error-field');
+                    $(this)
+                        .removeAttr('class')
+                        .addClass(
+                            'text-danger error-text kelompok_barang_' +
+                                kIndex +
+                                '_barang_' +
+                                bIndex +
+                                '_' +
+                                base +
+                                '_error_add'
+                        );
+                });
+
+                // variasi di dalam barang
+                $barang.find('[data-repeater-list="variasi"] > [data-repeater-item]').each(function (vIndex) {
+                    $(this)
+                        .find('span.error-text')
+                        .each(function () {
+                            const base = $(this).data('error-field');
+                            $(this)
+                                .removeAttr('class')
+                                .addClass(
+                                    'text-danger error-text kelompok_barang_' +
+                                        kIndex +
+                                        '_barang_' +
+                                        bIndex +
+                                        '_variasi_' +
+                                        vIndex +
+                                        '_' +
+                                        base +
+                                        '_error_add'
+                                );
+                        });
+                });
+            });
+        }
+    });
+}
+
+// trigger ulang setiap create/delete di repeater
+$('#repeater-barang').on('repeaterCreate repeaterDelete', function () {
+    setTimeout(reIndexRepeater, 100);
+});
+$('#Modal_Tambah_Data').on('shown.bs.modal', reIndexRepeater);
+
+
+
+
+// =======================================================
+// 📨 FORM SUBMIT AJAX
+// =======================================================
 $('#FormTambahModalID').on('submit', function (event) {
     event.preventDefault();
-
-    // === AUTO HAPUS PESAN ERROR SAAT INPUT DIEDIT ===
-$(document).on('input change select2:select select2:clear', 'input, select', function () {
-    let name = $(this).attr('name');
-    if (!name) return;
-
-    // Ubah format name jadi class validasi
-    let fieldName = name
-        .replace(/\[/g, '_')
-        .replace(/\]/g, '')
-        .replace(/\./g, '_');
-
-    $('span.' + fieldName + '_error_add').text('');
-});
-
-
     blockUI.block();
+
     const $btn = $('#btn-add-data');
     $btn.prop('disabled', true);
     $btn.find('.add-data-label').hide();
     $btn.find('.add-data-progress').show();
 
-    // CSRF setup
     $.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
     });
@@ -1056,24 +1089,29 @@ $(document).on('input change select2:select select2:clear', 'input, select', fun
         },
         success: function (result) {
             setTimeout(function () {
-                // CASE 1: VALIDASI ERROR
-                if (result.errors) {
-                    $.each(result.errors, function (prefix, val) {
-                        // ubah titik (.) jadi underscore (_)
-                        const fieldName = prefix.replace(/\./g, "_");
-                        $("span." + fieldName + "_error_add").text(val[0]);
-                    });
+                // 🔴 VALIDASI ERROR
+               if (result.errors) {
+    reIndexRepeater(); // penting: pastikan index span sudah sesuai
+    $.each(result.errors, function (prefix, val) {
+        const fieldName = prefix.replace(/\./g, "_");
+        const $target = $("span." + fieldName + "_error_add");
+        if ($target.length) {
+            $target.text(val[0]);
+        } else {
+            console.warn("⚠️ span error tidak ditemukan:", fieldName);
+        }
+    });
 
-                    Swal.fire({
-                        title: "Gagal",
-                        text: "Terjadi kesalahan validasi, periksa kembali input Anda.",
-                        icon: "error",
-                        timer: 1800,
-                        confirmButtonText: "Oke",
-                    });
-                }
+    Swal.fire({
+        title: "Gagal",
+        text: "Terjadi kesalahan validasi, periksa kembali input Anda.",
+        icon: "error",
+        timer: 2000,
+    });
+}
 
-                // CASE 2: APLIKASI ERROR
+
+                // ⚠️ APLIKASI ERROR
                 else if (result.error) {
                     $("#Modal_Tambah_Data").modal("hide");
                     Swal.fire({
@@ -1081,11 +1119,10 @@ $(document).on('input change select2:select select2:clear', 'input, select', fun
                         text: result.error,
                         icon: "error",
                         timer: 1800,
-                        confirmButtonText: "Oke",
                     });
                 }
 
-                // CASE 3: SUKSES
+                // ✅ SUKSES
                 else {
                     $("#Modal_Tambah_Data").modal("hide");
                     $(".chimox").DataTable().ajax.reload();
@@ -1095,16 +1132,15 @@ $(document).on('input change select2:select select2:clear', 'input, select', fun
                         text: result.success || "Data berhasil disimpan.",
                         icon: "success",
                         timer: 1500,
-                        confirmButtonText: "Oke",
                     });
                 }
 
-                // Reset tombol & unblock
+                // reset tombol
                 $btn.prop('disabled', false);
                 $btn.find('.add-data-label').show();
                 $btn.find('.add-data-progress').hide();
                 blockUI.release();
-            }, 800);
+            }, 700);
         },
         error: function (xhr) {
             blockUI.release();
@@ -1121,21 +1157,21 @@ $(document).on('input change select2:select select2:clear', 'input, select', fun
     });
 });
 
-// === RESET FORM SAAT MODAL DITUTUP ===
+// =======================================================
+// 🔁 HAPUS PESAN ERROR SAAT INPUT BERUBAH
+// =======================================================
+$(document).on('input change select2:select select2:clear', 'input, select', function () {
+    const name = $(this).attr('name');
+    if (!name) return;
+    const fieldName = name.replace(/\[/g, '_').replace(/\]/g, '').replace(/\./g, '_');
+    $('span.' + fieldName + '_error_add').text('');
+});
+
+// === RESET FORM SAAT MODAL TERTUTUP ===
 $("#Modal_Tambah_Data").on("hidden.bs.modal", function () {
     resetForm();
 });
 
-// === AUTO HAPUS PESAN ERROR SAAT USER MENGUBAH INPUT ===
-$(document).on('input change', 'input, select', function () {
-    const name = $(this).attr('name');
-    if (!name) return;
-    const fieldName = name
-        .replace(/\[/g, '_')
-        .replace(/\]/g, '')
-        .replace(/\./g, '_');
-    $('span.' + fieldName + '_error_add').text('');
-});
 
 
 

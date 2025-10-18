@@ -231,6 +231,11 @@ table.on('xhr.dt', function (e, settings, json) {
     }
 });
 
+// === CEGAH ENTER KIRIM FORM ===
+$(document).on('keypress', 'form input', function (e) {
+    if (e.which === 13) e.preventDefault();
+});
+
 $('#formAddDetail').on('submit', function(e) {
     e.preventDefault();
 

@@ -230,6 +230,12 @@ $(function() {
 });
 
 
+// === CEGAH ENTER KIRIM FORM ===
+$(document).on('keypress', 'form input', function (e) {
+    if (e.which === 13) e.preventDefault();
+});
+
+
 // 🔹 Inline Edit Harga
 $('#table-detail').on('click', '.editable-price', function () {
     const span = $(this);
