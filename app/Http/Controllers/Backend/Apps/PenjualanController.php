@@ -34,6 +34,37 @@ class PenjualanController extends Controller
     }
     public function store(Request $request)
     {
+
+        $validator = \Validator::make($request->all(), [
+            'no_penjualan' => 'required|string|max:50',
+            'tanggal'      => 'required|date',
+            'customer'     => 'required|string|max:150',
+            'pembayaran'   => 'required|uuid|exists:jenis_pembayaran,id',
+            'items'        => 'required|array|min:1',
+            'items.*.barang_id' => 'required|uuid|exists:barang,id',
+            'items.*.qty'       => 'required|numeric|min:1',
+        ], [
+            'no_penjualan.required' => 'Nomor penjualan wajib diisi.',
+            'tanggal.required'      => 'Tanggal penjualan wajib diisi.',
+            'customer.required'     => 'Nama customer wajib diisi.',
+            'pembayaran.required'   => 'Jenis pembayaran wajib dipilih.',
+            'pembayaran.exists'     => 'Jenis pembayaran tidak valid.',
+            'items.required'        => 'Daftar produk tidak boleh kosong.',
+            'items.min'             => 'Minimal 1 produk harus dipilih.',
+            'items.*.barang_id.required' => 'Setiap item wajib memiliki barang.',
+            'items.*.barang_id.exists'   => 'Barang tidak ditemukan di database.',
+            'items.*.qty.required'       => 'Jumlah qty wajib diisi.',
+            'items.*.qty.min'            => 'Qty minimal 1.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+
         DB::beginTransaction();
         try {
             // ✅ Buat ID baru manual
@@ -73,7 +104,6 @@ class PenjualanController extends Controller
 
 
             DB::commit();
-            // ✅ Generate kode transaksi berikutnya
             $nextNo = $this->generateNextNoPenjualan();
             return response()->json([
                 'status' => 'success',
@@ -165,18 +195,20 @@ class PenjualanController extends Controller
         return view('backend.apps.penjualan.daftar');
     }
 
-    public function dataPenjualan()
+    public function dataPenjualan(Request $request)
     {
         // Ambil data penjualan dengan relasi detail & barang
         $penjualan = Penjualan::with([
             'detail.barang:id,nama',
-            'user:id,name'
+            'user:id,name',
+            'jenis_pembayaran:id,nama'
         ])
             ->select(
                 'id',
                 'kode_transaksi',
                 'tanggal_penjualan',
                 'customer_nama',
+                'jenis_pembayaran_id',
                 'total_item',
                 'total_harga',
                 'catatan',
@@ -204,5 +236,38 @@ class PenjualanController extends Controller
             ->get();
 
         return response()->json($produk);
+    }
+    public function getJenisPembayaran()
+    {
+        $list = JenisPembayaran::select('id', 'nama')->orderBy('nama')->get();
+        return response()->json($list);
+    }
+    // Ambil daftar penjualan (untuk DataTable + filter)
+    public function getData(Request $request)
+    {
+        $query = Penjualan::with('jenis_pembayaran');
+
+        if ($request->filled('metode_pembayaran')) {
+            $query->whereHas('jenis_pembayaran', function ($q) use ($request) {
+                $q->where('nama', $request->metode_pembayaran);
+            });
+        }
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tanggal_penjualan', [$request->start_date, $request->end_date]);
+        } elseif ($request->filled('start_date')) {
+            $query->whereDate('tanggal_penjualan', '>=', $request->start_date);
+        } elseif ($request->filled('end_date')) {
+            $query->whereDate('tanggal_penjualan', '<=', $request->end_date);
+        }
+
+        return response()->json($query->latest()->get());
+    }
+
+    // Detail penjualan by ID
+    public function getDetail(Request $request)
+    {
+        $penjualan = Penjualan::with(['detail.barang'])->find($request->id);
+        return response()->json($penjualan);
     }
 }
