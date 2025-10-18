@@ -19,9 +19,12 @@
                         @foreach ($trx->detail as $item)
                             <tr class="detail-item">
                                 <td>
-                                    {{ $item->barang->nama ?? 'N/A' }} ({{ $item->barang->tipe->nama ?? '-' }}) <br>
+                                    {{-- Gunakan optional() untuk mengakses properti dengan aman --}}
+                                    <strong>{{ optional($item->barang)->nama ?? '[-]' }}</strong>
+                                    ({{ optional(optional($item->barang)->tipe)->nama ?? '-' }})
+                                    <br>
+
                                     {{ $item->qty }} x Rp {{ number_format($item->harga_jual, 0, ',', '.') }}
-                                    {{-- Jika ada potongan, tampilkan di sini --}}
                                 </td>
                                 <td class="text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
                             </tr>

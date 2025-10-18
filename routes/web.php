@@ -45,12 +45,13 @@ use App\Http\Controllers\Backend\Apps\BarangKeluarController;
 use App\Http\Controllers\Backend\Apps\BarangKeluarDetailController;
 use App\Http\Controllers\Backend\Apps\PengeluaranController;
 
-
 //END CHIMOX
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
 use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiController;
+use App\Http\Controllers\Backend\Laporan\LaporanLabaRugiHarianController;
 use App\Http\Controllers\Backend\Laporan\LaporanPembelianSupplierController;
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanBrandController;
+use App\Http\Controllers\Backend\Laporan\LaporanPenjualanHarianController;
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanKategoriController;
 use App\Http\Controllers\Backend\Stok\StokController;
 use App\Http\Controllers\SettingAppController;
@@ -279,6 +280,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/laporan/penjualan/export', [LaporanPenjualanController::class, 'export'])->name('laporan.penjualan.export');
     Route::resource('laporan-penjualan', LaporanPenjualanController::class);
 
+    Route::get('laporan-penjualan-harian-data', [LaporanPenjualanHarianController::class, 'getLaporanData'])->name('laporan.penjualan-harian.data');
+    Route::get('/laporan/penjualan-harian/export', [LaporanPenjualanHarianController::class, 'export'])->name('laporan.penjualan-harian.export');
+    Route::resource('laporan-penjualan-harian', LaporanPenjualanHarianController::class);
+
     Route::get('laporan-penjualan-brand-data', [LaporanPenjualanBrandController::class, 'getLaporanData'])->name('laporan.penjualan.brand.data');
     Route::get('laporan-penjualan-brand/chart', [LaporanPenjualanBrandController::class, 'getChartData'])->name('laporan.penjualan.brand.chart');
     Route::match(['get', 'post'], '/laporan/penjualan/brand/export', [LaporanPenjualanBrandController::class, 'export'])->name('laporan.penjualan.brand.export');
@@ -300,6 +305,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/laporan/laba-rugi/export-pdf', [LaporanLabaRugiController::class, 'exportLabaRugiPdf'])->name('laporan.laba-rugi.export-pdf');
     Route::get('/laporan/laba-rugi/detail', [LaporanLabaRugiController::class, 'getDetailData'])->name('laporan.laba-rugi.detail');
     Route::resource('laporan-laba-rugi', LaporanLabaRugiController::class);
+
+    Route::get('/laporan/laba-rugi-harian/export-pdf', [LaporanLabaRugiHarianController::class, 'exportLabaRugiPdf'])->name('laporan.laba-rugi-harian.export-pdf');
+    Route::resource('laporan-laba-rugi-harian', LaporanLabaRugiHarianController::class);
 
     Route::get('stok-data', [StokController::class, 'getStokData'])->name('stok.data');
     Route::get('stok/chart', [StokController::class, 'getChartData'])->name('stok.chart');
