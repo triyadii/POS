@@ -621,25 +621,25 @@
         // }
 
         function renderProduk(data) {
-    const container = document.querySelector('.daftar-produk');
-    container.innerHTML = '';
+            const container = document.querySelector('.daftar-produk');
+            container.innerHTML = '';
 
-    if (!data || data.length === 0) {
-        container.innerHTML = `
+            if (!data || data.length === 0) {
+                container.innerHTML = `
             <div class="text-center text-muted py-10">
                 <i class="fas fa-box-open fs-2hx mb-3 d-block text-gray-400"></i>
                 <div class="fw-semibold fs-5">Tidak ada produk ditemukan</div>
             </div>`;
-        return;
-    }
+                return;
+            }
 
-    data.forEach(p => {
-        const stok = parseInt(p.stok ?? 0);
-        const habis = stok <= 0;
+            data.forEach(p => {
+                const stok = parseInt(p.stok ?? 0);
+                const habis = stok <= 0;
 
-        const card = document.createElement('div');
-        card.className = 'col-xl-3 col-lg-4 col-md-6 mb-4';
-        card.innerHTML = `
+                const card = document.createElement('div');
+                card.className = 'col-xl-3 col-lg-4 col-md-6 mb-4';
+                card.innerHTML = `
         <div class="card shadow-sm produk-item border-0 h-100 ${habis ? 'bg-light-secondary' : ''}"
              data-id="${p.id}"
              style="cursor:${habis ? 'not-allowed' : 'pointer'};opacity:${habis ? 0.6 : 1};
@@ -668,34 +668,34 @@
             </div>
         </div>`;
 
-        container.appendChild(card);
-    });
+                container.appendChild(card);
+            });
 
-    // ✨ Efek hover (zoom-in ringan)
-    document.querySelectorAll('.produk-item').forEach(item => {
-        item.addEventListener('mouseenter', () => {
-            if (!item.classList.contains('bg-light-secondary')) {
-                item.style.transform = 'scale(1.03)';
-                item.style.boxShadow = '0 6px 12px rgba(0,0,0,0.1)';
-            }
-        });
-        item.addEventListener('mouseleave', () => {
-            item.style.transform = 'scale(1)';
-            item.style.boxShadow = '';
-        });
+            // ✨ Efek hover (zoom-in ringan)
+            document.querySelectorAll('.produk-item').forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    if (!item.classList.contains('bg-light-secondary')) {
+                        item.style.transform = 'scale(1.03)';
+                        item.style.boxShadow = '0 6px 12px rgba(0,0,0,0.1)';
+                    }
+                });
+                item.addEventListener('mouseleave', () => {
+                    item.style.transform = 'scale(1)';
+                    item.style.boxShadow = '';
+                });
 
-        // 🛒 Klik produk
-        item.addEventListener('click', function() {
-            const produk = produkData.find(p => p.id == this.dataset.id);
-            const stok = parseInt(produk.stok ?? 0);
-            if (stok <= 0) {
-                Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
-                return;
-            }
-            tambahKeTabel(produk);
-        });
-    });
-}
+                // 🛒 Klik produk
+                item.addEventListener('click', function() {
+                    const produk = produkData.find(p => p.id == this.dataset.id);
+                    const stok = parseInt(produk.stok ?? 0);
+                    if (stok <= 0) {
+                        Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
+                        return;
+                    }
+                    tambahKeTabel(produk);
+                });
+            });
+        }
 
 
 
@@ -880,6 +880,9 @@
                 });
             });
 
+            const pembayaranId = $('#pembayaran-penjualan').val();
+            const pembayaranNama = $('#pembayaran-penjualan option:selected').text();
+
             const payload = {
                 _token: $('input[name="_token"]').val(),
                 no_penjualan: $('#no_penjualan').val(),
@@ -890,7 +893,8 @@
                 uang: `Rp ${uangDiterima.toLocaleString('id-ID')}`,
                 kembalian: `Rp ${kembalian.toLocaleString('id-ID')}`,
                 catatan: $('#catatan').val(),
-                pembayaran: $('#pembayaran-penjualan').val(),
+                pembayaran: pembayaranId,
+                pembayaran_nama: pembayaranNama,
                 items: items
             };
 
@@ -1034,7 +1038,7 @@
             <span>Kembalian</span><span>${t.kembalian ?? '-'}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
-            <span>Metode</span><span>${t.pembayaran ?? '-'}</span>
+            <span>Metode</span><span>${t.pembayaran_nama ?? '-'}</span>
         </div>
 
         <hr style="border-top:1px dashed #000;">
