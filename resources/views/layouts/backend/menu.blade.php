@@ -157,10 +157,12 @@
                             <span
                                 class="menu-link py-3 {{ request()->routeIs(
                                     'laporan-penjualan.index',
+                                    'laporan-penjualan-harian.index',
                                     'laporan-pembelian-supplier.index',
                                     'laporan-penjualan-kategori.index',
                                     'laporan-penjualan-brand.index',
                                     'laporan-laba-rugi.index',
+                                    'laporan-laba-rugi-harian.index',
                                 )
                                     ? 'active '
                                     : '' }}">
@@ -189,6 +191,17 @@
                                     </div>
                                 @endcan
                                 <!--end:Menu item-->
+                                <div
+                                    class="menu-item {{ request()->routeIs('laporan-penjualan-harian.index') ? 'here show ' : '' }}">
+                                    <!--begin:Menu link-->
+                                    <a class="menu-link py-3" href="{{ route('laporan-penjualan-harian.index') }}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Penjualan Harian</span>
+                                    </a>
+                                    <!--end:Menu link-->
+                                </div>
                                 <!--begin:Menu item-->
                                 @can('laporan-pembelian-supplier-list')
                                     <div
@@ -249,6 +262,19 @@
                                     </div>
                                     <!--end:Menu item-->
                                 @endcan
+                                <!--begin:Menu item-->
+                                <div
+                                    class="menu-item {{ request()->routeIs('laporan-laba-rugi-harian.index') ? 'here show ' : '' }}">
+                                    <!--begin:Menu link-->
+                                    <a class="menu-link py-3" href="{{ route('laporan-laba-rugi-harian.index') }}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Laba Rugi Harian</span>
+                                    </a>
+                                    <!--end:Menu link-->
+                                </div>
+                                <!--end:Menu item-->
                             </div>
                             <!--end:Menu sub-->
                         </div>
