@@ -90,6 +90,7 @@ class LaporanPenjualanController extends Controller
             'detail.barang:id,kode_barang,nama,brand_id,tipe_id', // Ambil relasi barang
             'detail.barang.tipe:id,nama', // Ambil relasi tipe dari barang
             'detail.barang.brand:id,nama', // Ambil relasi brand dari barang
+            'pembayaran'
         ])->select('penjualan.*');
 
         return \DataTables::of($data)
@@ -102,6 +103,18 @@ class LaporanPenjualanController extends Controller
             })
             ->addColumn('customer', function ($data) {
                 return $data->customer_nama ?? 'Umum';
+            })
+            ->addColumn('jenis_pembayaran', function ($data) {
+                if (!$data->pembayaran) {
+                    return '-';
+                }
+                $nama = e($data->pembayaran->nama);
+                $rekening = e($data->pembayaran->no_rekening);
+                // Membuat HTML dengan nama dan no rekening di bawahnya
+                return "<div>
+                            <span class='fw-bold'>{$nama}</span><br>
+                            <small class='text-muted'>{$rekening}</small>
+                        </div>";
             })
             ->addColumn('total', function ($data) {
                 return 'Rp ' . number_format($data->total_harga, 0, ',', '.');
@@ -133,7 +146,8 @@ class LaporanPenjualanController extends Controller
 
                 return $button;
             })
-            ->rawColumns(['action']) // Pastikan rawColumns diubah ke 'action'
+            ->rawColumns(['action', 'jenis_pembayaran'])
+
             ->with([
                 'total_transaksi' => $totalTransaksi,
                 'total_penjualan' => $totalPendapatan,
@@ -162,17 +176,20 @@ class LaporanPenjualanController extends Controller
             'user:id,name',
             'detail.barang:id,kode_barang,nama',
             'detail.barang.tipe:id,nama',
+            'pembayaran'
         ])
             ->whereBetween('tanggal_penjualan', [$start, $end])
             ->orderBy('tanggal_penjualan', 'asc')
             ->get();
 
         // Statistik
+        $totalPenjualan = $penjualan->sum('total_harga');
         $totalTransaksi = $penjualan->count();
         $totalPendapatan = $penjualan->sum('total_harga');
         $jumlahProdukTerjual = PenjualanDetail::whereHas('penjualan', function ($q) use ($start, $end) {
             $q->whereBetween('tanggal_penjualan', [$start, $end]);
         })->sum('qty');
+        $totalPenjualanTerbilang = $this->terbilang($totalPenjualan);
 
         $namaUser = Auth::user()->name; // Mengambil nama user yang login
         $tanggalCetak = Carbon::now();  // Mengambil waktu saat ini    $namaUser = Auth::user()->name; // Mengambil nama user yang login
@@ -182,6 +199,7 @@ class LaporanPenjualanController extends Controller
             'totalTransaksi',
             'totalPendapatan',
             'jumlahProdukTerjual',
+            'totalPenjualanTerbilang',
             'start',
             'end',
             'namaUser', // Variabel baru

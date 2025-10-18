@@ -263,8 +263,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('penjualan', PenjualanController::class)->except(['show']);
     Route::get('/penjualan/daftar', [PenjualanController::class, 'daftarPenjualan'])->name('penjualan.daftar');
-    Route::get('/penjualan/daftar/data', [PenjualanController::class, 'dataPenjualan'])
-        ->name('penjualan.daftar.data');
+    // Route::get('/penjualan/daftar/data', [PenjualanController::class, 'dataPenjualan'])
+    //     ->name('penjualan.daftar.data');
+    Route::get('/penjualan/data', [PenjualanController::class, 'getData'])->name('penjualan.daftar.data');
+    Route::get('/penjualan/detail', [PenjualanController::class, 'getDetail'])->name('penjualan.detail');
+    Route::get('/penjualan/jenis-pembayaran', [PenjualanController::class, 'getJenisPembayaran'])
+        ->name('jenis-pembayaran.list');
     Route::get('penjualan/history', [PenjualanController::class, 'historyData'])->name('penjualan.history.data');
     Route::get('/penjualan/produk/data', [PenjualanController::class, 'produkData'])->name('penjualan.produk.data');
     Route::get('/penjualan/no-otomatis', [PenjualanController::class, 'generateNoTransaksi'])
@@ -294,6 +298,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('laporan-laba-rugi/chart', [LaporanLabaRugiController::class, 'getProfitLossData'])->name('laporan.laba-rugi.chart');
     Route::get('/laporan/laba-rugi/export-pdf', [LaporanLabaRugiController::class, 'exportLabaRugiPdf'])->name('laporan.laba-rugi.export-pdf');
+    Route::get('/laporan/laba-rugi/detail', [LaporanLabaRugiController::class, 'getDetailData'])->name('laporan.laba-rugi.detail');
     Route::resource('laporan-laba-rugi', LaporanLabaRugiController::class);
 
     Route::get('stok-data', [StokController::class, 'getStokData'])->name('stok.data');
