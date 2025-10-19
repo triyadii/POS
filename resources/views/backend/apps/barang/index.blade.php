@@ -108,16 +108,7 @@
         </select>
     </div>
             
-                <!-- Tipe (nested dari Brand) -->
-                <div class="col-xxl-4 col-md-4">
-                    <label class="fs-6 form-label fw-bold text-gray-900">Tipe Item</label>
-                    <select id="filter_tipe_id" name="filter_tipe_id"
-                            class="form-select form-select-sm" data-control="select2"
-                            data-placeholder="Pilih Tipe">
-                        </select>
-                    </div> 
-                </div>
-                <!--end::Row-->
+                
 
   
     
@@ -323,13 +314,7 @@
         <div data-repeater-list="barang">
           <div data-repeater-item class="p-4 mb-5 border rounded bg-light-subtle" data-scope="barang">
             <div class="row g-3 align-items-start">
-              <!-- TIPE -->
-              <div class="col-md-2">
-                <select data-type="tipe" name="tipe_id"
-                        class="form-select form-select-sm tipe_id"
-                        data-kt-repeater="select2" data-placeholder="pilih tipe/jenis brand"></select>
-                <span class="text-danger error-text" data-error-field="tipe_id"></span>
-              </div>
+              
 
               <!-- KODE + SUB REPEATER VARIASI -->
               <div class="col-md-2">
@@ -651,47 +636,10 @@
                 ajax: $.extend({}, config.ajax, { url: "{{ route('brand.select') }}" })
             }));
 
-            // Saat brand berubah ⇒ reset SEMUA select tipe di outer item ini
-            el.off('change.brand-reset').on('change.brand-reset', function () {
-                const outerItem = el.closest('[data-repeater-item]'); // brand ada di OUTER item
-                outerItem.find('select[data-type="tipe"]').each(function () {
-                    $(this).val(null).trigger('change');
-                });
-            });
+          
             break;
 
-        case 'tipe':
-            el.select2($.extend({}, config, {
-                placeholder: 'Pilih tipe',
-                ajax: $.extend({}, config.ajax, {
-                    url: "{{ route('tipe.select') }}",
-                    data: function (params) {
-                        // Ambil brand_id dari OUTER repeater item terdekat
-                        const outerItem = el.closest('[data-repeater-item]').parents('[data-repeater-item]').first();
-                        const brandID = outerItem.find('select[data-type="brand"]').val();
-
-                        return {
-                            q: params.term || '',
-                            brandID: brandID || '' // backend akan filter by brandID
-                        };
-                    }
-                })
-            }));
-
-            // Cegah buka dropdown tipe kalau brand belum dipilih
-            el.off('select2:opening.guard').on('select2:opening.guard', function (evt) {
-                const outerItem = el.closest('[data-repeater-item]').parents('[data-repeater-item]').first();
-                const brandID = outerItem.find('select[data-type="brand"]').val();
-                if (!brandID) {
-                    evt.preventDefault();
-                    if (typeof toastr !== 'undefined') {
-                        toastr.warning('Pilih brand terlebih dahulu');
-                    } else {
-                        alert('Pilih brand terlebih dahulu');
-                    }
-                }
-            });
-            break;
+       
 
         case 'satuan':
             el.select2($.extend({}, config, {
@@ -779,7 +727,6 @@
                         data: function(d) {
                             d.kategori_id = $('#filter_kategori_id').val();
                             d.brand_id = $('#filter_brand_id').val();
-                            d.tipe_id = $('#filter_tipe_id').val();
                             d.size = $('#filter_size').val();
                             d.stok = $('#filter_stok').val();
                             d.min_jual = $('#filter_min_jual').val();
@@ -932,9 +879,7 @@ $(document).on('input', '.format-rupiah', function() {
                     table.ajax.reload();
                 });
 
-                $('#filter_tipe_id').on('change', function() {
-                    table.ajax.reload();
-                });
+               
 
                 $('#filter_size').on('keyup', debounce(function() {
                     table.ajax.reload();
@@ -1598,50 +1543,7 @@ $('#filter_brand_id').select2({
         }
     });
 
-    // === 3️⃣ TIPE (nested dari brand) ===
-    $('#filter_tipe_id').select2({
-    ajax: {
-        url: "{{ route('tipe.select') }}",
-        dataType: 'json',
-        delay: 250,
-        data: function (params) {
-            // ⬇️ kirim brandID ke controller
-            return {
-                q: params.term || '',
-                brandID: $('#filter_brand_id').val() || ''
-            };
-        },
-        processResults: function (data) {
-            return {
-                results: data.map(function (item) {
-                    return { id: item.id, text: item.nama };
-                })
-            };
-        }
-    }
-});
-
-
-// 🚫 Awalnya disable dropdown tipe
-$('#filter_tipe_id').prop('disabled', true);
-
-// 🔄 Aktifkan tipe setelah brand dipilih
-$('#filter_brand_id').on('change', function () {
-    const brandID = $(this).val();
-
-    // Kosongkan tipe setiap kali brand berubah
-    $('#filter_tipe_id').val(null).trigger('change');
-
-    if (brandID) {
-        $('#filter_tipe_id').prop('disabled', false);
-    } else {
-        $('#filter_tipe_id').prop('disabled', true);
-    }
-
-});
-
-
-
+   
 
     });
 </script>
