@@ -107,18 +107,10 @@
                 data-placeholder="Pilih Brand">
         </select>
     </div>
+            
+                
 
-    <!-- Tipe (nested dari Brand) -->
-    <div class="col-xxl-4 col-md-4">
-        <label class="fs-6 form-label fw-bold text-gray-900">Tipe Item</label>
-        <select id="filter_tipe_id" name="filter_tipe_id"
-                class="form-select form-select-sm" data-control="select2"
-                data-placeholder="Pilih Tipe">
-        </select>
-    </div>
-</div>
-<!--end::Row-->
-
+  
     
                     <!--begin::Row-->
                     <div class="row g-8">
@@ -273,6 +265,9 @@
                     <!--end::Close-->
                 </div>
                 <!--end::Modal header-->
+
+                 <form method="post" id="FormTambahModalID" class="form" enctype="multipart/form-data">
+                        @csrf
                 <!--begin::Modal body-->
                 <div class="modal-body px-5 my-7">
                     <!--begin::Form-->
@@ -285,113 +280,126 @@
                             data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
 
                     
-                            
-                            <div id="repeater-barang">
-                                <!-- OUTER -->
-                                <div data-repeater-list="kelompok_barang">
-                                  <div data-repeater-item class="border rounded p-5 mb-5 bg-light">
-                              
-                                    <!-- KATEGORI & BRAND: HANYA DI SINI -->
-                                    <div class="row g-3 mb-4">
-                                      <div class="col-md-3">
-                                        <label class="form-label fw-bold">Kategori Item</label>
-                                        <select data-type="kategori" name="kategori_id" class="form-select form-select-sm kategori_id" data-kt-repeater="select2" data-placeholder="pilih kategori">
-                                        </select>
-                                      </div>
-                                      <div class="col-md-3">
-                                        <label class="form-label fw-bold">Brand</label>
-                                            <select  data-type="brand" name="brand_id" class="form-select form-select-sm brand_id" data-kt-repeater="select2" data-placeholder="pilih brand">
-                                               
-                                            </select>
-                                      </div>
-                                      <div class="col-md-3 d-flex align-items-end">
-                                        <a href="javascript:;" data-repeater-delete class="btn btn-sm btn-light-danger">
-                                          Hapus Kategori & Brand Ini
-                                        </a>
-                                      </div>
-                                    </div>
-                              
-                                    <!-- INNER: daftar item (TANPA select kategori/brand) -->
-                                    <!-- INNER: daftar item -->
-<div class="inner-repeater">
-    <div data-repeater-list="barang">
-      <div data-repeater-item class="p-4 mb-5 border rounded bg-light-subtle">
-  
-        <div class="row g-3 align-items-start">
-          <div class="col-md-2">
-            <select data-type="tipe" name="tipe_id" class="form-select form-select-sm tipe_id"
-              data-kt-repeater="select2" data-placeholder="pilih tipe/jenis brand"></select>
-          </div>
-  
-          <!-- Kolom Kode Item + Sub Repeater -->
-          <div class="col-md-2">
-            <input type="text" name="kode" class="form-control form-control-sm mb-2" placeholder="Kode Item">
-  
-            <!-- SUB-REPEATER UNTUK TAMBAHAN KODE & SIZE -->
-            <div class="sub-repeater ms-2">
-              <div data-repeater-list="variasi">
-                <div data-repeater-item class="row g-2 align-items-center mb-2">
-                  <div class="col-7">
-                    <input type="text" name="kode_variasi" class="form-control form-control-sm"
-                      placeholder="Kode Item">
-                  </div>
-                  <div class="col-4">
-                    <input type="text" name="size" class="form-control form-control-sm" placeholder="Size">
-                  </div>
-                  <div class="col-1 text-center">
-                    <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger btn-sm">
-                      <i class="ki-outline ki-trash fs-2"></i>
-                    </button>
-                  </div>
+               <div id="repeater-barang">
+  <!-- OUTER -->
+  <div data-repeater-list="kelompok_barang">
+    <div data-repeater-item class="border rounded p-5 mb-5 bg-light" data-scope="kelompok_barang">
+      <!-- KATEGORI & BRAND -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Kategori Item</label>
+          <select data-type="kategori" name="kategori_id"
+                  class="form-select form-select-sm kategori_id"
+                  data-kt-repeater="select2" data-placeholder="pilih kategori"></select>
+          <span class="text-danger error-text" data-error-field="kategori_id"></span>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Brand</label>
+          <select data-type="brand" name="brand_id"
+                  class="form-select form-select-sm brand_id"
+                  data-kt-repeater="select2" data-placeholder="pilih brand"></select>
+          <span class="text-danger error-text" data-error-field="brand_id"></span>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <a href="javascript:;" data-repeater-delete class="btn btn-sm btn-light-danger">
+            Hapus Kategori & Brand Ini
+          </a>
+        </div>
+      </div>
+
+      <!-- INNER REPEATER: daftar barang -->
+      <div class="inner-repeater">
+        <div data-repeater-list="barang">
+          <div data-repeater-item class="p-4 mb-5 border rounded bg-light-subtle" data-scope="barang">
+            <div class="row g-3 align-items-start">
+              
+
+              <!-- KODE + SUB REPEATER VARIASI -->
+              <div class="col-md-2">
+                <input type="text" name="kode" class="form-control form-control-sm mb-2" placeholder="Kode Item">
+                <span class="text-danger error-text" data-error-field="kode"></span>
+
+                <!-- SUB REPEATER: variasi kode & size -->
+                <div class="sub-repeater ms-2">
+                 <div data-repeater-list="variasi">
+                    <div data-repeater-item class="row g-2 align-items-center mb-2" data-scope="variasi">
+                        <div class="col-7">
+                        <input type="text" name="kode_variasi" class="form-control form-control-sm" placeholder="Kode Variasi">
+                        <span class="text-danger error-text" data-error-field="kode_variasi"></span>
+                        </div>
+                        <div class="col-4">
+                        <input type="text" name="size" class="form-control form-control-sm" placeholder="Size">
+                        <span class="text-danger error-text" data-error-field="size"></span>
+                        </div>
+                        <div class="col-1 text-center">
+                        <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger btn-sm">
+                            <i class="ki-outline ki-trash fs-2"></i>
+                        </button>
+                        </div>
+                    </div>
+                    </div>
+
+
+                  <button type="button" data-repeater-create class="btn btn-light-primary btn-sm w-100 mt-1">+ Tambah Variasi</button>
                 </div>
               </div>
-              <button type="button" data-repeater-create
-                class="btn btn-light-primary btn-sm w-100 mt-1">+ Tambah</button>
+
+              <!-- NAMA ITEM -->
+              <div class="col-md-2">
+                <input type="text" name="nama" class="form-control form-control-sm" placeholder="Nama Item">
+                <span class="text-danger error-text" data-error-field="nama"></span>
+              </div>
+
+              <!-- SIZE UTAMA -->
+              <div class="col-md-1">
+                <input type="text" name="size_main" class="form-control form-control-sm" placeholder="Size">
+                <span class="text-danger error-text" data-error-field="size_main"></span>
+              </div>
+
+              <!-- SATUAN -->
+              <div class="col-md-1">
+                <select data-type="satuan" name="satuan_id"
+                        class="form-select form-select-sm satuan_id"
+                        data-kt-repeater="select2" data-placeholder="pilih satuan"></select>
+                <span class="text-danger error-text" data-error-field="satuan_id"></span>
+              </div>
+
+              <!-- HARGA JUAL -->
+              <div class="col-md-1">
+                <input type="text" name="harga_jual" class="form-control form-control-sm text-end format-rupiah" placeholder="Harga Jual">
+                <span class="text-danger error-text" data-error-field="harga_jual"></span>
+              </div>
+
+              <!-- HARGA BELI -->
+              <div class="col-md-1">
+                <input type="text" name="harga_beli" class="form-control form-control-sm text-end format-rupiah" placeholder="Harga Beli">
+                <span class="text-danger error-text" data-error-field="harga_beli"></span>
+              </div>
+
+              <!-- DELETE -->
+              <div class="col-md-1 text-center">
+                <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger btn-sm">
+                  <i class="ki-outline ki-trash fs-2"></i>
+                </button>
+              </div>
             </div>
           </div>
-          <!-- END SUB-REPEATER -->
-  
-          <div class="col-md-2">
-            <input type="text" name="nama" class="form-control form-control-sm" placeholder="Nama Item">
-          </div>
-          <div class="col-md-1">
-            <input type="text" name="size_main" class="form-control form-control-sm" placeholder="Size">
-          </div>
-          <div class="col-md-1">
-            <select data-type="satuan" name="satuan_id" class="form-select form-select-sm satuan_id"
-              data-kt-repeater="select2" data-placeholder="pilih satuan"></select>
-          </div>
-          <div class="col-md-1">
-            <input type="text" name="harga_jual" class="form-control form-control-sm text-end format-rupiah"
-              placeholder="Harga Jual">
-          </div>
-          <div class="col-md-1">
-            <input type="text" name="harga_beli" class="form-control form-control-sm text-end format-rupiah"
-              placeholder="Harga Beli">
-          </div>
-          <div class="col-md-1 text-center">
-            <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger btn-sm">
-              <i class="ki-outline ki-trash fs-2"></i>
-            </button>
-          </div>
         </div>
-  
+
+        <button type="button" data-repeater-create class="btn btn-sm btn-light-primary">+ Tambah Item</button>
       </div>
+      <!-- END INNER REPEATER -->
     </div>
-  
-    <button type="button" data-repeater-create class="btn btn-sm btn-light-primary">+ Tambah Item</button>
   </div>
-  
-                                  </div>
-                                </div>
-                              
-                                <div class="mt-5">
-                                  <button type="button" data-repeater-create class="btn btn-sm btn-light-success">
-                                    + Tambah Kategori & Brand
-                                  </button>
-                                </div>
-                              </div>
-                              
+
+  <div class="mt-5">
+    <button type="button" data-repeater-create class="btn btn-sm btn-light-success">+ Tambah Kategori & Brand</button>
+  </div>
+</div>
+
+
 
 
                         </div>
@@ -628,47 +636,10 @@
                 ajax: $.extend({}, config.ajax, { url: "{{ route('brand.select') }}" })
             }));
 
-            // Saat brand berubah ⇒ reset SEMUA select tipe di outer item ini
-            el.off('change.brand-reset').on('change.brand-reset', function () {
-                const outerItem = el.closest('[data-repeater-item]'); // brand ada di OUTER item
-                outerItem.find('select[data-type="tipe"]').each(function () {
-                    $(this).val(null).trigger('change');
-                });
-            });
+          
             break;
 
-        case 'tipe':
-            el.select2($.extend({}, config, {
-                placeholder: 'Pilih tipe',
-                ajax: $.extend({}, config.ajax, {
-                    url: "{{ route('tipe.select') }}",
-                    data: function (params) {
-                        // Ambil brand_id dari OUTER repeater item terdekat
-                        const outerItem = el.closest('[data-repeater-item]').parents('[data-repeater-item]').first();
-                        const brandID = outerItem.find('select[data-type="brand"]').val();
-
-                        return {
-                            q: params.term || '',
-                            brandID: brandID || '' // backend akan filter by brandID
-                        };
-                    }
-                })
-            }));
-
-            // Cegah buka dropdown tipe kalau brand belum dipilih
-            el.off('select2:opening.guard').on('select2:opening.guard', function (evt) {
-                const outerItem = el.closest('[data-repeater-item]').parents('[data-repeater-item]').first();
-                const brandID = outerItem.find('select[data-type="brand"]').val();
-                if (!brandID) {
-                    evt.preventDefault();
-                    if (typeof toastr !== 'undefined') {
-                        toastr.warning('Pilih brand terlebih dahulu');
-                    } else {
-                        alert('Pilih brand terlebih dahulu');
-                    }
-                }
-            });
-            break;
+       
 
         case 'satuan':
             el.select2($.extend({}, config, {
@@ -756,7 +727,6 @@
                         data: function(d) {
                             d.kategori_id = $('#filter_kategori_id').val();
                             d.brand_id = $('#filter_brand_id').val();
-                            d.tipe_id = $('#filter_tipe_id').val();
                             d.size = $('#filter_size').val();
                             d.stok = $('#filter_stok').val();
                             d.min_jual = $('#filter_min_jual').val();
@@ -909,9 +879,7 @@ $(document).on('input', '.format-rupiah', function() {
                     table.ajax.reload();
                 });
 
-                $('#filter_tipe_id').on('change', function() {
-                    table.ajax.reload();
-                });
+               
 
                 $('#filter_size').on('keyup', debounce(function() {
                     table.ajax.reload();
@@ -938,111 +906,218 @@ $(document).on('input', '.format-rupiah', function() {
               
 
 
+// === TAMPILKAN MODAL ===
+$('#btn_tambah_data').on('click', function () {
+    $('#Modal_Tambah_Data').modal('show');
+});
 
+// === CEGAH ENTER KIRIM FORM ===
+$(document).on('keypress', 'form input', function (e) {
+    if (e.which === 13) e.preventDefault();
+});
 
-                // SHOW MODAL TAMBAH DATA
-                $('#btn_tambah_data').click(function() {
-                    $('#Modal_Tambah_Data').modal('show');
+// === ENTER DI KODE LANJUT KE KOLOM NAMA ===
+$(document).on('keypress', 'input[name="kode"], input[name="kode_variasi"]', function (e) {
+    if (e.which === 13) {
+        e.preventDefault();
+        $(this).closest('.row').find('input[name="nama"]').focus();
+    }
+});
 
+// === BLOCK UI UNTUK MODAL ===
+const target = document.querySelector("#tambah-modal-content");
+const blockUI = new KTBlockUI(target, {
+    message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> <span class="text-white">Please Wait ...</span></div>',
+    overlayClass: "bg-dark bg-opacity-50",
+});
+// =======================================================
+// 🔁 REINDEX REPEATER (final fix - support sub repeater)
+// =======================================================
+function reIndexRepeater() {
+    $('#repeater-barang [data-repeater-item]').each(function () {
+        const $kelompok = $(this);
+        const scope = $kelompok.attr('data-scope');
+
+        // cari index outer (kelompok_barang)
+        const kIndex = $kelompok.closest('[data-repeater-list="kelompok_barang"]').find('> [data-repeater-item]').index($kelompok);
+
+        if (scope === 'kelompok_barang') {
+            // kategori & brand
+            $kelompok.find('> .row span.error-text').each(function () {
+                const base = $(this).data('error-field');
+                $(this)
+                    .removeAttr('class')
+                    .addClass('text-danger error-text kelompok_barang_' + kIndex + '_' + base + '_error_add');
+            });
+
+            // barang di dalam kelompok ini
+            $kelompok.find('[data-repeater-list="barang"] > [data-repeater-item]').each(function (bIndex) {
+                const $barang = $(this);
+
+                // error span di barang
+                $barang.find('> .row span.error-text').each(function () {
+                    const base = $(this).data('error-field');
+                    $(this)
+                        .removeAttr('class')
+                        .addClass(
+                            'text-danger error-text kelompok_barang_' +
+                                kIndex +
+                                '_barang_' +
+                                bIndex +
+                                '_' +
+                                base +
+                                '_error_add'
+                        );
                 });
 
-                var target = document.querySelector("#tambah-modal-content");
-                var blockUI = new KTBlockUI(target, {
-                    message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> <span class="text-white">Please Wait ...</span></div>',
-                    overlayClass: "bg-dark bg-opacity-50",
+                // variasi di dalam barang
+                $barang.find('[data-repeater-list="variasi"] > [data-repeater-item]').each(function (vIndex) {
+                    $(this)
+                        .find('span.error-text')
+                        .each(function () {
+                            const base = $(this).data('error-field');
+                            $(this)
+                                .removeAttr('class')
+                                .addClass(
+                                    'text-danger error-text kelompok_barang_' +
+                                        kIndex +
+                                        '_barang_' +
+                                        bIndex +
+                                        '_variasi_' +
+                                        vIndex +
+                                        '_' +
+                                        base +
+                                        '_error_add'
+                                );
+                        });
                 });
+            });
+        }
+    });
+}
 
-                $('#FormTambahModalID').on('submit', function(event) {
-                    event.preventDefault();
-                    blockUI.block();
+// trigger ulang setiap create/delete di repeater
+$('#repeater-barang').on('repeaterCreate repeaterDelete', function () {
+    setTimeout(reIndexRepeater, 100);
+});
+$('#Modal_Tambah_Data').on('shown.bs.modal', reIndexRepeater);
 
-                    $('#btn-add-data .add-data-label').hide();
-                    $('#btn-add-data .add-data-progress').show();
-                    $('#btn-add-data').prop('disabled', true);
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
+
+
+
+// =======================================================
+// 📨 FORM SUBMIT AJAX
+// =======================================================
+$('#FormTambahModalID').on('submit', function (event) {
+    event.preventDefault();
+    blockUI.block();
+
+    const $btn = $('#btn-add-data');
+    $btn.prop('disabled', true);
+    $btn.find('.add-data-label').hide();
+    $btn.find('.add-data-progress').show();
+
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+    });
+
+    $.ajax({
+        url: "{{ route('barang.store') }}",
+        method: "POST",
+        data: new FormData(this),
+        contentType: false,
+        processData: false,
+        cache: false,
+        dataType: "json",
+        beforeSend: function () {
+            $("span.error-text").text("");
+        },
+        success: function (result) {
+            setTimeout(function () {
+                // 🔴 VALIDASI ERROR
+               if (result.errors) {
+    reIndexRepeater(); // penting: pastikan index span sudah sesuai
+    $.each(result.errors, function (prefix, val) {
+        const fieldName = prefix.replace(/\./g, "_");
+        const $target = $("span." + fieldName + "_error_add");
+        if ($target.length) {
+            $target.text(val[0]);
+        } else {
+            console.warn("⚠️ span error tidak ditemukan:", fieldName);
+        }
+    });
+
+    Swal.fire({
+        title: "Gagal",
+        text: "Terjadi kesalahan validasi, periksa kembali input Anda.",
+        icon: "error",
+        timer: 2000,
+    });
+}
+
+
+                // ⚠️ APLIKASI ERROR
+                else if (result.error) {
+                    $("#Modal_Tambah_Data").modal("hide");
+                    Swal.fire({
+                        title: result.judul || "Error",
+                        text: result.error,
+                        icon: "error",
+                        timer: 1800,
                     });
-                    $.ajax({
-                        url: "{{ route('barang.store') }}",
-                        method: 'post',
-                        data: new FormData(this),
-                        contentType: false,
-                        cache: false,
-                        processData: false,
-                        dataType: "json",
-                        beforeSend: function() {
-                            $(document).find("span.error-text").text("");
-                        },
-                        success: function(result) {
-                            if (result.errors) {
-                                setTimeout(function() {
-                                    $.each(result.errors, function(prefix, val) {
-                                        $("span." + prefix + "_error_add").text(val[
-                                            0]);
-                                    });
-                                    blockUI.release();
+                }
 
-                                    Swal.fire({
-                                        title: "Gagal",
-                                        text: "Terjadi kesalahan validasi, periksa kembali input Anda.",
-                                        icon: "error",
-                                        timer: 1500,
-                                        confirmButtonText: "Oke",
-                                    });
-                                    $('#btn-add-data .add-data-label').show();
-                                    $('#btn-add-data .add-data-progress').hide();
-                                    $('#btn-add-data').prop('disabled', false);
-                                }, 1000);
-                            } else if (result.error) {
-                                setTimeout(function() {
-                                    $("#Modal_Tambah_Data").modal("hide");
-                                    blockUI.release();
+                // ✅ SUKSES
+                else {
+                    $("#Modal_Tambah_Data").modal("hide");
+                    $(".chimox").DataTable().ajax.reload();
 
-                                    Swal.fire({
-                                        title: result.judul,
-                                        text: result.error,
-                                        icon: "error",
-                                        timer: 1500,
-                                        confirmButtonText: "Oke",
-                                    });
-
-                                    $('#btn-add-data .add-data-label').show();
-                                    $('#btn-add-data .add-data-progress').hide();
-                                    $('#btn-add-data').prop('disabled', false);
-
-
-                                }, 1000);
-                            } else {
-
-                                setTimeout(function() {
-                                    $("#Modal_Tambah_Data").modal("hide");
-                                    $(".chimox").DataTable().ajax.reload();
-                                    blockUI.release();
-                                    Swal.fire({
-                                        title: "Berhasil",
-                                        text: result.success,
-                                        icon: "success",
-                                        timer: 1500,
-                                        confirmButtonText: "Oke",
-                                    });
-
-                                    $('#btn-add-data .add-data-label').show();
-                                    $('#btn-add-data .add-data-progress').hide();
-                                    $('#btn-add-data').prop('disabled', false);
-
-                                }, 1000);
-                            }
-                        },
+                    Swal.fire({
+                        title: "Berhasil",
+                        text: result.success || "Data berhasil disimpan.",
+                        icon: "success",
+                        timer: 1500,
                     });
-                });
+                }
+
+                // reset tombol
+                $btn.prop('disabled', false);
+                $btn.find('.add-data-label').show();
+                $btn.find('.add-data-progress').hide();
+                blockUI.release();
+            }, 700);
+        },
+        error: function (xhr) {
+            blockUI.release();
+            $btn.prop('disabled', false);
+            $btn.find('.add-data-label').show();
+            $btn.find('.add-data-progress').hide();
+
+            Swal.fire({
+                title: "Error",
+                text: "Terjadi kesalahan server: " + xhr.statusText,
+                icon: "error",
+            });
+        }
+    });
+});
+
+// =======================================================
+// 🔁 HAPUS PESAN ERROR SAAT INPUT BERUBAH
+// =======================================================
+$(document).on('input change select2:select select2:clear', 'input, select', function () {
+    const name = $(this).attr('name');
+    if (!name) return;
+    const fieldName = name.replace(/\[/g, '_').replace(/\]/g, '').replace(/\./g, '_');
+    $('span.' + fieldName + '_error_add').text('');
+});
+
+// === RESET FORM SAAT MODAL TERTUTUP ===
+$("#Modal_Tambah_Data").on("hidden.bs.modal", function () {
+    resetForm();
+});
 
 
-                // Tombol "Batal"
-                $("#Modal_Tambah_Data").on("hidden.bs.modal", function() {
-                    resetForm();
-                });
 
 
 
@@ -1468,50 +1543,7 @@ $('#filter_brand_id').select2({
         }
     });
 
-    // === 3️⃣ TIPE (nested dari brand) ===
-    $('#filter_tipe_id').select2({
-    ajax: {
-        url: "{{ route('tipe.select') }}",
-        dataType: 'json',
-        delay: 250,
-        data: function (params) {
-            // ⬇️ kirim brandID ke controller
-            return {
-                q: params.term || '',
-                brandID: $('#filter_brand_id').val() || ''
-            };
-        },
-        processResults: function (data) {
-            return {
-                results: data.map(function (item) {
-                    return { id: item.id, text: item.nama };
-                })
-            };
-        }
-    }
-});
-
-
-// 🚫 Awalnya disable dropdown tipe
-$('#filter_tipe_id').prop('disabled', true);
-
-// 🔄 Aktifkan tipe setelah brand dipilih
-$('#filter_brand_id').on('change', function () {
-    const brandID = $(this).val();
-
-    // Kosongkan tipe setiap kali brand berubah
-    $('#filter_tipe_id').val(null).trigger('change');
-
-    if (brandID) {
-        $('#filter_tipe_id').prop('disabled', false);
-    } else {
-        $('#filter_tipe_id').prop('disabled', true);
-    }
-
-});
-
-
-
+   
 
     });
 </script>

@@ -137,7 +137,7 @@
                         <th width="5%">No</th>
                         <th>Barang</th>
                         <th>Kategori</th>
-                        <th>Brand & Tipe</th>
+                        <th>Brand</th>
                         <th>Size</th>
                         <th class="text-end min-w-80px">Qty</th>
 
@@ -229,6 +229,11 @@ table.on('xhr.dt', function (e, settings, json) {
     } else {
         $('#total-transaksi').text('Rp 0');
     }
+});
+
+// === CEGAH ENTER KIRIM FORM ===
+$(document).on('keypress', 'form input', function (e) {
+    if (e.which === 13) e.preventDefault();
 });
 
 $('#formAddDetail').on('submit', function(e) {

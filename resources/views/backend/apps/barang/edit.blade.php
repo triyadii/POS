@@ -42,20 +42,7 @@
 
                             <!--begin::Row-->
 <div class="row mb-7">
-    <!--begin::Col Kode Barang-->
-    <div class="col-md-6 fv-row">
-        <label class="required fw-semibold fs-6 mb-2">Tipe/Jenis Brand</label>
-        <select id="Edittipe_id" name="tipe_id"
-        class="form-select b-3 mb-lg-0" data-control="select2"
-        data-placeholder="pilih tipe" data-dropdown-parent="#Modal_Edit_Data">
-        @if (empty($data->tipe_id))
-        @else
-            <option value="{{ $tipeSelected->id }}" selected>{{ $tipeSelected->nama }}</option>
-        @endif
-    </select>
-        <span class="text-danger error-text tipe_id_error_edit"></span>
-    </div>
-    <!--end::Col-->
+   
 
      <!--begin::Col Kode Barang-->
      <div class="col-md-6 fv-row">
@@ -234,59 +221,13 @@
         }
     });
     
-    // === Select Tipe (Edit) — tergantung Brand ===
-    $('#Edittipe_id').select2({
-        dropdownParent: $('#Modal_Edit_Data'),
-        placeholder: 'Pilih tipe',
-        ajax: {
-            url: "{{ route('tipe.select') }}",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                // Ambil brand_id yang dipilih
-                var brandID = $('#Editbrand_id').val();
-                return {
-                    q: params.term, // pencarian
-                    brandID: brandID // filter berdasarkan brand
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: $.map(data, function (item) {
-                        return {
-                            id: item.id,
-                            text: item.nama
-                        };
-                    })
-                };
-            }
-        }
-    });
     
-    // === Reset tipe ketika brand berubah ===
-    $('#Editbrand_id').on('change', function () {
-        $('#Edittipe_id').val(null).trigger('change');
-    });
-    
-    // === Cegah buka tipe sebelum pilih brand ===
-    $('#Edittipe_id').on('select2:opening', function (e) {
-        var brandID = $('#Editbrand_id').val();
-        if (!brandID) {
-            e.preventDefault();
-            if (typeof toastr !== 'undefined') {
-                toastr.warning('Silakan pilih brand terlebih dahulu.');
-            } else {
-                alert('Silakan pilih brand terlebih dahulu.');
-            }
-        }
-    });
     
     // === Prefill data lama ketika modal edit dibuka ===
     $('#Modal_Edit_Data').on('shown.bs.modal', function () {
         let brandId = "{{ $data->brand_id ?? '' }}";
         let brandNama = "{{ $data->brand->nama ?? '' }}";
-        let tipeId = "{{ $data->tipe_id ?? '' }}";
-        let tipeNama = "{{ $data->tipe->nama ?? '' }}";
+       
     
         // Set Brand lama
         if (brandId) {
@@ -294,11 +235,7 @@
             $('#Editbrand_id').append(brandOption).trigger('change');
         }
     
-        // Set Tipe lama
-        if (tipeId) {
-            let tipeOption = new Option(tipeNama, tipeId, true, true);
-            $('#Edittipe_id').append(tipeOption).trigger('change');
-        }
+       
     });
     </script>
     

@@ -573,6 +573,7 @@
                     $('#Modal_Tambah_Data').modal('show');
 
                 });
+                
 
                 var target = document.querySelector("#tambah-modal-content");
                 var blockUI = new KTBlockUI(target, {

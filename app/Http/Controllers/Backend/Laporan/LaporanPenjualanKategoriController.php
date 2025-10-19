@@ -63,13 +63,25 @@ class LaporanPenjualanKategoriController extends Controller
         }
         $totalPendapatan = $dateRangeExists ? (clone $detailQuery)->sum('subtotal') : 0;
         $jumlahProdukTerjual = $dateRangeExists ? (clone $detailQuery)->sum('qty') : 0;
-        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,tipe_id,kategori_id', 'detail.barang.tipe:id,nama', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama']);
+        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,tipe_id,kategori_id', 'detail.barang.tipe:id,nama', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama', 'pembayaran']);
 
         return \DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('tanggal', fn($data) => Carbon::parse($data->tanggal_penjualan)->translatedFormat('d F Y, H:i'))
             ->addColumn('user', fn($data) => $data->user->name ?? '-')
             ->addColumn('customer', fn($data) => $data->customer_nama ?? 'Umum')
+            ->addColumn('jenis_pembayaran', function ($data) {
+                if (!$data->pembayaran) {
+                    return '-';
+                }
+                $nama = e($data->pembayaran->nama);
+                $rekening = e($data->pembayaran->no_rekening);
+                // Membuat HTML dengan nama dan no rekening di bawahnya
+                return "<div>
+                            <span class='fw-bold'>{$nama}</span><br>
+                            <small class='text-muted'>{$rekening}</small>
+                        </div>";
+            })
             ->addColumn('total', function ($data) use ($kategoriId) {
                 $total = $kategoriId ? $data->detail->filter(fn($item) => $item->barang->kategori_id == $kategoriId)->sum('subtotal') : $data->total_harga;
                 return 'Rp ' . number_format($total, 0, ',', '.');
@@ -106,7 +118,7 @@ class LaporanPenjualanKategoriController extends Controller
 
                 return $button;
             })
-            ->rawColumns(['action']) // Pastikan rawColumns diubah ke 'action'
+            ->rawColumns(['action', 'jenis_pembayaran'])
             ->with(['total_transaksi' => $totalTransaksi, 'total_penjualan' => $totalPendapatan, 'jumlah_produk_terjual' => $jumlahProdukTerjual,])
             ->make(true);
     }
@@ -152,7 +164,7 @@ class LaporanPenjualanKategoriController extends Controller
         $start = Carbon::parse($request->start)->startOfDay();
         $end = Carbon::parse($request->end)->endOfDay();
         $kategoriId = $request->kategori_id;
-        $query = Penjualan::with(['user:id,name', 'detail.barang:id,kode_barang,nama', 'detail.barang.tipe:id,nama',])
+        $query = Penjualan::with(['user:id,name', 'detail.barang:id,kode_barang,nama', 'detail.barang.tipe:id,nama', 'pembayaran'])
             ->whereBetween('tanggal_penjualan', [$start, $end])->orderBy('tanggal_penjualan', 'asc');
         if ($kategoriId && $kategoriId != 'all') {
             $query->whereHas('detail.barang', function ($q) use ($kategoriId) {

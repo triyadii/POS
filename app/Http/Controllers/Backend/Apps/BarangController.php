@@ -13,6 +13,7 @@ use DataTables;
 use Auth;
 use Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 
 class BarangController extends Controller
@@ -69,9 +70,7 @@ class BarangController extends Controller
             $postsQuery->where('brand_id', $request->brand_id);
         }
         
-        if ($request->filled('tipe_id')) {
-            $postsQuery->where('tipe_id', $request->tipe_id);
-        }
+        
         
         if ($request->filled('size')) {
             $postsQuery->where('size', 'LIKE', "%{$request->size}%");
@@ -113,9 +112,9 @@ class BarangController extends Controller
                                                     <i class="ki-outline ki-down fs-5 ms-1"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">';
-                    if (auth()->user()->can('barang-show')) {
-                        $x .= ' <li><a class="dropdown-item btn px-3" href="' . route('barang.show', $row->id) . '" >Detail</a></li>';
-                    }
+                    // if (auth()->user()->can('barang-show')) {
+                    //     $x .= ' <li><a class="dropdown-item btn px-3" href="' . route('barang.show', $row->id) . '" >Detail</a></li>';
+                    // }
                     if (auth()->user()->can('barang-edit')) {
                         $x .= ' <li><a class="dropdown-item btn px-3" id="getEditRowData" data-id="' . $row->id . '" >Edit</a></li>';
                     }
@@ -157,7 +156,6 @@ class BarangController extends Controller
                 return '
                 <div class="d-flex flex-column">
                     <span class="fw-semibold text-gray-800">' . e($row->brand->nama ?? '-') . '</span>
-                    <span class="text-muted fs-7">Tipe: ' . e($row->tipe->nama ?? '-') . '</span>
                 </div>
             ';
             })
@@ -275,148 +273,194 @@ class BarangController extends Controller
         }
     }
     
+public function store(Request $request)
+{
+    $formattedTime = Carbon::now()->diffForHumans();
 
-     public function store(Request $request)
-     {
-         $formattedTime = Carbon::now()->diffForHumans();
-     
-         // 🧩 Validasi utama
-         $validator = Validator::make($request->all(), [
-             'kelompok_barang' => 'required|array|min:1',
-             'kelompok_barang.*.kategori_id' => 'required|uuid',
-             'kelompok_barang.*.brand_id'    => 'required|uuid',
-             'kelompok_barang.*.barang'      => 'required|array|min:1',
-             'kelompok_barang.*.barang.*.tipe_id' => 'required|uuid',
-             'kelompok_barang.*.barang.*.satuan_id' => 'required|uuid',
-             'kelompok_barang.*.barang.*.nama' => 'required|string|max:150',
-             'kelompok_barang.*.barang.*.harga_beli' => 'required|min:0',
-             'kelompok_barang.*.barang.*.harga_jual' => 'required|min:0',
-             'kelompok_barang.*.barang.*.kode' => 'required|string|max:100',
-             'kelompok_barang.*.barang.*.variasi' => 'nullable|array',
-         ], [
-             'kelompok_barang.required' => 'Minimal 1 kelompok barang harus diisi.',
-             'kelompok_barang.*.kategori_id.required' => 'Kategori wajib dipilih.',
-             'kelompok_barang.*.brand_id.required' => 'Brand wajib dipilih.',
-             'kelompok_barang.*.barang.*.nama.required' => 'Nama Item wajib diisi.',
-             'kelompok_barang.*.barang.*.tipe_id.required' => 'Tipe wajib dipilih.',
-             'kelompok_barang.*.barang.*.satuan_id.required' => 'Satuan wajib dipilih.',
-             'kelompok_barang.*.barang.*.harga_beli.required' => 'Harga beli wajib diisi.',
-             'kelompok_barang.*.barang.*.harga_jual.required' => 'Harga jual wajib diisi.',
-             'kelompok_barang.*.barang.*.kode.required' => 'Kode item wajib diisi.',
-         ]);
-     
-         // 🧠 Validasi tambahan untuk variasi
-         if ($request->has('kelompok_barang')) {
-             foreach ($request->kelompok_barang as $kKey => $kelompok) {
-                 if (!empty($kelompok['barang'])) {
-                     foreach ($kelompok['barang'] as $bKey => $barang) {
-                         if (!empty($barang['variasi'])) {
-                             foreach ($barang['variasi'] as $vKey => $variasi) {
-                                 // Kalau user isi variasi tapi tidak isi kode
-                                 if (!empty($variasi) && empty($variasi['kode_variasi'])) {
-                                     $validator->errors()->add(
-                                         "kelompok_barang.{$kKey}.barang.{$bKey}.variasi.{$vKey}.kode_variasi",
-                                         'Kode variasi wajib diisi jika variasi ditambahkan.'
-                                     );
-                                 }
-                             }
-                         }
-                     }
-                 }
-             }
-         }
-     
-         if ($validator->fails()) {
-             return response()->json(['errors' => $validator->errors()]);
-         }
-     
-         try {
-             DB::beginTransaction();
-             $savedCount = 0;
-     
-             // 🚀 Loop kelompok utama
-             foreach ($request->kelompok_barang as $kelompok) {
-                 $kategoriId = $kelompok['kategori_id'];
-                 $brandId = $kelompok['brand_id'];
-     
-                 // Loop setiap barang di dalam kelompok
-                 foreach ($kelompok['barang'] as $item) {
-                     // 🧹 Bersihkan harga dari titik/koma
-                     $hargaBeli = (int) str_replace(['.', ','], '', $item['harga_beli']);
-                     $hargaJual = (int) str_replace(['.', ','], '', $item['harga_jual']);
-     
-                     // sebelum create:
-                    $sizeUtama = isset($item['size']) ? $item['size'] : ($item['size_main'] ?? null);
+ 
 
-                    // SIMPAN BARANG UTAMA
-                    if (!empty($item['kode'])) {
-                        Barang::create([
-                            'id'          => (string) Str::uuid(),
-                            'kode_barang' => trim($item['kode']),
-                            'nama'        => $item['nama'],
-                            'kategori_id' => $kategoriId,
-                            'brand_id'    => $brandId,
-                            'tipe_id'     => $item['tipe_id'],
-                            'satuan_id'   => $item['satuan_id'],
-                            'stok'        => 0,
-                            'harga_beli'  => $hargaBeli,
-                            'harga_jual'  => $hargaJual,
-                            'size'        => $sizeUtama,   // <-- di sini
-                        ]);
-                        $savedCount++;
+
+    $validator = Validator::make($request->all(), [
+        'kelompok_barang' => 'required|array|min:1',
+
+        'kelompok_barang.*.kategori_id' => 'required|uuid',
+        'kelompok_barang.*.brand_id'    => 'required|uuid',
+
+        'kelompok_barang.*.barang'      => 'required|array|min:1',
+        'kelompok_barang.*.barang.*.satuan_id' => 'required|uuid',
+        'kelompok_barang.*.barang.*.nama'      => 'required|string|max:150',
+        'kelompok_barang.*.barang.*.size_main' => 'required|string|max:150', // ✅ sesuai nama input
+
+        'kelompok_barang.*.barang.*.harga_beli' => 'required',
+'kelompok_barang.*.barang.*.harga_jual' => 'required',
+
+        'kelompok_barang.*.barang.*.kode' => [
+            'required', 'string', 'max:100',
+            Rule::unique('barang', 'kode_barang'),
+        ],
+
+        // ✅ variasi opsional tapi kalau ada harus lengkap
+        'kelompok_barang.*.barang.*.variasi' => 'nullable|array',
+'kelompok_barang.*.barang.*.variasi.*.kode_variasi' => [
+    'required', 'string', 'max:100',
+    Rule::unique('barang', 'kode_barang'),
+],
+'kelompok_barang.*.barang.*.variasi.*.size' => 'required|string|max:100',
+    ], [
+        'kelompok_barang.required' => 'Minimal 1 kelompok barang harus diisi.',
+        'kelompok_barang.*.kategori_id.required' => 'Kategori wajib dipilih.',
+        'kelompok_barang.*.brand_id.required'    => 'Brand wajib dipilih.',
+
+        'kelompok_barang.*.barang.*.nama.required' => 'Nama item wajib diisi.',
+        'kelompok_barang.*.barang.*.size_main.required' => 'Size item wajib diisi.',
+
+        'kelompok_barang.*.barang.*.satuan_id.required' => 'Satuan wajib dipilih.',
+        'kelompok_barang.*.barang.*.harga_beli.required' => 'Harga beli wajib diisi.',
+        'kelompok_barang.*.barang.*.harga_jual.required' => 'Harga jual wajib diisi.',
+        'kelompok_barang.*.barang.*.harga_beli.max' => 'Harga beli maksimal Rp1.000.000.000',
+'kelompok_barang.*.barang.*.harga_jual.max' => 'Harga jual maksimal Rp1.000.000.000',
+        'kelompok_barang.*.barang.*.kode.required' => 'Kode item wajib diisi.',
+        'kelompok_barang.*.barang.*.kode.unique' => 'Kode item sudah terdaftar.',
+
+        'kelompok_barang.*.barang.*.variasi.*.kode_variasi.required' => 'Kode variasi wajib diisi.',
+        'kelompok_barang.*.barang.*.variasi.*.kode_variasi.unique'   => 'Kode variasi sudah terdaftar.',
+        'kelompok_barang.*.barang.*.variasi.*.size.required'         => 'Size variasi wajib diisi.',
+    ]);
+
+  // ===============================================
+// 🔍 CEK DUPLIKAT KODE BARANG & VARIASI (final)
+// ===============================================
+$validator->after(function ($validator) use ($request) {
+    $inputCodes = [];
+
+    foreach ($request->kelompok_barang ?? [] as $kKey => $kelompok) {
+        foreach ($kelompok['barang'] ?? [] as $bKey => $barang) {
+            // 🔸 KODE UTAMA
+            if (!empty($barang['kode'])) {
+                $kode = strtolower(trim($barang['kode']));
+
+                if (isset($inputCodes[$kode])) {
+                    foreach ($inputCodes[$kode] as $pos) {
+                        $validator->errors()->add(
+                            "kelompok_barang.{$pos['k']}.barang.{$pos['b']}" . ($pos['v'] !== null ? ".variasi.{$pos['v']}.kode_variasi" : ".kode"),
+                            "Kode {$barang['kode']} duplikat di form input."
+                        );
                     }
-     
-                     // ✅ SIMPAN VARIASI JIKA ADA
-                     if (!empty($item['variasi'])) {
-                         foreach ($item['variasi'] as $variasi) {
-                             // lewati jika kode variasi kosong
-                             if (empty($variasi['kode_variasi'])) continue;
-     
-                             Barang::create([
-                                 'id'          => (string) Str::uuid(),
-                                 'kode_barang' => trim($variasi['kode_variasi']),
-                                 'nama'        => $item['nama'],
-                                 'kategori_id' => $kategoriId,
-                                 'brand_id'    => $brandId,
-                                 'tipe_id'     => $item['tipe_id'],
-                                 'satuan_id'   => $item['satuan_id'],
-                                 'stok'        => 0,
-                                 'harga_beli'  => $hargaBeli,
-                                 'harga_jual'  => $hargaJual,
-                                 'size'        => $variasi['size'] ?? null,
-                             ]);
-                             $savedCount++;
-                         }
-                     }
-                 }
-             }
-     
-             // 🪶 Activity log
-             activity('tambah barang')
-                 ->causedBy(Auth::user() ?? null)
-                 ->withProperties([
-                     'jumlah_data' => $savedCount,
-                     'input' => $request->kelompok_barang,
-                 ])
-                 ->log('Menambahkan ' . $savedCount . ' data barang (termasuk variasi)');
-     
-             DB::commit();
-     
-             return response()->json([
-                 'success' => "Berhasil menyimpan {$savedCount} data barang.",
-                 'time'    => $formattedTime,
-                 'judul'   => 'Berhasil',
-             ]);
-         } catch (\Throwable $e) {
-             DB::rollBack();
-             return response()->json([
-                 'error'        => 'Terjadi kesalahan di aplikasi, hubungi developer.',
-                 'judul'        => 'Aplikasi Error',
-                 'time'         => $formattedTime,
-                 'errorMessage' => $e->getMessage(),
-             ]);
-         }
-     }
+                    $validator->errors()->add(
+                        "kelompok_barang.{$kKey}.barang.{$bKey}.kode",
+                        "Kode {$barang['kode']} duplikat di form input."
+                    );
+                }
+
+                $inputCodes[$kode][] = ['k' => $kKey, 'b' => $bKey, 'v' => null];
+            }
+
+            // 🔸 VARIASI
+            foreach ($barang['variasi'] ?? [] as $vKey => $variasi) {
+                if (!empty($variasi['kode_variasi'])) {
+                    $kode = strtolower(trim($variasi['kode_variasi']));
+
+                    if (isset($inputCodes[$kode])) {
+                        foreach ($inputCodes[$kode] as $pos) {
+                            $validator->errors()->add(
+                                "kelompok_barang.{$pos['k']}.barang.{$pos['b']}" . ($pos['v'] !== null ? ".variasi.{$pos['v']}.kode_variasi" : ".kode"),
+                                "Kode variasi {$variasi['kode_variasi']} duplikat di form input."
+                            );
+                        }
+                        $validator->errors()->add(
+                            "kelompok_barang.{$kKey}.barang.{$bKey}.variasi.{$vKey}.kode_variasi",
+                            "Kode variasi {$variasi['kode_variasi']} duplikat di form input."
+                        );
+                    }
+
+                    $inputCodes[$kode][] = ['k' => $kKey, 'b' => $bKey, 'v' => $vKey];
+                }
+            }
+        }
+    }
+});
+
+
+
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()]);
+    }
+
+    try {
+        DB::beginTransaction();
+        $savedCount = 0;
+
+        foreach ($request->kelompok_barang as $kelompok) {
+            $kategoriId = $kelompok['kategori_id'];
+            $brandId = $kelompok['brand_id'];
+
+            foreach ($kelompok['barang'] as $barang) {
+                $hargaBeli = (int) str_replace(['.', ','], '', $barang['harga_beli']);
+                $hargaJual = (int) str_replace(['.', ','], '', $barang['harga_jual']);
+
+                // 🟢 simpan barang utama
+                Barang::create([
+                    'id'          => (string) Str::uuid(),
+                    'kode_barang' => trim($barang['kode']),
+                    'nama'        => $barang['nama'],
+                    'kategori_id' => $kategoriId,
+                    'brand_id'    => $brandId,
+                    'satuan_id'   => $barang['satuan_id'],
+                    'stok'        => 0,
+                    'harga_beli'  => $hargaBeli,
+                    'harga_jual'  => $hargaJual,
+                    'size'        => $barang['size_main'],
+                ]);
+                $savedCount++;
+
+                // 🟢 simpan variasi jika ada
+                foreach ($barang['variasi'] ?? [] as $variasi) {
+                    if (empty($variasi['kode_variasi'])) continue;
+
+                    Barang::create([
+                        'id'          => (string) Str::uuid(),
+                        'kode_barang' => trim($variasi['kode_variasi']),
+                        'nama'        => $barang['nama'],
+                        'kategori_id' => $kategoriId,
+                        'brand_id'    => $brandId,
+                        'satuan_id'   => $barang['satuan_id'],
+                        'stok'        => 0,
+                        'harga_beli'  => $hargaBeli,
+                        'harga_jual'  => $hargaJual,
+                        'size'        => $variasi['size'],
+                    ]);
+                    $savedCount++;
+                }
+            }
+        }
+
+        activity('tambah barang')
+            ->causedBy(Auth::user() ?? null)
+            ->withProperties([
+                'jumlah_data' => $savedCount,
+                'input' => $request->kelompok_barang,
+            ])
+            ->log('Menambahkan ' . $savedCount . ' data barang (termasuk variasi)');
+
+        DB::commit();
+
+        return response()->json([
+            'success' => "Berhasil menyimpan {$savedCount} data barang.",
+            'time'    => $formattedTime,
+            'judul'   => 'Berhasil',
+        ]);
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        return response()->json([
+            'error'        => 'Terjadi kesalahan di aplikasi, hubungi developer.',
+            'judul'        => 'Aplikasi Error',
+            'time'         => $formattedTime,
+            'errorMessage' => $e->getMessage(),
+        ]);
+    }
+}
+
      
 
 
@@ -433,7 +477,6 @@ class BarangController extends Controller
             'data' => $data,
             'kategoriSelected' => $data->findOrFail($id)->kategori,
             'brandSelected' => $data->findOrFail($id)->brand,
-            'tipeSelected' => $data->findOrFail($id)->tipe,
             'satuanSelected' => $data->findOrFail($id)->satuan,
         ])->render();
 
@@ -461,10 +504,9 @@ class BarangController extends Controller
         // 🧩 Validasi input
         $validator = \Validator::make($request->all(), [
             'kode_barang' => 'required|string|max:100|unique:barang,kode_barang,' . $id . ',id',
-            'nama'        => 'required|string|max:150|unique:barang,nama,' . $id . ',id',
+            'nama'        => 'required|string|max:150',
             'kategori_id' => 'required|uuid',
             'brand_id'    => 'required|uuid',
-            'tipe_id'     => 'required|uuid',
             'satuan_id'   => 'required|uuid',
             'stok'        => 'nullable|numeric|min:0',
             'harga_beli'  => 'required|numeric|min:0',
@@ -478,7 +520,6 @@ class BarangController extends Controller
             'nama.unique'          => 'Nama Barang sudah digunakan oleh barang lain',
             'kategori_id.required' => 'Kategori wajib dipilih',
             'brand_id.required'    => 'Brand wajib dipilih',
-            'tipe_id.required'     => 'Tipe wajib dipilih',
             'satuan_id.required'   => 'Satuan wajib dipilih',
             'harga_beli.required'  => 'Harga beli wajib diisi',
             'harga_jual.required'  => 'Harga jual wajib diisi',
@@ -504,7 +545,6 @@ class BarangController extends Controller
                 'nama'        => $request->input('nama'),
                 'kategori_id' => $request->input('kategori_id'),
                 'brand_id'    => $request->input('brand_id'),
-                'tipe_id'     => $request->input('tipe_id'),
                 'satuan_id'   => $request->input('satuan_id'),
                 'stok'        => $request->input('stok') ?? 0,
                 'harga_beli'  => $request->input('harga_beli'),
