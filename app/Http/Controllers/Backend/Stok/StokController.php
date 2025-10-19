@@ -34,7 +34,7 @@ class StokController extends Controller
 
     public function getStokData(Request $request)
     {
-        $query = Barang::with(['kategori', 'brand']);
+        $query = Barang::with(['kategori', 'brand'])->select('barang.*');
         if ($request->filled('filter_kategori') && $request->filter_kategori != 'all') {
             $query->where('kategori_id', $request->filter_kategori);
         }

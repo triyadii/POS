@@ -31,6 +31,15 @@
                             <i class="ki-outline ki-printer fs-2 me-2"></i> Export
                         </button>
                         <div class="position-relative">
+                            <select class="form-select form-select-sm form-select-solid" name="filter_jenis_pembayaran" id="filter_jenis_pembayaran">
+                                <option value="">Semua Pembayaran</option>
+                                {{-- Loop data dari controller --}}
+                                @foreach ($jenisPembayaran as $item)
+                                    <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="position-relative">
                             {{-- ====================================================== --}}
                             {{-- PERUBAHAN: Menggunakan Flatpickr (bawaan Metronic) --}}
                             {{-- ====================================================== --}}
@@ -92,6 +101,7 @@
                                     <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                                         <th class="min-w-100px">Tanggal</th>
                                         <th class="min-w-125px">No. Transaksi</th>
+                                        <th class="min-w-100px">Jenis Pembayaran</th>
                                         <th class="min-w-150px">Nama Barang</th>
                                         <th class="min-w-50px text-end">Qty</th>
                                         <th class="min-w-100px text-end">Harga Jual</th>
@@ -112,7 +122,7 @@
                                 {{-- =================================== --}}
                                 <tfoot class="fw-bold fs-6">
                                     <tr class="table-light">
-                                        <th colspan="3" class="text-end">Total</th>
+                                        <th colspan="4" class="text-end">Total</th>
                                         <th class="text-end" id="footer-total-item">0</th>
                                         <th class="text-end"></th> {{-- Kolom kosong untuk Harga Jual --}}
                                         <th class="text-end"></th> {{-- Kolom kosong untuk Harga Beli --}}
@@ -288,6 +298,8 @@
                                 d.filter_tanggal_start = selectedDate;
                                 d.filter_tanggal_end = selectedDate;
                             }
+                            // 2. (BARU) Kirim data filter jenis pembayaran ke backend
+                            d.filter_jenis_pembayaran = $('#filter_jenis_pembayaran').val();
                         },
                         dataSrc: function(json) {
                             // --- Statistik Box Atas ---
@@ -331,6 +343,12 @@
                             data: 'kode_transaksi',
                             name: 'penjualan.kode_transaksi'
                         },
+                        {
+                    data: 'jenis_pembayaran',
+                    name: 'penjualan.pembayaran.nama', // penting untuk sorting/searching
+                    orderable: true,
+                    searchable: true
+                },
                         {
                             data: 'nama_barang',
                             name: 'barang.nama'
@@ -420,12 +438,22 @@
                     }
                 });
 
+                // 3. (BARU) Tambahkan event listener untuk filter jenis pembayaran
+                $('#filter_jenis_pembayaran').on('change', function() {
+                    // Hanya reload jika tanggal sudah dipilih (agar konsisten)
+                    const flatpickr = document.querySelector("#filter_tanggal")._flatpickr;
+                    if (flatpickr && flatpickr.selectedDates[0]) {
+                        table.ajax.reload();
+                    }
+                });
+
                 // Fungsi Tombol Print (Tidak Berubah)
                 $('#btn-print-laporan').on('click', function() {
                     const ukuran = $('#ukuran_kertas').val();
                     const orientasi = $('#orientasi_kertas').val();
                     const tipe = $('input[name="tipe_laporan"]:checked').val();
                     const tanggal = $('#filter_tanggal').val();
+                    const jenisPembayaran = $('#filter_jenis_pembayaran').val(); // (BARU) Ambil value
 
                     if (!tanggal) return Swal.fire('Perhatian',
                         'Silakan pilih tanggal terlebih dahulu.', 'warning');
@@ -441,6 +469,7 @@
                     url.searchParams.set('tipe', tipe);
                     url.searchParams.set('start', start);
                     url.searchParams.set('end', end);
+                    url.searchParams.set('jenis_pembayaran', jenisPembayaran); // (BARU) Tambahkan ke URL
 
                     window.open(url.toString(), '_blank');
                 });

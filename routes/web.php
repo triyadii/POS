@@ -309,6 +309,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/laporan/laba-rugi/detail', [LaporanLabaRugiController::class, 'getDetailData'])->name('laporan.laba-rugi.detail');
     Route::resource('laporan-laba-rugi', LaporanLabaRugiController::class);
 
+    // Tambahkan route ini untuk mengambil data detail harian via AJAX
+    Route::get('/laporan/laba-rugi-harian/get-data', [LaporanLabaRugiHarianController::class, 'getLaporanHarianDetail'])->name('laporan.laba-rugi-harian.get-data');
+
+    // Route Anda yang sudah ada (Biarkan saja)
     Route::get('/laporan/laba-rugi-harian/export-pdf', [LaporanLabaRugiHarianController::class, 'exportLabaRugiPdf'])->name('laporan.laba-rugi-harian.export-pdf');
     Route::resource('laporan-laba-rugi-harian', LaporanLabaRugiHarianController::class);
 
