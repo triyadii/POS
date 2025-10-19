@@ -60,7 +60,7 @@
             <td class="text-right"><strong>0</strong></td>
             <td class="text-right"><strong>0</strong></td>
             <td class="text-right"><strong>0</strong></td>
-            <td class="text-right"><strong>{{ number_format($total_akhir, 0, ',', '.') }}</strong></td>
+            <td class="text-right"><strong>{{ number_format($total_subtotal, 0, ',', '.') }}</strong></td>
             <td class="text-right"><strong>{{ number_format($total_tunai, 0, ',', '.') }}</strong></td>
             <td class="text-right"><strong>{{ number_format($total_kredit, 0, ',', '.') }}</strong></td>
         </tr>

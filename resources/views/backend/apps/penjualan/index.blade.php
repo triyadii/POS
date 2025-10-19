@@ -621,25 +621,25 @@
         // }
 
         function renderProduk(data) {
-    const container = document.querySelector('.daftar-produk');
-    container.innerHTML = '';
+            const container = document.querySelector('.daftar-produk');
+            container.innerHTML = '';
 
-    if (!data || data.length === 0) {
-        container.innerHTML = `
+            if (!data || data.length === 0) {
+                container.innerHTML = `
             <div class="text-center text-muted py-10">
                 <i class="fas fa-box-open fs-2hx mb-3 d-block text-gray-400"></i>
                 <div class="fw-semibold fs-5">Tidak ada produk ditemukan</div>
             </div>`;
-        return;
-    }
+                return;
+            }
 
-    data.forEach(p => {
-        const stok = parseInt(p.stok ?? 0);
-        const habis = stok <= 0;
+            data.forEach(p => {
+                const stok = parseInt(p.stok ?? 0);
+                const habis = stok <= 0;
 
-        const card = document.createElement('div');
-        card.className = 'col-xl-3 col-lg-4 col-md-6 mb-4';
-        card.innerHTML = `
+                const card = document.createElement('div');
+                card.className = 'col-xl-3 col-lg-4 col-md-6 mb-4';
+                card.innerHTML = `
         <div class="card shadow-sm produk-item border-0 h-100 ${habis ? 'bg-light-secondary' : ''}"
              data-id="${p.id}"
              style="cursor:${habis ? 'not-allowed' : 'pointer'};opacity:${habis ? 0.6 : 1};
@@ -668,34 +668,34 @@
             </div>
         </div>`;
 
-        container.appendChild(card);
-    });
+                container.appendChild(card);
+            });
 
-    // ✨ Efek hover (zoom-in ringan)
-    document.querySelectorAll('.produk-item').forEach(item => {
-        item.addEventListener('mouseenter', () => {
-            if (!item.classList.contains('bg-light-secondary')) {
-                item.style.transform = 'scale(1.03)';
-                item.style.boxShadow = '0 6px 12px rgba(0,0,0,0.1)';
-            }
-        });
-        item.addEventListener('mouseleave', () => {
-            item.style.transform = 'scale(1)';
-            item.style.boxShadow = '';
-        });
+            // ✨ Efek hover (zoom-in ringan)
+            document.querySelectorAll('.produk-item').forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    if (!item.classList.contains('bg-light-secondary')) {
+                        item.style.transform = 'scale(1.03)';
+                        item.style.boxShadow = '0 6px 12px rgba(0,0,0,0.1)';
+                    }
+                });
+                item.addEventListener('mouseleave', () => {
+                    item.style.transform = 'scale(1)';
+                    item.style.boxShadow = '';
+                });
 
-        // 🛒 Klik produk
-        item.addEventListener('click', function() {
-            const produk = produkData.find(p => p.id == this.dataset.id);
-            const stok = parseInt(produk.stok ?? 0);
-            if (stok <= 0) {
-                Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
-                return;
-            }
-            tambahKeTabel(produk);
-        });
-    });
-}
+                // 🛒 Klik produk
+                item.addEventListener('click', function() {
+                    const produk = produkData.find(p => p.id == this.dataset.id);
+                    const stok = parseInt(produk.stok ?? 0);
+                    if (stok <= 0) {
+                        Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
+                        return;
+                    }
+                    tambahKeTabel(produk);
+                });
+            });
+        }
 
 
 
@@ -880,6 +880,9 @@
                 });
             });
 
+            const pembayaranId = $('#pembayaran-penjualan').val();
+            const pembayaranNama = $('#pembayaran-penjualan option:selected').text();
+
             const payload = {
                 _token: $('input[name="_token"]').val(),
                 no_penjualan: $('#no_penjualan').val(),
@@ -890,7 +893,8 @@
                 uang: `Rp ${uangDiterima.toLocaleString('id-ID')}`,
                 kembalian: `Rp ${kembalian.toLocaleString('id-ID')}`,
                 catatan: $('#catatan').val(),
-                pembayaran: $('#pembayaran-penjualan').val(),
+                pembayaran: pembayaranId,
+                pembayaran_nama: pembayaranNama,
                 items: items
             };
 
@@ -1034,7 +1038,7 @@
             <span>Kembalian</span><span>${t.kembalian ?? '-'}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
-            <span>Metode</span><span>${t.pembayaran ?? '-'}</span>
+            <span>Metode</span><span>${t.pembayaran_nama ?? '-'}</span>
         </div>
 
         <hr style="border-top:1px dashed #000;">
@@ -1045,26 +1049,70 @@
     `;
 
             // Cetak struk ke window baru
-            const printWindow = window.open('', '', 'width=400,height=600');
-            printWindow.document.write(`
-        <html>
-        <head>
-            <title>Struk Penjualan</title>
-            <style>
-                body { font-family: monospace; margin: 0; padding: 10px; font-size: 12px; }
-                hr { border: 1px dashed #000; }
-                table { width: 100%; border-collapse: collapse; }
-                td { padding: 2px 0; vertical-align: top; }
-            </style>
-        </head>
-        <body>
-            ${strukHTML}
-        </body>
-        </html>
-    `);
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
+            // 🧾 Versi otomatis untuk printer thermal Codeshop CBT-58i (lebar 58 mm)
+const printWindow = window.open('', '', 'width=400,height=800');
+printWindow.document.write(`
+<html>
+<head>
+  <title>Struk Penjualan</title>
+  <style>
+    /* ======== BASE STYLE ======== */
+    body {
+      font-family: monospace;
+      font-size: 11px;
+      margin: 0;
+      padding: 5px 8px;
+      width: 58mm;          /* ✅ lebar fix thermal 58mm */
+      color: #000;
+    }
+    hr {
+      border: 1px dashed #000;
+      margin: 4px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    td {
+      padding: 1px 0;
+      vertical-align: top;
+    }
+
+    /* ======== PRINT SETTINGS ======== */
+    @page {
+      size: 58mm auto;      /* ✅ panjang otomatis sesuai isi */
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        width: 58mm;
+        height: auto;
+        overflow: visible !important;
+      }
+
+      /* Hindari potongan di tengah tabel / teks */
+      table, tr, td, div, p {
+        page-break-inside: avoid;
+      }
+
+      /* ✅ Tambah spasi putih otomatis di akhir agar tidak potong teks bawah */
+      body::after {
+        content: "";
+        display: block;
+        height: 50mm;  /* area kosong yang pasti tercetak */
+      }
+    }
+  </style>
+</head>
+<body>
+  ${strukHTML}
+</body>
+</html>
+`);
+printWindow.document.close();
+printWindow.focus();
+printWindow.print();
             printWindow.close();
         });
 

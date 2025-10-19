@@ -67,10 +67,7 @@ class Barang extends Model
         return $this->belongsTo(Brand::class, 'brand_id');
     }
 
-    public function tipe()
-    {
-        return $this->belongsTo(Tipe::class, 'tipe_id');
-    }
+ 
 
     // Relasi ke transaksi barang_masuk_detail dan penjualan_detail
     public function barangMasukDetail()

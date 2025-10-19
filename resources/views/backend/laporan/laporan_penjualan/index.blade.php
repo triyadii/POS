@@ -243,6 +243,7 @@
                         },
                         {
                             data: 'total',
+                            className: 'text-end',
                             name: 'total_harga'
                         },
                         { // Ganti kolom 'detail_barang' dengan 'action'

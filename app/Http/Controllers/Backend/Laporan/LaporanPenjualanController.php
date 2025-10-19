@@ -87,8 +87,7 @@ class LaporanPenjualanController extends Controller
         $data = $query->with([
             'user:id,name',
             'detail',
-            'detail.barang:id,kode_barang,nama,brand_id,tipe_id', // Ambil relasi barang
-            'detail.barang.tipe:id,nama', // Ambil relasi tipe dari barang
+            'detail.barang:id,kode_barang,nama,brand_id', // Ambil relasi barang
             'detail.barang.brand:id,nama', // Ambil relasi brand dari barang
             'pembayaran'
         ])->select('penjualan.*');
@@ -175,7 +174,6 @@ class LaporanPenjualanController extends Controller
         $penjualan = Penjualan::with([
             'user:id,name',
             'detail.barang:id,kode_barang,nama',
-            'detail.barang.tipe:id,nama',
             'pembayaran'
         ])
             ->whereBetween('tanggal_penjualan', [$start, $end])
