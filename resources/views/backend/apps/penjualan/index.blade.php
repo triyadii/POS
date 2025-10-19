@@ -19,16 +19,19 @@
                     <div class="card-body p-9 pt-5">
                         <form id="form-penjualan">
                             @csrf
-                            <div class="row gx-6 gx-xl-9 mb-2">
-                                <div class="col-lg-6 mb-2">
-                                    <input type="date" class="form-control" name="tanggal" id="tanggal"
-                                        value="{{ date('Y-m-d') }}" disabled />
+                            <div class="row gx-6 gx-xl-9 mb-2 align-items-center">
+                                <div class="col-lg-6 d-flex align-items-center">
+                                    <i class="ki-duotone ki-calendar fs-3 me-2 text-primary"></i>
+                                    <span id="jam-real" class="fw-bold text-primary"></span>
+                                    <input type="hidden" name="tanggal" id="tanggal">
                                 </div>
-                                <div class="col-lg-6 mb-2">
-                                    <input type="text" class="form-control form-control-solid" name="no_penjualan"
-                                        id="no_penjualan" value="{{ $no_penjualan }}" readonly />
+
+                                <div class="col-lg-6 text-end">
+                                    <input type="text" class="form-control form-control-solid text-end fw-semibold"
+                                        name="no_penjualan" id="no_penjualan" value="{{ $no_penjualan }}" readonly />
                                 </div>
                             </div>
+
 
                             <div class="row gx-6 gx-xl-9 align-items-end mb-6">
                                 <div class="col-lg-10 mb-2">
@@ -290,6 +293,37 @@
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const jamReal = document.getElementById('jam-real');
+        const inputTanggal = document.getElementById('tanggal');
+
+        function updateJam() {
+            const now = new Date();
+            const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const namaBulan = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+
+            const hari = namaHari[now.getDay()];
+            const tanggal = now.getDate();
+            const bulan = namaBulan[now.getMonth()];
+            const tahun = now.getFullYear();
+            const jam = String(now.getHours()).padStart(2, '0');
+            const menit = String(now.getMinutes()).padStart(2, '0');
+            const detik = String(now.getSeconds()).padStart(2, '0');
+
+            // Teks tampil di layar
+            jamReal.textContent = `${hari}, ${tanggal} ${bulan} ${tahun} ${jam}:${menit}:${detik} WIB`;
+
+            // Nilai tersembunyi dikirim ke backend
+            inputTanggal.value =
+                `${tahun}-${String(now.getMonth()+1).padStart(2,'0')}-${String(tanggal).padStart(2,'0')} ${jam}:${menit}:${detik}`;
+        }
+
+        updateJam();
+        setInterval(updateJam, 1000);
+    });
     $(document).ready(function() {
 
         $(document).on('click', '#modalPenjualanSelesai .btn-secondary', function() {
@@ -389,6 +423,33 @@
         new bootstrap.Modal('#modalHistoryPenjualan').show();
     });
 
+    function formatTanggalLengkap(tanggal) {
+        if (!tanggal) return '-';
+
+        // Hilangkan "Z" di akhir supaya tidak dianggap UTC oleh browser
+        const cleanDate = tanggal.replace('Z', '');
+        const d = new Date(cleanDate);
+
+        const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const namaBulan = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        const hari = namaHari[d.getDay()];
+        const tgl = d.getDate();
+        const bln = namaBulan[d.getMonth()];
+        const thn = d.getFullYear();
+
+        const jam = String(d.getHours()).padStart(2, '0');
+        const menit = String(d.getMinutes()).padStart(2, '0');
+        const detik = String(d.getSeconds()).padStart(2, '0');
+
+        return `${hari}, ${tgl} ${bln} ${thn} ${jam}:${menit}:${detik} WIB`;
+    }
+
+
+
     function loadHistoryPenjualan() {
         const tbody = $('#table-history tbody');
         tbody.html('<tr><td colspan="7" class="text-center">Memuat data...</td></tr>');
@@ -404,7 +465,7 @@
                 const row = `
         <tr>
             <td>${p.kode_transaksi}</td>
-            <td>${new Date(p.tanggal_penjualan).toLocaleDateString('id-ID')}</td>
+            <td>${formatTanggalLengkap(p.tanggal_penjualan)}</td>
             <td>${p.customer_nama ?? '-'}</td>
             <td>${p.pembayaran ? p.pembayaran.nama : '-'}</td>
             <td>${p.total_item}</td>

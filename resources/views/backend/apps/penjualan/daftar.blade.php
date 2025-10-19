@@ -227,7 +227,29 @@
                     data: 'tanggal_penjualan',
                     render: function(data) {
                         if (!data) return '-';
-                        return new Date(data).toLocaleDateString('id-ID');
+
+                        // Hilangkan "Z" supaya tidak dikonversi ke UTC
+                        const cleanDate = data.replace('Z', '');
+                        const d = new Date(cleanDate);
+
+                        const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat',
+                            'Sabtu'
+                        ];
+                        const namaBulan = [
+                            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                        ];
+
+                        const hari = namaHari[d.getDay()];
+                        const tgl = d.getDate();
+                        const bln = namaBulan[d.getMonth()];
+                        const thn = d.getFullYear();
+
+                        const jam = String(d.getHours()).padStart(2, '0');
+                        const menit = String(d.getMinutes()).padStart(2, '0');
+                        const detik = String(d.getSeconds()).padStart(2, '0');
+
+                        return `${hari}, ${tgl} ${bln} ${thn} ${jam}:${menit}:${detik} WIB`;
                     }
                 },
                 {
