@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
+use App\Models\JenisPembayaran; // 1. (BARU) Tambahkan model ini
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -15,7 +16,10 @@ class LaporanPenjualanHarianController extends Controller
 {
     public function index(Request $request)
     {
-        return view('backend.laporan.laporan_penjualan_harian.index');
+        // Ambil data jenis pembayaran untuk dikirim ke view
+        $jenisPembayaran = JenisPembayaran::select('id', 'nama')->get();
+        
+        return view('backend.laporan.laporan_penjualan_harian.index', compact('jenisPembayaran'));
     }
 
     // DISESUAIKAN: Mengambil data untuk DataTables (LOGIKA DIUBAH TOTAL)
@@ -26,6 +30,7 @@ class LaporanPenjualanHarianController extends Controller
         // =======================================================
         $query = PenjualanDetail::query();
         $dateRangeExists = false;
+        $jenisPembayaranId = $request->filter_jenis_pembayaran; // (BARU) Ambil ID filter
 
         if (!empty($request->filter_tanggal_start) && !empty($request->filter_tanggal_end)) {
             $startDate = Carbon::parse($request->filter_tanggal_start)->startOfDay();
@@ -38,11 +43,23 @@ class LaporanPenjualanHarianController extends Controller
             });
         }
 
+        // (BARU) Terapkan filter jenis pembayaran jika ada
+        if (!empty($jenisPembayaranId)) {
+            $query->whereHas('penjualan', function ($q) use ($jenisPembayaranId) {
+                $q->where('jenis_pembayaran_id', $jenisPembayaranId);
+            });
+        }
+
         // --- Statistik Box Atas (berdasarkan Penjualan) ---
         $statsQuery = Penjualan::query();
         if ($dateRangeExists) {
             $statsQuery->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
         }
+        // (BARU) Terapkan filter jenis pembayaran di query statistik
+        if (!empty($jenisPembayaranId)) {
+            $statsQuery->where('jenis_pembayaran_id', $jenisPembayaranId);
+        }
+
         $totalTransaksi = $dateRangeExists ? $statsQuery->count() : 0;
         $totalPendapatan = $dateRangeExists ? $statsQuery->sum('total_harga') : 0;
         // Hitung total item terjual dari query detail
@@ -89,6 +106,10 @@ class LaporanPenjualanHarianController extends Controller
             // 2. Nomor Transaksi
             ->addColumn('kode_transaksi', function ($detail) {
                 return $detail->penjualan->kode_transaksi ?? '-';
+            })
+            // 3. (BARU) Tambahkan kolom Jenis Pembayaran
+            ->addColumn('jenis_pembayaran', function ($detail) {
+                return optional(optional($detail->penjualan)->pembayaran)->nama ?? '-';
             })
             // 3. List Barang (Nama Barang)
             ->addColumn('nama_barang', function ($detail) {
@@ -180,10 +201,21 @@ class LaporanPenjualanHarianController extends Controller
             'tipe' => 'required|in:datatable',
             'start' => 'required|date',
             'end' => 'required|date',
+            'jenis_pembayaran' => 'nullable|string',
         ]);
 
         $start = Carbon::parse($request->start)->startOfDay();
         $end = Carbon::parse($request->end)->endOfDay();
+        $jenisPembayaranId = $request->jenis_pembayaran; // (BARU) Ambil ID filter
+
+        // (BARU) Ambil nama jenis pembayaran untuk ditampilkan di PDF
+        $namaJenisPembayaran = 'Semua';
+        if (!empty($jenisPembayaranId)) {
+            $pembayaran = JenisPembayaran::find($jenisPembayaranId);
+            if ($pembayaran) {
+                $namaJenisPembayaran = $pembayaran->nama;
+            }
+        }
 
         // --- Query utama untuk PDF (Berdasarkan PenjualanDetail) ---
         $query = PenjualanDetail::query()
@@ -198,6 +230,10 @@ class LaporanPenjualanHarianController extends Controller
             ->select('penjualan_detail.*') // Must select detail columns
             ->orderBy('penjualan.tanggal_penjualan', 'asc');
 
+            // (BARU) Terapkan filter jenis pembayaran jika ada
+        if (!empty($jenisPembayaranId)) {
+            $query->where('penjualan.jenis_pembayaran_id', $jenisPembayaranId);
+        }
         $penjualanDetails = $query->get(); // Ambil semua data
 
         // --- Kalkulasi Statistik & Footer ---
@@ -234,7 +270,8 @@ class LaporanPenjualanHarianController extends Controller
             'start',
             'end',
             'namaUser',
-            'tanggalCetak'
+            'tanggalCetak',
+            'namaJenisPembayaran'
         );
 
         $viewPath = 'backend.laporan.laporan_penjualan_harian.';

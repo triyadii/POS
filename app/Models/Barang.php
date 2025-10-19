@@ -27,7 +27,7 @@ class Barang extends Model
         'harga_jual',
         'size',
     ];
-    
+
 
     protected static function boot()
     {
@@ -39,7 +39,7 @@ class Barang extends Model
             }
         });
     }
-    
+
 
     // Tambahkan properti ini di file Barang.php
     protected $casts = [
