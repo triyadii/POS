@@ -23,7 +23,9 @@ class Penjualan extends Model
         'total_item',
         'total_harga',
         'catatan',
+        'potongan',
         'jenis_pembayaran_id',
+        'kategori_penjualan',
     ];
 
     protected static function boot()
