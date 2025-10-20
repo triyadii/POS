@@ -38,15 +38,14 @@ class PenjualanController extends Controller
         $validator = \Validator::make($request->all(), [
             'no_penjualan' => 'required|string|max:50',
             'tanggal'      => 'required|date',
-            'customer'     => 'required|string|max:150',
             'pembayaran'   => 'required|uuid|exists:jenis_pembayaran,id',
+            'potongan' => 'nullable|numeric',
             'items'        => 'required|array|min:1',
             'items.*.barang_id' => 'required|uuid|exists:barang,id',
             'items.*.qty'       => 'required|numeric|min:1',
         ], [
             'no_penjualan.required' => 'Nomor penjualan wajib diisi.',
             'tanggal.required'      => 'Tanggal penjualan wajib diisi.',
-            'customer.required'     => 'Nama customer wajib diisi.',
             'pembayaran.required'   => 'Jenis pembayaran wajib dipilih.',
             'pembayaran.exists'     => 'Jenis pembayaran tidak valid.',
             'items.required'        => 'Daftar produk tidak boleh kosong.',
@@ -74,12 +73,13 @@ class PenjualanController extends Controller
                 'id' => $penjualanId,
                 'kode_transaksi' => $request->no_penjualan,
                 'tanggal_penjualan' => $request->tanggal,
-                'customer_nama' => $request->customer,
                 'jenis_pembayaran_id' => $request->pembayaran,
                 'user_id' => auth()->id() ?? 'dummy-user',
                 'total_item' => $request->total_item,
                 'total_harga' => preg_replace('/[^\d]/', '', $request->total),
                 'catatan' => $request->catatan,
+                'potongan'      => $request->potongan,
+                'kategori_penjualan' => "offline",
             ]);
 
 
@@ -233,12 +233,26 @@ class PenjualanController extends Controller
     }
     public function produkData()
     {
-        $produk = Barang::select('id', 'nama', 'harga_jual', 'stok')
-            ->with('kategori:id,nama')
-            ->get();
+        $produk = Barang::with('kategori:id,nama')
+            ->select('id', 'nama', 'kode_barang', 'stok', 'harga_jual', 'harga_beli', 'kategori_id')
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'id' => $p->id,
+                    'nama' => $p->nama,
+                    'kode_barang' => $p->kode_barang,
+                    'stok' => $p->stok,
+                    'harga_jual' => $p->harga_jual,
+                    'harga_beli' => $p->harga_beli,
+                    'kategori' => [
+                        'nama' => $p->kategori->nama ?? '-'
+                    ],
+                ];
+            });
 
         return response()->json($produk);
     }
+
     public function getJenisPembayaran()
     {
         $list = JenisPembayaran::select('id', 'nama')->orderBy('nama')->get();
@@ -461,5 +475,21 @@ class PenjualanController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ]);
         }
+    }
+    public function editKasir($id)
+    {
+        $penjualan = Penjualan::with(['detail.barang', 'pembayaran'])
+            ->findOrFail($id);
+
+        $produk = Barang::with('kategori')->get();
+        $pembayaran = JenisPembayaran::all();
+
+        return view('backend.penjualan.index', [
+            'editMode' => true,
+            'penjualan' => $penjualan,
+            'produk' => $produk,
+            'pembayaran' => $pembayaran,
+            'no_penjualan' => $penjualan->no_penjualan, // gunakan kode lama
+        ]);
     }
 }
