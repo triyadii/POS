@@ -7,7 +7,7 @@
         <tr>
             <td><strong>Tanggal:</strong> {{ $trx->tanggal_penjualan->format('d-m-Y') }}</td>
             <td><strong>No. Transaksi:</strong> {{ $trx->kode_transaksi }}</td>
-            <td><strong>Pembayaran:</strong> {{ optional($trx->pembayaran)->nama ?? '-' }}</td>
+            <td><strong>Pembayaran:</strong> {{ optional($trx->jenis_pembayaran)->nama ?? '-' }}</td>
             <td><strong>Kategori Penjualan:</strong> {{ ucwords($trx->kategori_penjualan) }}</td>
             <td class="text-right"><strong>Sub Total:</strong>
                 {{ number_format($trx->detail->sum('subtotal'), 0, ',', '.') }}</td>
