@@ -708,7 +708,7 @@ $validator->after(function ($validator) use ($request) {
 
         if ($request->has('q')) {
             $search = $request->q;
-            $barang = Barang::select("id", "nama", "kode_barang","harga_jual","stok")
+            $barang = Barang::select("id", "nama", "kode_barang","harga_jual","harga_beli","stok")
                 ->where(function ($query) use ($search) {
                     $query->where('kode_barang', 'LIKE', "%{$search}%")
                         ->orWhere('nama', 'LIKE', "%{$search}%");
