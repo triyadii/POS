@@ -85,7 +85,7 @@ class LaporanPenjualanHarianController extends Controller
         // --- Query utama untuk DataTables ---
         $data = $query->with([
             'user:id,name',
-            'pembayaran:id,nama',
+            'jenis_pembayaran:id,nama',
         ])->select('penjualan.*');
 
 
@@ -99,7 +99,7 @@ class LaporanPenjualanHarianController extends Controller
                 return Carbon::parse($data->tanggal_penjualan)->translatedFormat('d-m-Y');
             })
             ->addColumn('jenis_pembayaran', function ($data) {
-                return optional($data->pembayaran)->nama ?? '-';
+                return optional($data->jenis_pembayaran)->nama ?? '-';
             })
             ->addColumn('kategori_penjualan', function ($data) {
                 return ucwords($data->kategori_penjualan); // Format: 'offline' -> 'Offline'
@@ -184,9 +184,9 @@ class LaporanPenjualanHarianController extends Controller
 
         $namaJenisPembayaran = 'Semua';
         if (!empty($jenisPembayaranId)) {
-            $pembayaran = JenisPembayaran::find($jenisPembayaranId);
-            if ($pembayaran) {
-                $namaJenisPembayaran = $pembayaran->nama;
+            $jenis_pembayaran = JenisPembayaran::find($jenisPembayaranId);
+            if ($jenis_pembayaran) {
+                $namaJenisPembayaran = $jenis_pembayaran->nama;
             }
         }
 
@@ -197,7 +197,7 @@ class LaporanPenjualanHarianController extends Controller
             ->whereBetween('tanggal_penjualan', [$start, $end])
             ->with([
                 'user:id,name',
-                'pembayaran:id,nama',
+                'jenis_pembayaran:id,nama',
                 'detail', // Eager load detail item
                 'detail.barang:id,kode_barang,nama' // Eager load barang dari detail
             ])
