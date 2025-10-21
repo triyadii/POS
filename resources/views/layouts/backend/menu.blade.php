@@ -22,7 +22,7 @@
 
         @canany(['barang-list', 'barang-keluar-list', 'barang-masuk-list', 'daftar-penjualan-list', 'stok-list',
             'cari-barang-list', 'laporan-global-list', 'laporan-pembelian-supplier-list', 'laporan-penjualan-kategori-list',
-            'laporan-penjualan-brand-list', 'laporan-penjualan-brand-list', 'pengeluaran-list'])
+            'laporan-penjualan-brand-list', 'laporan-penjualan-brand-list', 'pengeluaran-list','penjualan-online-list'])
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
                 class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
@@ -43,6 +43,7 @@
                         'laporan-penjualan-brand.index',
                         'laporan-laba-rugi.index',
                         'pengeluaran.index',
+                        'penjualan-online.index'
                     )
                         ? 'active '
                         : '' }}">
@@ -104,6 +105,19 @@
                         </div>
                     @endcan
 
+                    @can('penjualan-online-list')
+                        <div class="menu-item {{ request()->routeIs('penjualan-online.index') ? 'here show ' : '' }}">
+                            <!--begin:Menu link-->
+                            <a class="menu-link py-3" href="{{ route('penjualan-online.index') }}">
+                                <span class="menu-icon">
+                                    <i class="ki-outline ki-monitor-mobile fs-2"></i>
+                                </span>
+                                <span class="menu-title">Penjualan Online</span>
+
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                    @endcan
 
                     @can('daftar-penjualan-list')
                         <div class="menu-item {{ request()->routeIs('penjualan.daftar') ? 'here show ' : '' }}">

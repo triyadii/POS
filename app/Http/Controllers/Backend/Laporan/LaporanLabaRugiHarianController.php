@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\PenjualanDetail;
-use App\Models\BarangMasukDetail; // Kita pakai detail
-use App\Models\PengeluaranDetail; // Kita pakai detail
+use App\Models\BarangMasukDetail;
+use App\Models\PengeluaranDetail;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -15,15 +15,28 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class LaporanLabaRugiHarianController extends Controller
 {
     /**
-     * Tampilkan halaman index utama
+     * Tampilkan halaman index utama.
+     * MODIFIKASI: Langsung memuat data untuk hari ini saat halaman dibuka.
      */
     public function index(Request $request)
     {
-        return view('backend.laporan.laporan_laba_rugi_harian.index');
+        // 1. Tentukan tanggal hari ini
+        $tanggalHariIni = Carbon::now()->startOfDay();
+
+        // 2. Ambil data untuk hari ini menggunakan fungsi private
+        $data = $this->_getLaporanData($tanggalHariIni);
+
+        // 3. Render partial HTML-nya
+        $laporanHtml = view('backend.laporan.laporan_laba_rugi_harian._partials.laporan_content', $data)->render();
+
+        // 4. Kirim HTML yang sudah jadi ke view utama
+        return view('backend.laporan.laporan_laba_rugi_harian.index', [
+            'laporanHtml' => $laporanHtml
+        ]);
     }
 
     /**
-     * [BARU] Ambil data detail untuk laporan harian via AJAX
+     * [AJAX] Ambil data detail untuk tanggal yang dipilih di datepicker
      */
     public function getLaporanHarianDetail(Request $request)
     {
@@ -33,65 +46,18 @@ class LaporanLabaRugiHarianController extends Controller
 
         $tanggal = Carbon::parse($request->filter_tanggal)->startOfDay();
 
-        // 1. Ambil Detail Penjualan (Pendapatan & Komparasi Profit)
-        $detail_penjualan = PenjualanDetail::with('barang:id,nama,kode_barang')
-            ->whereHas('penjualan', function ($q) use ($tanggal) {
-                $q->whereDate('tanggal_penjualan', $tanggal);
-            })
-            ->get();
+        // Panggil fungsi private untuk mengambil data
+        $data = $this->_getLaporanData($tanggal);
 
-        // 2. Ambil Detail Pembelian (Barang Masuk)
-        $detail_pembelian = BarangMasukDetail::with('barang:id,nama,kode_barang', 'barangMasuk:id,kode_transaksi')
-            ->whereHas('barangMasuk', function ($q) use ($tanggal) {
-                $q->whereDate('tanggal_masuk', $tanggal);
-            })
-            ->get();
+        // Render file partial view
+        $html = view('backend.laporan.laporan_laba_rugi_harian._partials.laporan_content', $data)->render();
 
-        // 3. Ambil Detail Pengeluaran (Biaya Operasional)
-        $detail_pengeluaran = PengeluaranDetail::with('kategori:id,nama')
-            ->whereHas('pengeluaran', function ($q) use ($tanggal) {
-                $q->whereDate('tanggal', $tanggal);
-            })
-            ->get();
-
-        // 4. Hitung Total
-        // Total Penjualan (Omzet)
-        $total_penjualan = $detail_penjualan->sum('subtotal');
-
-        // Total Modal (COGS) dari barang yang terjual
-        $total_hpp_penjualan = $detail_penjualan->sum(function ($item) {
-            return $item->harga_beli * $item->qty;
-        });
-
-        // Total Profit Kotor (Margin Penjualan)
-        $total_profit_kotor = $total_penjualan - $total_hpp_penjualan;
-
-        // Total Pembelian Hari Itu
-        $total_pembelian = $detail_pembelian->sum('subtotal');
-
-        // Total Pengeluaran Hari Itu
-        $total_pengeluaran = $detail_pengeluaran->sum('jumlah');
-
-        // Laba Rugi Bersih (Sesuai formula Anda: Penjualan - Pembelian - Pengeluaran)
-        $laba_rugi = $total_penjualan - $total_pembelian - $total_pengeluaran;
-
-        return response()->json([
-            // Data untuk Statistik Box
-            'total_penjualan' => $total_penjualan,
-            'total_pembelian' => $total_pembelian,
-            'total_pengeluaran' => $total_pengeluaran,
-            'laba_rugi' => $laba_rugi,
-            'total_profit_kotor' => $total_profit_kotor, // Tambahan untuk komparasi
-
-            // Data untuk Tabel Detail
-            'detail_penjualan' => $detail_penjualan,
-            'detail_pembelian' => $detail_pembelian,
-            'detail_pengeluaran' => $detail_pengeluaran,
-        ]);
+        // Kembalikan HTML sebagai response JSON
+        return response()->json(['html' => $html]);
     }
 
     /**
-     * [MODIFIKASI] Export PDF untuk laporan detail harian
+     * [PDF] Export PDF untuk laporan detail harian
      */
     public function exportLabaRugiPdf(Request $request)
     {
@@ -103,37 +69,60 @@ class LaporanLabaRugiHarianController extends Controller
         $paperSize = $request->ukuran_kertas ?? 'A4';
         $orientation = $request->orientasi_kertas ?? 'portrait';
 
-        // --- Mengambil data (logika sama persis dengan getLaporanHarianDetail) ---
+        // Panggil fungsi private untuk mengambil data
+        $data = $this->_getLaporanData($tanggal);
+
+        // Tambahkan data khusus untuk PDF
+        $data['namaUser'] = Auth::user()->name;
+        $data['tanggalCetak'] = Carbon::now();
+
+        // Load view PDF
+        $pdf = Pdf::loadView('backend.laporan.laporan_laba_rugi_harian.laba_rugi_harian_pdf', $data)
+            ->setPaper($paperSize, $orientation);
+
+        return $pdf->stream('laporan-laba-rugi-harian-' . $tanggal->format('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * FUNGSI PRIVATE BARU: (Prinsip DRY - Don't Repeat Yourself)
+     * Satu fungsi terpusat untuk mengambil dan mengkalkulasi semua data laporan.
+     */
+    private function _getLaporanData(Carbon $tanggal)
+    {
+        // 1. Ambil Detail Penjualan
         $detail_penjualan = PenjualanDetail::with('barang:id,nama,kode_barang')
             ->whereHas('penjualan', function ($q) use ($tanggal) {
                 $q->whereDate('tanggal_penjualan', $tanggal);
             })
             ->get();
 
+        // 2. Ambil Detail Pembelian
         $detail_pembelian = BarangMasukDetail::with('barang:id,nama,kode_barang', 'barangMasuk:id,kode_transaksi')
             ->whereHas('barangMasuk', function ($q) use ($tanggal) {
                 $q->whereDate('tanggal_masuk', $tanggal);
             })
             ->get();
 
+        // 3. Ambil Detail Pengeluaran
         $detail_pengeluaran = PengeluaranDetail::with('kategori:id,nama')
             ->whereHas('pengeluaran', function ($q) use ($tanggal) {
                 $q->whereDate('tanggal', $tanggal);
             })
             ->get();
 
-        // --- Kalkulasi Total (logika sama persis) ---
+        // 4. Hitung Total
         $total_penjualan = $detail_penjualan->sum('subtotal');
         $total_hpp_penjualan = $detail_penjualan->sum(function ($item) {
-            return $item->harga_beli * $item->qty;
+            // Pastikan harga_beli ada untuk menghindari error
+            return ($item->harga_beli ?? 0) * $item->qty;
         });
         $total_profit_kotor = $total_penjualan - $total_hpp_penjualan;
         $total_pembelian = $detail_pembelian->sum('subtotal');
         $total_pengeluaran = $detail_pengeluaran->sum('jumlah');
         $laba_rugi = $total_penjualan - $total_pembelian - $total_pengeluaran;
-        // --- End Kalkulasi ---
 
-        $data = [
+        // 5. Kembalikan array data yang siap di-render
+        return [
             'tanggal' => $tanggal,
             'total_penjualan' => $total_penjualan,
             'total_pembelian' => $total_pembelian,
@@ -143,17 +132,10 @@ class LaporanLabaRugiHarianController extends Controller
             'detail_penjualan' => $detail_penjualan,
             'detail_pembelian' => $detail_pembelian,
             'detail_pengeluaran' => $detail_pengeluaran,
-            'namaUser' => Auth::user()->name,
-            'tanggalCetak' => Carbon::now()
         ];
-
-        // Kita akan menggunakan view PDF baru: 'laba_rugi_harian_pdf'
-        $pdf = Pdf::loadView('backend.laporan.laporan_laba_rugi_harian.laba_rugi_harian_pdf', $data)
-            ->setPaper($paperSize, $orientation);
-
-        return $pdf->stream('laporan-laba-rugi-harian-' . $tanggal->format('Y-m-d') . '.pdf');
     }
 
+    // ... (fungsi terbilang dan penyebut biarkan saja ada di bawah) ...
     private function terbilang($nilai)
     {
         if ($nilai < 0) {

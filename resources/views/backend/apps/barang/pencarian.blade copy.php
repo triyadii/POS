@@ -58,9 +58,8 @@
 
                 <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4 w-100 chimox" id="chimox">
                     <thead>
-                        <tr class="fw-bold text-muted fs-7 text-uppercase gs-0">         
-                            <th class="min-w-125px">Kode Item</th>
-                   
+                        <tr class="fw-bold text-muted fs-7 text-uppercase gs-0">                            
+                           <th class="min-w-125px">Kode Item</th>
                             <th class="min-w-125px">Nama Item</th>
                             <th class="min-w-70px">Kategori</th>
                             <th class="min-w-100px">Brand</th>
@@ -152,13 +151,12 @@ $(document).ready(function () {
             emptyTable: "Tidak ada data tersedia",
         },
         columns: [
-                        { data: 'kode', name: 'kode' },
-
+            { data: 'kode_barang', name: 'kode_barang' },
             { data: 'nama', name: 'nama' },
-            { data: 'kategori_id', name: 'kategori_id' , orderable: false, searchable: false},
-            { data: 'brand_id', name: 'brand_id' , orderable: false, searchable: false},
-            { data: 'size', name: 'size', orderable: false, searchable: false },
-            { data: 'stok', name: 'stok' , orderable: false, searchable: false},
+            { data: 'kategori_id', name: 'kategori_id' },
+            { data: 'brand_id', name: 'brand_id' },
+            { data: 'size', name: 'size' },
+            { data: 'stok', name: 'stok' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ]
     });

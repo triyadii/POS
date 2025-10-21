@@ -44,6 +44,7 @@ use App\Http\Controllers\Backend\Apps\BarangMasukDetailController;
 use App\Http\Controllers\Backend\Apps\BarangKeluarController;
 use App\Http\Controllers\Backend\Apps\BarangKeluarDetailController;
 use App\Http\Controllers\Backend\Apps\PengeluaranController;
+use App\Http\Controllers\Backend\Apps\PenjualanOnlineController;
 
 //END CHIMOX
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
@@ -165,6 +166,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/PencarianBarang', [BarangController::class, 'pencarianBarang'])->name('barang.pencarian');
     Route::get('/PencarianBarangList', [BarangController::class, 'pencarianBarangList'])->name('pencarianList.barang');
+    Route::get('/barang/{id}/history', [BarangController::class, 'historyPenjualanPage'])
+        ->name('barang.history.page');
+    Route::get('/barang/{id}/history/data', [BarangController::class, 'historyPenjualanData'])
+        ->name('barang.history.data');
+
+
 
     // Route::resource('barang-masuk', BarangMasukController::class);
     // Route::get('get-barang-masuk', [BarangMasukController::class, 'getData'])->name('get-barang-masuk');
@@ -259,6 +266,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/pengeluaran/mass-delete', [PengeluaranController::class, 'massDelete'])->name('pengeluaran.mass-delete');
 
 
+    Route::resource('penjualan-online', PenjualanOnlineController::class);
+    Route::get('get-penjualan-online', [PenjualanOnlineController::class, 'getData'])->name('get-penjualan-online');
+    Route::post('/penjualan-online/mass-delete', [PenjualanOnlineController::class, 'massDelete'])->name('penjualan-online.mass-delete');
+    Route::get('/penjualan/print/{id}', [PenjualanOnlineController::class, 'print'])->name('penjualan.print');
+
+
+
     //END CHIMOX
 
 
@@ -286,6 +300,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('laporan-penjualan', LaporanPenjualanController::class);
 
     Route::get('laporan-penjualan-harian-data', [LaporanPenjualanHarianController::class, 'getLaporanData'])->name('laporan.penjualan-harian.data');
+    Route::get('laporan-penjualan-harian-detail-items', [LaporanPenjualanHarianController::class, 'getDetailItems'])->name('laporan.penjualan-harian.detail-items');
     Route::get('/laporan/penjualan-harian/export', [LaporanPenjualanHarianController::class, 'export'])->name('laporan.penjualan-harian.export');
     Route::resource('laporan-penjualan-harian', LaporanPenjualanHarianController::class);
 

@@ -2,6 +2,7 @@
 @section('title', 'Laporan Penjualan Harian')
 @section('content')
 
+    {{-- Toolbar (Tidak Berubah) --}}
     <div id="kt_app_toolbar" class="app-toolbar d-flex flex-stack py-4 py-lg-8">
         <div class="d-flex flex-grow-1 flex-stack flex-wrap gap-2 mb-n10" id="kt_toolbar">
             <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
@@ -20,6 +21,7 @@
     </div>
     <div id="kt_app_content" class="app-content flex-column-fluid">
         <div class="card">
+            {{-- Filter (Tidak Berubah) --}}
             <div class="card-header border-0 pt-6">
                 <div class="card-title flex-column">
                     <h3 class="fw-semibold mb-1">Data Laporan Penjualan Harian</h3>
@@ -31,20 +33,25 @@
                             <i class="ki-outline ki-printer fs-2 me-2"></i> Export
                         </button>
                         <div class="position-relative">
-                            <select class="form-select form-select-sm form-select-solid" name="filter_jenis_pembayaran" id="filter_jenis_pembayaran">
+                            <select class="form-select form-select-sm" name="filter_jenis_pembayaran"
+                                id="filter_jenis_pembayaran">
                                 <option value="">Semua Pembayaran</option>
-                                {{-- Loop data dari controller --}}
                                 @foreach ($jenisPembayaran as $item)
                                     <option value="{{ $item->id }}">{{ $item->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="position-relative">
-                            {{-- ====================================================== --}}
-                            {{-- PERUBAHAN: Menggunakan Flatpickr (bawaan Metronic) --}}
-                            {{-- ====================================================== --}}
-                            <input class="form-control form-control-sm form-control-solid" placeholder="Pilih tanggal"
-                                name="filter_tanggal" id="filter_tanggal" autocomplete="off" />
+                            <select class="form-select form-select-sm" name="filter_kategori_penjualan"
+                                id="filter_kategori_penjualan">
+                                <option value="">Semua Tipe</option>
+                                <option value="offline">Offline</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+                        <div class="position-relative">
+                            <input class="form-control form-control-sm" placeholder="Pilih tanggal" name="filter_tanggal"
+                                id="filter_tanggal" autocomplete="off" />
                         </div>
                     </div>
                 </div>
@@ -79,10 +86,6 @@
                     </div>
                 </div>
 
-                {{-- =================================== --}}
-                {{-- BAGIAN CHART TELAH DIHAPUS --}}
-                {{-- =================================== --}}
-
                 {{-- Tabel Data --}}
                 <div class="card border border-dashed border-dark card-flush h-xl-100 d-none mt-5" id="table-wrapper">
                     <div class="card-header pt-7">
@@ -93,57 +96,44 @@
                     </div>
                     <div class="card-body pt-5">
                         <div class="table-responsive">
+                            {{-- =================================== --}}
+                            {{-- PERUBAHAN: Thead diubah (lebih sedikit kolom) --}}
+                            {{-- =================================== --}}
                             <table class="table align-middle table-row-dashed fs-6 gy-5" id="chimox">
-                                {{-- =================================== --}}
-                                {{-- PERUBAHAN: Tambah Kolom Harga Jual --}}
-                                {{-- =================================== --}}
                                 <thead>
                                     <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                        <th class="w-25px"></th> {{-- Kolom untuk tombol expander --}}
                                         <th class="min-w-100px">Tanggal</th>
                                         <th class="min-w-125px">No. Transaksi</th>
+                                        <th class="min-w-100px">Kategori Penjualan</th>
                                         <th class="min-w-100px">Jenis Pembayaran</th>
-                                        <th class="min-w-150px">Nama Barang</th>
-                                        <th class="min-w-50px text-end">Qty</th>
-                                        <th class="min-w-100px text-end">Harga Jual</th>
-                                        <th class="min-w-100px text-end">Harga Beli</th>
+                                        <th class="min-w-50px text-end">Total Item</th>
                                         <th class="min-w-100px text-end">Sub Total</th>
-                                        <th class="min-w-100px text-end">Profit</th>
-                                        <th class="min-w-70px text-end">Potongan</th>
-                                        <th class="min-w-70px text-end">Pajak</th>
-                                        <th class="min-w-70px text-end">Biaya Lain</th>
+                                        <th class="min-w-100px text-end">Potongan</th>
                                         <th class="min-w-100px text-end">Total Akhir</th>
-                                        <th class="min-w-100px text-end">Bayar Tunai</th>
-                                        <th class="min-w-100px text-end">Bayar Kredit</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-gray-600 fw-semibold"></tbody>
                                 {{-- =================================== --}}
-                                {{-- PERUBAHAN: Tambah <th> kosong di tfoot --}}
+                                {{-- PERUBAHAN: tfoot disesuaikan --}}
                                 {{-- =================================== --}}
                                 <tfoot class="fw-bold fs-6">
                                     <tr class="table-light">
-                                        <th colspan="4" class="text-end">Total</th>
+                                        <th colspan="5" class="text-end">Total</th>
                                         <th class="text-end" id="footer-total-item">0</th>
-                                        <th class="text-end"></th> {{-- Kolom kosong untuk Harga Jual --}}
-                                        <th class="text-end"></th> {{-- Kolom kosong untuk Harga Beli --}}
                                         <th class="text-end" id="footer-subtotal">Rp 0</th>
-                                        <th class="text-end" id="footer-profit">Rp 0</th>
-                                        <th class="text-end" id="footer-potongan">0</th>
-                                        <th class="text-end" id="footer-pajak">0</th>
-                                        <th class="text-end" id="footer-biaya-lain">0</th>
+                                        <th class="text-end" id="footer-potongan">Rp 0</th>
                                         <th class="text-end" id="footer-total-akhir">Rp 0</th>
-                                        <th class="text-end" id="footer-bayar-tunai">Rp 0</th>
-                                        <th class="text-end" id="footer-bayar-kredit">Rp 0</th>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
 
-                        {{-- ... (Summary Box tidak berubah) ... --}}
+                        {{-- Summary Box Bawah (Kita masih bisa menampilkan semua data) --}}
                         <div class="d-flex justify-content-end mt-10">
                             <div class="mw-350px w-100">
                                 <div class="d-flex flex-stack fs-6">
-                                    <div class="fw-semibold text-gray-600">Jumlah Item :</div>
+                                    <div class="fw-semibold text-gray-600">Jumlah Item Terjual:</div>
                                     <div class="fw-bold text-gray-800" id="summary-total-item">0</div>
                                 </div>
                                 <div class="separator separator-dashed my-3"></div>
@@ -153,16 +143,9 @@
                                 </div>
                                 <div class="d-flex flex-stack fs-6 mt-1">
                                     <div class="fw-semibold text-gray-600">Potongan :</div>
-                                    <div class="fw-bold text-gray-800" id="summary-potongan">0</div>
+                                    <div class="fw-bold text-gray-800" id="summary-potongan">Rp 0</div>
                                 </div>
-                                <div class="d-flex flex-stack fs-6 mt-1">
-                                    <div class="fw-semibold text-gray-600">Pajak :</div>
-                                    <div class="fw-bold text-gray-800" id="summary-pajak">0</div>
-                                </div>
-                                <div class="d-flex flex-stack fs-6 mt-1">
-                                    <div class="fw-semibold text-gray-600">Biaya Lain :</div>
-                                    <div class="fw-bold text-gray-800" id="summary-biaya-lain">0</div>
-                                </div>
+                                {{-- Pajak & Biaya Lain bisa disembunyikan jika selalu 0 --}}
                                 <div class="separator separator-dashed my-3"></div>
                                 <div class="d-flex flex-stack fs-5">
                                     <div class="fw-bold text-gray-800">Total Akhir :</div>
@@ -190,7 +173,7 @@
             </div>
         </div>
 
-        {{-- Modal Export (Tidak berubah) --}}
+        {{-- Modal Export (Tidak Berubah) --}}
         <div class="modal fade" tabindex="-1" id="btn-export">
             <div class="modal-dialog modal-dialog-centered mw-650px">
                 <div class="modal-content">
@@ -246,27 +229,7 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Modal Detail (Tidak Berubah) --}}
-    <div class="modal fade" tabindex="-1" id="kt_modal_detail_penjualan">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title"></h3>
-                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
-                        aria-label="Close">
-                        <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <div id="detail-content-container"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     @push('stylesheets')
@@ -286,7 +249,7 @@
                     processing: true,
                     serverSide: true,
                     order: [
-                        [0, 'desc']
+                        [1, 'desc'] // Urutkan berdasarkan tanggal
                     ],
                     ajax: {
                         url: "{{ route('laporan.penjualan-harian.data') }}",
@@ -298,8 +261,8 @@
                                 d.filter_tanggal_start = selectedDate;
                                 d.filter_tanggal_end = selectedDate;
                             }
-                            // 2. (BARU) Kirim data filter jenis pembayaran ke backend
                             d.filter_jenis_pembayaran = $('#filter_jenis_pembayaran').val();
+                            d.filter_kategori_penjualan = $('#filter_kategori_penjualan').val();
                         },
                         dataSrc: function(json) {
                             // --- Statistik Box Atas ---
@@ -310,20 +273,15 @@
                             // --- Footer Tabel (tfoot) ---
                             $('#footer-total-item').text(json.footer_total_item ?? 0);
                             $('#footer-subtotal').text(formatRupiah(json.footer_subtotal));
-                            $('#footer-profit').text(formatRupiah(json.footer_profit));
-                            $('#footer-potongan').text(json.footer_potongan ?? 0);
-                            $('#footer-pajak').text(json.footer_pajak ?? 0);
-                            $('#footer-biaya-lain').text(json.footer_biaya_lain ?? 0);
+                            $('#footer-potongan').text(formatRupiah(json.footer_potongan));
                             $('#footer-total-akhir').text(formatRupiah(json.footer_total_akhir));
-                            $('#footer-bayar-tunai').text(formatRupiah(json.footer_bayar_tunai));
-                            $('#footer-bayar-kredit').text(formatRupiah(json.footer_bayar_kredit));
 
-                            // --- Summary Box Bawah ---
+                            // --- Summary Box Bawah (Masih menampilkan semua data) ---
                             $('#summary-total-item').text(json.footer_total_item ?? 0);
                             $('#summary-subtotal').text(formatRupiah(json.footer_subtotal));
-                            $('#summary-potongan').text(json.footer_potongan ?? 0);
-                            $('#summary-pajak').text(json.footer_pajak ?? 0);
-                            $('#summary-biaya-lain').text(json.footer_biaya_lain ?? 0);
+                            $('#summary-potongan').text(formatRupiah(json.footer_potongan));
+                            $('#summary-pajak').text(formatRupiah(json.footer_pajak));
+                            $('#summary-biaya-lain').text(formatRupiah(json.footer_biaya_lain));
                             $('#summary-total-akhir').text(formatRupiah(json.footer_total_akhir));
                             $('#summary-bayar-tunai').text(formatRupiah(json.footer_bayar_tunai));
                             $('#summary-bayar-kredit').text(formatRupiah(json.footer_bayar_kredit));
@@ -333,94 +291,54 @@
                         }
                     },
                     // ===================================
-                    // PERUBAHAN: Tambah Kolom Harga Jual
+                    // PERUBAHAN: Definisi kolom diubah
                     // ===================================
                     columns: [{
+                            data: 'expander',
+                            name: 'expander',
+                            orderable: false,
+                            searchable: false,
+                            className: 'dt-control'
+                        },
+                        {
                             data: 'tanggal',
-                            name: 'penjualan.tanggal_penjualan'
+                            name: 'tanggal_penjualan'
                         },
                         {
                             data: 'kode_transaksi',
-                            name: 'penjualan.kode_transaksi'
+                            name: 'kode_transaksi'
                         },
                         {
-                    data: 'jenis_pembayaran',
-                    name: 'penjualan.pembayaran.nama', // penting untuk sorting/searching
-                    orderable: true,
-                    searchable: true
-                },
-                        {
-                            data: 'nama_barang',
-                            name: 'barang.nama'
+                            data: 'kategori_penjualan', // Data dari controller
+                            name: 'kategori_penjualan' // Nama untuk sorting/filtering
                         },
                         {
-                            data: 'qty',
-                            name: 'qty',
-                            className: 'text-end'
+                            data: 'jenis_pembayaran',
+                            name: 'pembayaran.nama',
+                            orderable: true,
+                            searchable: true
                         },
                         {
-                            data: 'harga_jual_fmt',
-                            name: 'harga_jual',
-                            className: 'text-end'
-                        },
-                        {
-                            data: 'harga_beli_fmt',
-                            name: 'harga_beli',
+                            data: 'total_item',
+                            name: 'total_item',
                             className: 'text-end'
                         },
                         {
                             data: 'sub_total_fmt',
-                            name: 'subtotal',
-                            className: 'text-end'
-                        },
-                        {
-                            data: 'profit',
-                            name: 'profit',
+                            name: 'sub_total_fmt', // Ini kalkulasi, tidak bisa di-sort
                             className: 'text-end',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'potongan',
-                            name: 'potongan',
-                            className: 'text-end',
-                            orderable: false,
-                            searchable: false
+                            data: 'potongan_fmt',
+                            name: 'potongan', // Bisa di-sort berdasarkan 'potongan'
+                            className: 'text-end text-danger'
                         },
                         {
-                            data: 'pajak',
-                            name: 'pajak',
-                            className: 'text-end',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'biaya_lain',
-                            name: 'biaya_lain',
-                            className: 'text-end',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'total_akhir',
-                            name: 'total_akhir',
-                            className: 'text-end',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'bayar_tunai',
-                            name: 'bayar_tunai',
-                            className: 'text-end',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'bayar_kredit',
-                            name: 'bayar_kredit',
-                            className: 'text-end',
-                            orderable: false,
-                            searchable: false
+                            data: 'total_akhir_fmt',
+                            name: 'total_harga', // Bisa di-sort berdasarkan 'total_harga'
+                            className: 'text-end fw-bold'
                         },
                     ]
                 });
@@ -438,22 +356,69 @@
                     }
                 });
 
-                // 3. (BARU) Tambahkan event listener untuk filter jenis pembayaran
-                $('#filter_jenis_pembayaran').on('change', function() {
-                    // Hanya reload jika tanggal sudah dipilih (agar konsisten)
+                // Fungsi reload helper
+                function reloadTableIfDateSelected() {
                     const flatpickr = document.querySelector("#filter_tanggal")._flatpickr;
                     if (flatpickr && flatpickr.selectedDates[0]) {
                         table.ajax.reload();
                     }
+                }
+
+                // Filter jenis pembayaran
+                $('#filter_jenis_pembayaran').on('change', function() {
+                    reloadTableIfDateSelected();
                 });
 
-                // Fungsi Tombol Print (Tidak Berubah)
+                $('#filter_kategori_penjualan').on('change', function() {
+                    reloadTableIfDateSelected();
+                });
+
+                // ===================================
+                // JAVASCRIPT BARU: Handle Child Row
+                // ===================================
+                $('#chimox tbody').on('click', 'button.btn-expand', function() {
+                    var tr = $(this).closest('tr');
+                    var row = table.row(tr);
+                    var $btn = $(this);
+                    var id = $btn.data('id');
+
+                    if (row.child.isShown()) {
+                        // This row is already open - close it
+                        row.child.hide();
+                        tr.removeClass('shown');
+                        $btn.html('<i class="ki-outline ki-plus-square fs-3"></i>'); // Icon Plus
+                    } else {
+                        // Open this row
+                        $btn.html('<span class="spinner-border spinner-border-sm"></span>'); // Loading
+
+                        $.get("{{ route('laporan.penjualan-harian.detail-items') }}", {
+                                id: id
+                            })
+                            .done(function(response) {
+                                // Tampilkan child row dengan HTML dari controller
+                                row.child(response.html).show();
+                                tr.addClass('shown');
+                                $btn.html('<i class="ki-outline ki-minus-square fs-3"></i>'); // Icon Minus
+                            })
+                            .fail(function() {
+                                row.child('Error: Gagal memuat detail item.').show();
+                                tr.addClass('shown');
+                                $btn.html(
+                                    '<i class="ki-outline ki-arrows-circle fs-3"></i>'
+                                ); // Icon Error/Refresh
+                            });
+                    }
+                });
+
+
+                // Fungsi Tombol Print (Tidak Berubah, tapi PDF-nya masih item-based)
                 $('#btn-print-laporan').on('click', function() {
                     const ukuran = $('#ukuran_kertas').val();
                     const orientasi = $('#orientasi_kertas').val();
                     const tipe = $('input[name="tipe_laporan"]:checked').val();
                     const tanggal = $('#filter_tanggal').val();
-                    const jenisPembayaran = $('#filter_jenis_pembayaran').val(); // (BARU) Ambil value
+                    const jenisPembayaran = $('#filter_jenis_pembayaran').val();
+                    const kategoriPenjualan = $('#filter_kategori_penjualan').val();
 
                     if (!tanggal) return Swal.fire('Perhatian',
                         'Silakan pilih tanggal terlebih dahulu.', 'warning');
@@ -469,7 +434,8 @@
                     url.searchParams.set('tipe', tipe);
                     url.searchParams.set('start', start);
                     url.searchParams.set('end', end);
-                    url.searchParams.set('jenis_pembayaran', jenisPembayaran); // (BARU) Tambahkan ke URL
+                    url.searchParams.set('jenis_pembayaran', jenisPembayaran);
+                    url.searchParams.set('kategori_penjualan', kategoriPenjualan);
 
                     window.open(url.toString(), '_blank');
                 });

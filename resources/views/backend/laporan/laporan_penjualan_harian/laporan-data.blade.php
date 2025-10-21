@@ -1,7 +1,7 @@
 @include('backend.laporan.laporan_penjualan_harian._partials.pdf-style')
 
 <body>
-    {{-- Script nomor halaman (tidak berubah) --}}
+    {{-- Skrip nomor halaman ini tetap di sini dan akan tetap berfungsi --}}
     <script type="text/php">
         if (isset($pdf)) {
             $text = "Halaman {PAGE_NUM} dari {PAGE_COUNT}";
@@ -14,21 +14,26 @@
         }
     </script>
 
-    {{-- Include partials dari folder ini --}}
     @include('backend.laporan.laporan_penjualan_harian._partials.pdf-header')
+
     <main>
         @include('backend.laporan.laporan_penjualan_harian._partials.pdf-table')
+
+        {{-- ======================================= --}}
+        {{-- PERUBAHAN: Footer dipindah ke DALAM main --}}
+        {{-- ======================================= --}}
+        <footer class="footer">
+            <div class="footer-left">
+                Dicetak oleh: <strong>{{ $namaUser }}</strong> <br>
+                Tanggal Cetak: {{ $tanggalCetak->translatedFormat('d F Y, H:i:s') }}
+            </div>
+            <div class="footer-right">
+                Dokumen ini dibuat secara otomatis oleh sistem.
+            </div>
+        </footer>
     </main>
 
-    <footer class="footer">
-        <div class="footer-left">
-            Dicetak oleh: <strong>{{ $namaUser }}</strong> <br>
-            Tanggal Cetak: {{ $tanggalCetak->translatedFormat('d F Y, H:i:s') }}
-        </div>
-        <div class="footer-right">
-            Dokumen ini dibuat secara otomatis oleh sistem.
-        </div>
-    </footer>
+    {{-- Footer sudah tidak di sini lagi --}}
 </body>
 
 </html>
