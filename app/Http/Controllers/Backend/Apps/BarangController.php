@@ -170,22 +170,42 @@ class BarangController extends Controller
             })
 
 
+            // ->addColumn('stok', function ($row) {
+            //     $satuan = $row->satuan->singkatan ?? '-';
+            //     // return '
+            //     //     <div class="d-flex align-items-center">
+            //     //         <input 
+            //     //             type="number" 
+            //     //             class="form-control form-control-sm text-end inline-edit" 
+            //     //             data-id="' . $row->id . '" 
+            //     //             data-field="stok"
+            //     //             value="' . e($row->stok) . '" 
+            //     //             style="width:80px"
+            //     //         />
+            //     //         <span class="ms-2 text-muted fs-8">' . e($satuan) . '</span>
+            //     //     </div>
+            //     // ';
+
+            //      return '
+            //     <div class="">
+            //         <span class="fw-semibold badge badge-secondary">' . e($row->qty ?? '-') . $satuan '</span>
+            //     </div>
+            // ';
+            // })
+
             ->addColumn('stok', function ($row) {
-                $satuan = $row->satuan->singkatan ?? '-';
-                return '
-                    <div class="d-flex align-items-center">
-                        <input 
-                            type="number" 
-                            class="form-control form-control-sm text-end inline-edit" 
-                            data-id="' . $row->id . '" 
-                            data-field="stok"
-                            value="' . e($row->stok) . '" 
-                            style="width:80px"
-                        />
-                        <span class="ms-2 text-muted fs-8">' . e($satuan) . '</span>
-                    </div>
-                ';
-            })
+    $satuan = $row->satuan->singkatan ?? '-';
+    $qty    = $row->stok ?? '-';
+
+    return '
+        <div class="text-end">
+            <span class="fw-semibold badge badge-secondary">
+                ' . e($qty) . ' ' . e($satuan) . '
+            </span>
+        </div>
+    ';
+})
+
             
             ->addColumn('harga_jual', function ($row) {
                 return '
@@ -688,7 +708,7 @@ $validator->after(function ($validator) use ($request) {
 
         if ($request->has('q')) {
             $search = $request->q;
-            $barang = Barang::select("id", "nama", "kode_barang")
+            $barang = Barang::select("id", "nama", "kode_barang","harga_jual","stok")
                 ->where(function ($query) use ($search) {
                     $query->where('kode_barang', 'LIKE', "%{$search}%")
                         ->orWhere('nama', 'LIKE', "%{$search}%");
@@ -903,7 +923,7 @@ public function historyPenjualanData(Request $request, $id)
     return \DataTables::eloquent($query)
         ->addColumn('tanggal', fn($row) => optional($row->penjualan->tanggal_penjualan)->format('d/m/Y H:i'))
         ->addColumn('kode', fn($row) => $row->penjualan->kode_transaksi ?? '-')
-        ->addColumn('customer', fn($row) => $row->penjualan->customer_nama ?? '-')
+        ->addColumn('kategori_penjualan', fn($row) => $row->penjualan->kategori_penjualan ?? '-')
         ->addColumn('qty', fn($row) => $row->qty)
         ->addColumn('harga_jual', fn($row) => 'Rp ' . number_format($row->harga_jual, 0, ',', '.'))
         ->addColumn('subtotal', fn($row) => 'Rp ' . number_format($row->subtotal, 0, ',', '.'))

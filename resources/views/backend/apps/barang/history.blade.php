@@ -73,7 +73,7 @@
         <tr class="fw-bold text-muted text-uppercase">
             <th>Tanggal</th>
             <th>Kode Transaksi</th>
-            <th>Customer</th>
+            <th>Kategori</th>
             <th>Qty</th>
             <th>Harga Jual</th>
             <th>Subtotal</th>
@@ -101,7 +101,7 @@ let endDate = null;
 flatpickr("#filter_tanggal", {
   mode: "range",
   dateFormat: "Y-m-d",
-  locale: "id",
+  
   onClose: function(selectedDates, dateStr, instance) {
     // dateStr sudah dalam format "Y-m-d" atau "Y-m-d to Y-m-d"
     if (!dateStr) {
@@ -141,7 +141,7 @@ $('#resetFilter').on('click', function() {
         columns: [
             { data: 'tanggal', name: 'tanggal' },
             { data: 'kode', name: 'kode' },
-            { data: 'customer', name: 'customer' },
+            { data: 'kategori_penjualan', name: 'kategori_penjualan' },
             { data: 'qty', name: 'qty', className: 'text-center' },
             { data: 'harga_jual', name: 'harga_jual', className: 'text-end' },
             { data: 'subtotal', name: 'subtotal', className: 'text-end' }
