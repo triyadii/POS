@@ -44,6 +44,7 @@ use App\Http\Controllers\Backend\Apps\BarangMasukDetailController;
 use App\Http\Controllers\Backend\Apps\BarangKeluarController;
 use App\Http\Controllers\Backend\Apps\BarangKeluarDetailController;
 use App\Http\Controllers\Backend\Apps\PengeluaranController;
+use App\Http\Controllers\Backend\Apps\PenjualanOnlineController;
 
 //END CHIMOX
 use App\Http\Controllers\Backend\Laporan\LaporanPenjualanController;
@@ -263,6 +264,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('pengeluaran', PengeluaranController::class);
     Route::get('get-pengeluaran', [PengeluaranController::class, 'getData'])->name('get-pengeluaran');
     Route::post('/pengeluaran/mass-delete', [PengeluaranController::class, 'massDelete'])->name('pengeluaran.mass-delete');
+
+
+    Route::resource('penjualan-online', PenjualanOnlineController::class);
+    Route::get('get-penjualan-online', [PenjualanOnlineController::class, 'getData'])->name('get-penjualan-online');
+    Route::post('/penjualan-online/mass-delete', [PenjualanOnlineController::class, 'massDelete'])->name('penjualan-online.mass-delete');
+    Route::get('/penjualan/print/{id}', [PenjualanOnlineController::class, 'print'])->name('penjualan.print');
+
 
 
     //END CHIMOX

@@ -15,16 +15,17 @@ class Penjualan extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', // ❗ wajib ada
-        'kode_transaksi',
-        'tanggal_penjualan',
-        'customer_nama',
-        'user_id',
-        'total_item',
-        'total_harga',
-        'catatan',
-        'jenis_pembayaran_id',
-    ];
+    'id',
+    'kode_transaksi',
+    'tanggal_penjualan',
+    'user_id',
+    'total_item',
+    'total_harga',
+    'potongan',             // ✅ baru
+    'kategori_penjualan',   // ✅ baru
+    'catatan',
+    'jenis_pembayaran_id',
+];
 
     protected static function boot()
     {
@@ -38,11 +39,12 @@ class Penjualan extends Model
     }
 
     // Tambahkan properti ini di file Penjualan.php
-    protected $casts = [
-        'tanggal_penjualan' => 'datetime', // atau 'datetime'
-        'total_item' => 'integer',
-        'total_harga' => 'float',
-    ];
+   protected $casts = [
+    'tanggal_penjualan' => 'datetime',
+    'total_item' => 'integer',
+    'total_harga' => 'float',
+    'potongan' => 'float', // ✅ baru
+];
 
     // ==========================
     // 🔗 RELASI MODEL

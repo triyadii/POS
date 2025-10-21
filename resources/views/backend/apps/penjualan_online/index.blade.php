@@ -1,5 +1,5 @@
 @extends('layouts.backend.index')
-@section('title', 'Barang')
+@section('title', 'Penjualan Online')
 @section('content')
 
 
@@ -10,7 +10,7 @@
             <!--begin::Page title-->
             <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                 <!--begin::Title-->
-                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Barang
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Penjualan Online
                     List</h1>
                 <!--end::Title-->
                 <!--begin::Breadcrumb-->
@@ -35,7 +35,7 @@
                     <!--end::Item-->
 
                     <!--begin::Item-->
-                    <li class="breadcrumb-item text-gray-900">Barang List</li>
+                    <li class="breadcrumb-item text-gray-900">Penjualan Online List</li>
                     <!--end::Item-->
                 </ul>
                 <!--end::Breadcrumb-->
@@ -43,9 +43,14 @@
             <!--end::Page title-->
             <!--begin::Actions-->
             <div class="d-flex align-items-center pt-4 pb-7 pt-lg-1 pb-lg-2">
-                
+                <!--begin::Wrapper-->
+                <div class="me-3">
+                    
+                    <!--end::Menu-->
+                </div>
+                <!--end::Wrapper-->
                 <!--begin::Button-->
-                @can('barang-create')
+                @can('penjualan-online-create')
                     <button type="button" id="btn_tambah_data" class="btn btn-sm btn-primary">
                         <i class="ki-outline ki-plus fs-2"></i>Add</button>
                 @endcan
@@ -58,140 +63,35 @@
     <!--end::Toolbar-->
 
     <div id="kt_app_content" class="app-content flex-column-fluid">
-
-
+        <!--begin::Card-->
         <div class="card border-top-accent shadow-sm mb-xl-10 mb-5">
-            <!--begin::Card body-->
-            <div class="card-body">
-                <!--begin::Compact form-->
-                <div class="d-flex align-items-center">
-                    <!--begin::Input group-->
-                    <div class="position-relative w-md-400px me-md-2">
-                        <i class="ki-outline ki-magnifier fs-3 text-gray-500 position-absolute top-50 translate-middle ms-6"></i>
-                        <input type="text" class="form-control ps-10" name="search" id="search" value="" placeholder="cari kode item & nama item">
-                    </div>
-                    <!--end::Input group-->
-    
-                    <!--begin:Action-->
-                    <div class="d-flex align-items-center">               
-                        {{-- <button type="submit" class="btn btn-primary me-5">Search</button> --}}
-                        
-                        <a href="#" id="kt_horizontal_search_advanced_link" class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#kt_advanced_search_form">Advanced Search</a>
-                    </div>
-                    <!--end:Action-->
-                </div>
-                <!--end::Compact form-->
-    
-                <!--begin::Advance form-->
-                <div class="collapse" id="kt_advanced_search_form">
-                    <!--begin::Separator-->
-                    <div class="separator separator-dashed mt-9 mb-6"></div>
-                    <!--end::Separator-->
-    
-                   <!--begin::Row-->
-                    <div class="row g-8 mb-8">
-                        <!-- Kategori -->
-                        <div class="col-xxl-4 col-md-4">
-                            <label class="fs-6 form-label fw-bold text-gray-900">Kategori Item</label>
-                            <select id="filter_kategori_id" name="filter_kategori_id"
-                                    class="form-select form-select-sm" data-control="select2"
-                                    data-placeholder="Pilih Kategori">
-                            </select>
-                        </div>
-
-                        <!-- Brand -->
-                        <div class="col-xxl-4 col-md-4">
-                            <label class="fs-6 form-label fw-bold text-gray-900">Brand Item</label>
-                            <select id="filter_brand_id" name="filter_brand_id"
-                                    class="form-select form-select-sm" data-control="select2"
-                                    data-placeholder="Pilih Brand">
-                            </select>
-                        </div>
-            
-                
-
-  
-    
-                    <!--begin::Row-->
-                    <div class="row g-8">
-                        <div class="col-xxl-3 col-md-3">
-                            <label class="form-label fw-bold text-gray-800">Size</label>
-                            <input type="text" id="filter_size" class="form-control form-control-sm" placeholder="cth: 30, XL, L">
-                        </div>
-                    
-                        <div class="col-xxl-3 col-md-3">
-                            <label class="form-label fw-bold text-gray-800">Stok</label>
-                            <select id="filter_stok" class="form-select form-select-sm">
-                                <option value="">Semua</option>
-                                <option value="0">Stok Kosong</option>
-                                <option value="1">Tersedia ( > 0 )</option>
-                            </select>
-                        </div>
-                    
-                        <div class="col-xxl-3 col-md-3">
-                            <label class="form-label fw-bold text-gray-800">Harga Jual</label>
-                            <div class="input-group input-group-sm">
-                                <input type="number" id="filter_min_jual" class="form-control" placeholder="Min">
-                                <span class="input-group-text">-</span>
-                                <input type="number" id="filter_max_jual" class="form-control" placeholder="Max">
-                            </div>
-                        </div>
-                    
-                        <div class="col-xxl-3 col-md-3">
-                            <label class="form-label fw-bold text-gray-800">Harga Beli</label>
-                            <div class="input-group input-group-sm">
-                                <input type="number" id="filter_min_beli" class="form-control" placeholder="Min">
-                                <span class="input-group-text">-</span>
-                                <input type="number" id="filter_max_beli" class="form-control" placeholder="Max">
-                            </div>
-                        </div>
-                    </div>
-                    <!--end::Row-->
-                </div>
-                <!--end::Advance form--> 
-            </div>
-            <!--end::Card body--> 
-        </div>
-
-
-
-
-        
-    </div>
-
-
-    <!--begin::Card-->
-        <div class="card  border-top-accent shadow-sm mb-xl-10 mb-5">
             <!--begin::Card header-->
             <div class="card-header d-flex justify-content-between align-items-center border-gray-400">
                 <!--begin::Card title-->
                 <div class="card-title">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
-                       <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
-                   Data Item Barang
-                </h1>
+                        <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+                        <input type="text" data-kt-user-table-filter="search" id="search"
+                            class="form-control w-450px ps-13" placeholder="Search data" />
                     </div>
                     <!--end::Search-->
                 </div>
                 <!--begin::Card title-->
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar">
-
-                     <!--begin::Group actions-->
-                     <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
+                    <!--begin::Toolbar-->
+                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                         <!--begin::Group actions-->
+                    <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
                         <div class="fw-bold me-5">
                             <span class="me-2" data-kt-user-table-select="selected_count"></span>Selected
                         </div>
-                        <button type="button" class="btn btn-sm btn-danger me-3" data-kt-user-table-select="delete_selected"> <i
+                        <button type="button" class="btn btn-sm btn-danger me-2" data-kt-user-table-select="delete_selected"> <i
                                 class="ki-outline ki-trash  me-2"></i>Delete
                             Selected</button>
                     </div>
                     <!--end::Group actions-->
-
-
-                    <!--begin::Toolbar-->
-                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                         <!--begin::Reload Data-->
                         <button type="button" class="btn btn-sm btn-primary " id="refresh-table-btn">
                             <span class="indicator-label">
@@ -217,7 +117,7 @@
                 <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4 w-100 chimox" id="chimox">
                     <thead>
                         <tr class="fw-bold text-muted fs-7 text-uppercase gs-0">                            
-                            @can('barang-massdelete')
+                            @can('brand-massdelete')
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox" data-kt-check="true"
@@ -225,14 +125,14 @@
                                     </div>
                                 </th>
                             @endcan
-                            <th class="min-w-125px">Nama Item</th>
-                            <th class="min-w-70px">Kategori</th>
-                            <th class="min-w-100px">Brand</th>
-                            <th class="min-w-50px">Size</th>
-                            <th class="text-end min-w-100px">Stok</th>
-                            <th class="text-end min-w-100px">Harga Jual</th>
-                            <th class="text-end min-w-100px">Harga Beli</th>
-                            @canany(['barang-show', 'barang-edit', 'barang-delete'])
+                            <th class="min-w-125px">Tanggal</th>
+                            <th class="min-w-100px">Kode Transaksi</th>
+                             <th class="min-w-100px">Pembayaran</th>
+                            <th class="min-w-100px text-end">Jumlah</th>
+                            <th class="min-w-100px text-end">Total Harga</th>
+                            <th class="min-w-100px text-end">Potongan</th>
+                           <th class="min-w-100px text-end">Grand Total</th>
+                            @canany(['penjualan-online-show', 'penjualan-online-edit', 'penjualan-online-delete'])
                                 <th class="text-end min-w-100px">Action</th>
                             @endcanany
                         </tr>
@@ -246,6 +146,7 @@
             <!--end::Card body-->
         </div>
         <!--end::Card-->
+    </div>
 
 
 
@@ -268,9 +169,6 @@
                     <!--end::Close-->
                 </div>
                 <!--end::Modal header-->
-
-                 <form method="post" id="FormTambahModalID" class="form" enctype="multipart/form-data">
-                        @csrf
                 <!--begin::Modal body-->
                 <div class="modal-body px-5 my-7">
                     <!--begin::Form-->
@@ -282,127 +180,112 @@
                             data-kt-scroll-dependencies="#kt_modal_add_user_header"
                             data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
 
-                    
-               <div id="repeater-barang">
-  <!-- OUTER -->
-  <div data-repeater-list="kelompok_barang">
-    <div data-repeater-item class="border rounded p-5 mb-5 bg-light" data-scope="kelompok_barang">
-      <!-- KATEGORI & BRAND -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Kategori Item</label>
-          <select data-type="kategori" name="kategori_id"
-                  class="form-select form-select-sm kategori_id"
-                  data-kt-repeater="select2" data-placeholder="pilih kategori"></select>
-          <span class="text-danger error-text" data-error-field="kategori_id"></span>
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label fw-bold">Brand</label>
-          <select data-type="brand" name="brand_id"
-                  class="form-select form-select-sm brand_id"
-                  data-kt-repeater="select2" data-placeholder="pilih brand"></select>
-          <span class="text-danger error-text" data-error-field="brand_id"></span>
-        </div>
-
-        <div class="col-md-3 d-flex align-items-end">
-          <a href="javascript:;" data-repeater-delete class="btn btn-sm btn-light-danger">
-            Hapus Kategori & Brand Ini
-          </a>
-        </div>
-      </div>
-
-      <!-- INNER REPEATER: daftar barang -->
-      <div class="inner-repeater">
-        <div data-repeater-list="barang">
-          <div data-repeater-item class="p-4 mb-5 border rounded bg-light-subtle" data-scope="barang">
-            <div class="row g-3 align-items-start">
-              
-
-              <!-- KODE + SUB REPEATER VARIASI -->
-              <div class="col-md-2">
-                <input type="text" name="kode" class="form-control form-control-sm mb-2" placeholder="Kode Item">
-                <span class="text-danger error-text" data-error-field="kode"></span>
-
-                <!-- SUB REPEATER: variasi kode & size -->
-                <div class="sub-repeater ms-2">
-                 <div data-repeater-list="variasi">
-                    <div data-repeater-item class="row g-2 align-items-center mb-2" data-scope="variasi">
-                        <div class="col-7">
-                        <input type="text" name="kode_variasi" class="form-control form-control-sm" placeholder="Kode Variasi">
-                        <span class="text-danger error-text" data-error-field="kode_variasi"></span>
-                        </div>
-                        <div class="col-4">
-                        <input type="text" name="size" class="form-control form-control-sm" placeholder="Size">
-                        <span class="text-danger error-text" data-error-field="size"></span>
-                        </div>
-                        <div class="col-1 text-center">
-                        <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger btn-sm">
-                            <i class="ki-outline ki-trash fs-2"></i>
-                        </button>
-                        </div>
-                    </div>
-                    </div>
+                          
+                            
 
 
-                  <button type="button" data-repeater-create class="btn btn-light-primary btn-sm w-100 mt-1">+ Tambah Variasi</button>
-                </div>
-              </div>
+                            <!--begin::Repeater-->
+                    <div id="kt_docs_repeater_nested">
+                        <div data-repeater-list="penjualan_list">
+                            <div data-repeater-item>
+                                <div class="form-group row mb-5 border rounded p-4 bg-light-subtle">
 
-              <!-- NAMA ITEM -->
-              <div class="col-md-2">
-                <input type="text" name="nama" class="form-control form-control-sm" placeholder="Nama Item">
-                <span class="text-danger error-text" data-error-field="nama"></span>
-              </div>
+                                    <!-- 🔹 Jenis Pembayaran -->
+                                    <div class="col-md-3">
+    <label class="form-label fw-semibold">Jenis Pembayaran:</label>
+    <select name="jenis_pembayaran_id"
+        class="form-select form-select-sm jenis-pembayaran-select"
+        data-placeholder="Pilih jenis pembayaran...">
+    </select>
+<span class="text-danger error-text" data-error-for="jenis_pembayaran_id"></span>
 
-              <!-- SIZE UTAMA -->
-              <div class="col-md-1">
-                <input type="text" name="size_main" class="form-control form-control-sm" placeholder="Size">
-                <span class="text-danger error-text" data-error-field="size_main"></span>
-              </div>
-
-              <!-- SATUAN -->
-              <div class="col-md-1">
-                <select data-type="satuan" name="satuan_id"
-                        class="form-select form-select-sm satuan_id"
-                        data-kt-repeater="select2" data-placeholder="pilih satuan"></select>
-                <span class="text-danger error-text" data-error-field="satuan_id"></span>
-              </div>
-
-              <!-- HARGA JUAL -->
-              <div class="col-md-1">
-                <input type="text" name="harga_jual" class="form-control form-control-sm text-end format-rupiah" placeholder="Harga Jual">
-                <span class="text-danger error-text" data-error-field="harga_jual"></span>
-              </div>
-
-              <!-- HARGA BELI -->
-              <div class="col-md-1">
-                <input type="text" name="harga_beli" class="form-control form-control-sm text-end format-rupiah" placeholder="Harga Beli">
-                <span class="text-danger error-text" data-error-field="harga_beli"></span>
-              </div>
-
-              <!-- DELETE -->
-              <div class="col-md-1 text-center">
-                <button type="button" data-repeater-delete class="btn btn-icon btn-light-danger btn-sm">
-                  <i class="ki-outline ki-trash fs-2"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <button type="button" data-repeater-create class="btn btn-sm btn-light-primary">+ Tambah Item</button>
-      </div>
-      <!-- END INNER REPEATER -->
-    </div>
-  </div>
-
-  <div class="mt-5">
-    <button type="button" data-repeater-create class="btn btn-sm btn-light-success">+ Tambah Kategori & Brand</button>
-  </div>
 </div>
 
 
+                                    <!-- 🔹 Inner Repeater: Barang -->
+                                    <div class="col-md-6">
+                                        <div class="inner-repeater">
+    <div data-repeater-list="barang_list" class="mb-3">
+        <div data-repeater-item class="pb-3 border-bottom-dashed">
+            <div class="row">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Barang:</label>
+                    <select name="barang_id"
+                        class="form-select form-select-sm barang-select"
+                        data-placeholder="Cari Barang..."
+                        data-kt-repeater="select2"></select>
+<span class="text-danger error-text" data-error-for="barang_id"></span>
+
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Harga:</label>
+                    <input type="text" name="harga_jual" class="form-control form-control-sm harga-jual" readonly placeholder="0">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Qty:</label>
+                    <input type="number" name="qty" class="form-control form-control-sm qty-input" min="1" value="1">
+<span class="text-danger error-text" data-error-for="qty"></span>
+
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Subtotal:</label>
+                    <input type="text" name="subtotal" class="form-control form-control-sm subtotal-field" readonly placeholder="0">
+                </div>
+
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" data-repeater-delete class="btn btn-icon btn-sm btn-light-danger">
+                        <i class="ki-outline ki-trash fs-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" data-repeater-create class="btn btn-sm btn-light-primary mt-2">
+        <i class="ki-outline ki-plus fs-2"></i> Tambah Barang
+    </button>
+</div>
+
+                                    </div>
+
+                                    <!-- 🔹 Total / Potongan / Grand Total -->
+                                    <div class="col-md-3">
+                                        <div class="row">
+                                            <div class="col-12 mb-3">
+                                                <label class="form-label fw-semibold">Total:</label>
+                                                <input type="text" name="total_harga" class="form-control form-control-sm rupiah-input total-harga" readonly placeholder="0">
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label class="form-label fw-semibold">Potongan:</label>
+                                                <input type="text" name="potongan" class="form-control form-control-sm rupiah-input potongan-input" placeholder="0">
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label class="form-label fw-semibold">Grand Total:</label>
+                                                <input type="text" name="grand_total" class="form-control form-control-sm rupiah-input grand-total" readonly placeholder="0">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Hapus transaksi -->
+                                    <div class="col-md-12 text-end mt-3">
+                                        <button type="button" data-repeater-delete class="btn btn-sm btn-light-danger">
+                                            <i class="ki-outline ki-trash fs-2"></i> Hapus Transaksi
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <button type="button" data-repeater-create class="btn btn-flex btn-light-primary">
+                                <i class="ki-outline ki-plus fs-3"></i> Tambah Penjualan
+                            </button>
+                        </div>
+                    </div>
+                    <!--end::Repeater-->
+                            
 
 
                         </div>
@@ -433,7 +316,7 @@
     <!-- Begin Modal Edit -->
     <div class="modal fade" id="Modal_Edit_Data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered mw-750px">
+        <div class="modal-dialog modal-dialog-centered mw-950px">
             <div class="modal-content" id="edit-modal-content">
                 <div class="modal-header bg-secondary" id="kt_modal_edit_user_header">
                     <h2 class="fw-bold">Edit Data</h2>
@@ -504,6 +387,27 @@
     <!--end modal hapus-->
 
 
+    <!-- Modal Detail Brand -->
+<div class="modal fade" id="Modal_Show_Data" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content rounded-3 shadow">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold">Detail Data</h5>
+          <button type="button" class="btn btn-sm btn-icon btn-light" data-bs-dismiss="modal">
+            <i class="ki-outline ki-cross fs-2"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="modalShowBody">
+          <div class="text-center py-10 text-muted">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-3">Memuat data detail...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
     @push('stylesheets')
         <meta name="csrf-token" content="{{ csrf_token() }}" />
         <link rel="stylesheet" href="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.css') }}" />
@@ -524,16 +428,21 @@
                 padding-bottom: 0.5rem;
             }
             
-            .sub-repeater {
-  background: #f8f9fa;
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
-}
-
-.sub-repeater input {
-  background-color: #fff;
-}
+            
             </style>
+
+            <style>
+.select2-results__option[aria-disabled="true"] {
+    background-color: #f8d7da !important;
+    color: #842029 !important;
+    cursor: not-allowed !important;
+    font-weight: bold;
+}
+.select2-results__option[aria-disabled="true"]:hover {
+    background-color: #f8d7da !important;
+}
+</style>
+
     @endpush
 
     @push('scripts')
@@ -546,158 +455,283 @@
                 // Clear error messages
                 $(".error-text").text("");
             }
-
         </script>
 <script>
-    "use strict";
-    
-    $('#repeater-barang').repeater({
-        initEmpty: false,
-    
+$(document).ready(function () {
+ function reIndexRepeater() {
+    $('#kt_docs_repeater_nested [data-repeater-list="penjualan_list"] > [data-repeater-item]').each(function (i, outer) {
+        const $outer = $(outer);
+
+        // ✅ Jenis Pembayaran
+        $outer.find('[data-error-for="jenis_pembayaran_id"]')
+            .attr('class', `text-danger error-text penjualan_list_${i}_jenis_pembayaran_id_error_add`);
+
+        // ✅ Barang List
+        $outer.find('[data-repeater-list="barang_list"] > [data-repeater-item]').each(function (j, inner) {
+            const $inner = $(inner);
+
+            $inner.find('[data-error-for="barang_id"]')
+                .attr('class', `text-danger error-text penjualan_list_${i}_barang_list_${j}_barang_id_error_add`);
+
+            $inner.find('[data-error-for="qty"]')
+                .attr('class', `text-danger error-text penjualan_list_${i}_barang_list_${j}_qty_error_add`);
+        });
+    });
+}
+    // Inisialisasi Nested Repeater
+    $('#kt_docs_repeater_nested').repeater({
+        repeaters: [{
+            selector: '.inner-repeater',
+            show: function () {
+                $(this).slideDown();
+                initSelect2();
+                initSelectJenisPembayaran();
+                reIndexRepeater();
+
+                
+
+            },
+            hide: function (deleteElement) {
+                $(this).slideUp(deleteElement);
+                setTimeout(updateAllTotals, 200);
+                setTimeout(reIndexRepeater, 200);
+            }
+        }],
         show: function () {
             $(this).slideDown();
-    
-            // Re-init select2 di item baru
-            $(this).find('[data-kt-repeater="select2"]').each(function () {
-                let el = $(this);
-                let type = el.data('type');
-                initSelect2(el, type);
-            });
+                initSelect2();
+                initSelectJenisPembayaran();
+                reIndexRepeater();
 
-            initFormatRupiah($(this)); 
         },
-    
-        hide: function (del) {
-            $(this).slideUp(del);
-        },
-    
-        ready: function(){
-            // Init select2 untuk item pertama
-            $('[data-kt-repeater="select2"]').each(function () {
-                let el = $(this);
-                let type = el.data('type');
-                initSelect2(el, type);
-            });
+        hide: function (deleteElement) {
+            $(this).slideUp(deleteElement);
+            setTimeout(updateAllTotals, 200);
+            setTimeout(reIndexRepeater, 200);
 
-            initFormatRupiah($('#repeater-barang'));
-        },
-    
-        repeaters: [
-  {
-    selector: '.inner-repeater',
-    initEmpty: false,
-    show: function () {
-      $(this).slideDown();
-      $(this).find('[data-kt-repeater="select2"]').each(function () {
-        let el = $(this);
-        let type = el.data('type');
-        initSelect2(el, type);
-      });
-      initFormatRupiah($(this));
-    },
-    hide: function (del) { $(this).slideUp(del); },
-    repeaters: [
-      {
-        selector: '.sub-repeater',
-        initEmpty: false,
-        show: function () {
-          $(this).slideDown();
-        },
-        hide: function (del) { $(this).slideUp(del); }
-      }
-    ]
-  }
-]
-
+        }
     });
-    
-    // === Helper untuk inisialisasi Select2 ===
-    function initSelect2(el, type) {
-    let config = {
-        dropdownParent: $('#Modal_Tambah_Data'),
-        ajax: {
-            dataType: 'json',
-            delay: 250,
-            processResults: data => ({
-                results: data.map(i => ({ id: i.id, text: i.nama }))
-            })
-        },
-        allowClear: true
-    };
 
-    switch (type) {
-        case 'kategori':
-            el.select2($.extend({}, config, {
-                placeholder: 'Pilih kategori',
-                ajax: $.extend({}, config.ajax, { url: "{{ route('kategori.select') }}" })
-            }));
-            break;
-
-        case 'brand':
-            el.select2($.extend({}, config, {
-                placeholder: 'Pilih brand',
-                ajax: $.extend({}, config.ajax, { url: "{{ route('brand.select') }}" })
-            }));
-
-          
-            break;
-
-       
-
-        case 'satuan':
-            el.select2($.extend({}, config, {
-                placeholder: 'Pilih satuan',
-                ajax: $.extend({}, config.ajax, { url: "{{ route('satuan.select') }}" })
-            }));
-            break;
+    // 🔹 Fungsi Select2 Barang
+    function initSelect2() {
+        $('.barang-select').each(function () {
+            if ($(this).data('select2')) $(this).select2('destroy');
+            $(this).select2({
+                dropdownParent: $('#Modal_Tambah_Data'),
+                placeholder: 'Cari barang (kode / nama)...',
+                allowClear: true,
+                ajax: {
+                    url: "{{ route('barang.select') }}",
+                    dataType: 'json',
+                    delay: 300,
+                    data: params => ({ q: params.term }),
+                    processResults: data => ({
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: `${item.kode_barang} — ${item.nama}`,
+                            kode_barang: item.kode_barang,
+                            nama: item.nama,
+                            harga_jual: item.harga_jual,
+                            stok: item.stok,
+                            disabled: item.stok <= 0 
+                        }))
+                    }),
+                },
+                templateResult: formatBarangResult,
+                templateSelection: formatBarangSelection,
+                minimumInputLength: 1,
+                width: '100%'
+            });
+        });
     }
+
+    // 🔹 Template hasil Select2
+    // function formatBarangResult(data) {
+    //     if (data.loading) return data.text;
+    //     return $(`
+    //         <div class="d-flex flex-column py-1">
+    //             <span class="fw-bold text-gray-800">${data.kode_barang ?? ''} — ${data.nama ?? data.text}</span>
+    //             <small class="text-muted">Harga: Rp ${parseInt(data.harga_jual ?? 0).toLocaleString('id-ID')}</small>
+    //         </div>
+    //     `);
+    // }
+    function formatBarangResult(data) {
+    if (data.loading) return data.text;
+
+    const harga = parseInt(data.harga_jual ?? 0).toLocaleString('id-ID');
+    const stok = parseInt(data.stok ?? 0);
+
+    // warna stok merah kalau habis
+    const stokLabel = stok > 0
+        ? `<span class="badge badge-light-success">Stok: ${stok}</span>`
+        : `<span class="badge badge-light-danger">Stok Habis</span>`;
+
+    return $(`
+        <div class="d-flex flex-column py-1 ${stok <= 0 ? 'opacity-50' : ''}">
+            <div class="d-flex justify-content-between">
+                <span class="fw-bold text-gray-800">${data.kode_barang ?? ''} — ${data.nama ?? data.text}</span>
+                ${stokLabel}
+            </div>
+            <small class="text-muted">Harga: Rp ${harga}</small>
+        </div>
+    `);
+}
+
+    // function formatBarangSelection(data) { return data.text || ''; }
+
+    function formatBarangSelection(data) {
+    if (!data.id) return data.text;
+    return `${data.kode_barang ?? ''} — ${data.nama ?? data.text}`;
 }
 
 
+    initSelect2();
 
-    // === Format Rupiah Otomatis (tanpa hapus titik saat submit) ===
-    function initFormatRupiah(container) {
-    container.find('.format-rupiah').each(function () {
-        let input = $(this);
 
-        input.off('input').on('input', function (e) {
-            let cursorPos = this.selectionStart;
-            let raw = this.value.replace(/\D/g, ''); // ambil hanya angka
-            if (raw === '') {
-                this.value = '';
-                input.data('value', '');
-                return;
-            }
-
-            // Simpan nilai mentah di data-value (biar backend bisa akses kalau mau)
-            input.data('value', raw);
-
-            // Format tampilan
-            this.value = new Intl.NumberFormat('id-ID').format(parseInt(raw));
-
-            // Kembalikan kursor di akhir
-            this.setSelectionRange(this.value.length, this.value.length);
+    // 🔹 Fungsi inisialisasi Select2 Jenis Pembayaran
+function initSelectJenisPembayaran() {
+    $('.jenis-pembayaran-select').each(function () {
+        if ($(this).data('select2')) {
+            $(this).select2('destroy');
+        }
+        $(this).select2({
+            dropdownParent: $('#Modal_Tambah_Data'),
+            placeholder: 'Cari jenis pembayaran...',
+            allowClear: true,
+            ajax: {
+                url: "{{ route('jenis-pembayaran.select') }}",
+                dataType: 'json',
+                delay: 300,
+                data: params => ({ q: params.term }),
+                processResults: data => ({
+                    results: data.map(item => ({
+                        id: item.id,
+                        text: item.nama
+                    }))
+                }),
+            },
+            minimumInputLength: 0,
+            width: '100%'
         });
     });
 }
+initSelectJenisPembayaran();
 
-    
-    // === FIX untuk modal: reinit select2 saat modal tampil ===
-    $('#Modal_Tambah_Data').on('shown.bs.modal', function () {
-        $('[data-kt-repeater="select2"]').each(function () {
-            let el = $(this);
-            let type = el.data('type');
-            if (!el.hasClass('select2-hidden-accessible')) {
-                initSelect2(el, type);
-            }
+    // 🔹 Helper format angka
+    const clean = s => parseInt(String(s).replace(/\D/g, '')) || 0;
+    const format = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+    // 🔹 Saat barang dipilih
+    $(document).on('select2:select', '.barang-select', function (e) {
+        const data = e.params.data;
+        const row = $(this).closest('[data-repeater-item]');
+        const harga = parseInt(data.harga_jual ?? 0);
+
+        row.find('.harga-jual').val(format(harga));
+        const qty = parseInt(row.find('.qty-input').val()) || 1;
+        row.find('.subtotal-field').val(format(qty * harga));
+
+        const outer = row.closest('[data-repeater-list="barang_list"]').closest('[data-repeater-item]');
+        hitungTotal(outer);
+    });
+
+    // 🔹 Saat qty berubah
+    $(document).on('input', '.qty-input', function () {
+        const row = $(this).closest('[data-repeater-item]');
+        const harga = clean(row.find('.harga-jual').val());
+        const qty = parseInt($(this).val()) || 0;
+        row.find('.subtotal-field').val(format(harga * qty));
+
+        const outer = row.closest('[data-repeater-list="barang_list"]').closest('[data-repeater-item]');
+        hitungTotal(outer);
+    });
+
+    // 🔹 Saat potongan diketik → auto format + hitung grand total
+    $(document).on('input', '.potongan-input', function () {
+        const input = $(this);
+        let val = input.val();
+
+        // bersihkan karakter non-angka
+        const angka = clean(val);
+
+        // format ke rupiah
+        const formatted = angka > 0 ? format(angka) : '';
+        input.val(formatted);
+
+        // hitung ulang grand total
+        const outer = input.closest('[data-repeater-item]');
+        hitungGrandTotal(outer);
+    });
+
+    // 🔹 Hitung total per transaksi
+    function hitungTotal(outer) {
+        let total = 0;
+        outer.find('.inner-repeater [data-repeater-item]').each(function () {
+            const harga = clean($(this).find('.harga-jual').val());
+            const qty = parseInt($(this).find('.qty-input').val()) || 0;
+            total += harga * qty;
         });
+        outer.find('.total-harga').val(format(total));
+        hitungGrandTotal(outer);
+    }
 
-        initFormatRupiah($('#repeater-barang'));
+    // 🔹 Hitung grand total (total - potongan)
+    function hitungGrandTotal(outer) {
+        const total = clean(outer.find('.total-harga').val());
+        const potongan = clean(outer.find('.potongan-input').val());
+        const grand = Math.max(total - potongan, 0);
+        outer.find('.grand-total').val(format(grand));
+    }
+
+    // 🔹 Update semua total setelah hapus repeater
+    function updateAllTotals() {
+        $('[data-repeater-list="penjualan_list"] > [data-repeater-item]').each(function () {
+            hitungTotal($(this));
+        });
+    }
+
+});
+</script>
+
+
+
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '.btn-show-brand', function(e) {
+            e.preventDefault();
+    
+            let id = $(this).data('id');
+            let modal = new bootstrap.Modal(document.getElementById('Modal_Show_Data'));
+            let body = $('#modalShowBody');
+    
+            // tampilkan modal + loading
+            body.html(`
+                <div class="text-center py-10 text-muted">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-3">Memuat data brand...</p>
+                </div>
+            `);
+            modal.show();
+    
+            // load konten dari route show
+            $.ajax({
+                url: `/penjualan-online/${id}`,
+                type: 'GET',
+                success: function(res) {
+                    body.html(res);
+                },
+                error: function(xhr) {
+                    body.html(`
+                        <div class="alert alert-danger">
+                            Gagal memuat data.<br>${xhr.responseJSON?.message || 'Terjadi kesalahan server.'}
+                        </div>
+                    `);
+                }
+            });
+        });
     });
     </script>
     
-    
-
 
         <script type="text/javascript">
             function debounce(func, wait) {
@@ -708,10 +742,10 @@
                 };
             }
             $(document).ready(function() {
-                var canShow = @json(auth()->user()->can('barang-show'));
-                var canEdit = @json(auth()->user()->can('barang-edit'));
-                var canDelete = @json(auth()->user()->can('barang-delete'));
-                var canMassDelete = @json(auth()->user()->can('barang-massdelete'));
+                var canShow = @json(auth()->user()->can('penjualan-online-show'));
+                var canEdit = @json(auth()->user()->can('penjualan-online-edit'));
+                var canDelete = @json(auth()->user()->can('penjualan-online-delete'));
+                var canMassDelete = @json(auth()->user()->can('penjualan-online-massdelete'));
 
                 var table = $('.chimox').DataTable({
                     processing: true,
@@ -725,18 +759,9 @@
                     serverSide: true,
                     order: false,
                     ajax: {
-                        url: "{{ route('get-barang') }}",
+                        url: "{{ route('get-penjualan-online') }}",
                         type: 'GET',
-                        data: function(d) {
-                            d.kategori_id = $('#filter_kategori_id').val();
-                            d.brand_id = $('#filter_brand_id').val();
-                            d.size = $('#filter_size').val();
-                            d.stok = $('#filter_stok').val();
-                            d.min_jual = $('#filter_min_jual').val();
-                            d.max_jual = $('#filter_max_jual').val();
-                            d.min_beli = $('#filter_min_beli').val();
-                            d.max_beli = $('#filter_max_beli').val();
-                        }
+                        data: function(d) {}
                     },
                     columns: [
                         // Kondisi untuk Mass Delete Checkbox
@@ -753,49 +778,55 @@
                         } : null,
 
                         {
-                            data: 'nama',
-                            name: 'nama',
+                            data: 'tanggal_penjualan',
+                            name: 'tanggal_penjualan',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'kategori_id',
-                            name: 'kategori_id',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'brand_id',
-                            name: 'brand_id',
+                            data: 'kode_transaksi',
+                            name: 'kode_transaksi',
                             orderable: false,
                             searchable: false
                         },
 
                         {
-                            data: 'size',
-                            name: 'size',
+                            data: 'jenis_pembayaran_id',
+                            name: 'jenis_pembayaran_id',
+                            orderable: false,
+                            searchable: false
+                        },
+
+
+                          {
+                            data: 'total_item',
+                            name: 'total_item',
                             orderable: false,
                             searchable: false
                         },
                         {
-                            data: 'stok',
-                            name: 'stok',
+                            data: 'total_harga',
+                            name: 'total_harga',
                             orderable: false,
                             searchable: false
                         },
+                         {
+                            data: 'potongan',
+                            name: 'potongan',
+                            orderable: false,
+                            searchable: false
+                        },
+
                         {
-                            data: 'harga_jual',
-                            name: 'harga_jual',
+                            data: 'total',
+                            name: 'total',
                             orderable: false,
                             searchable: false
                         },
-                        {
-                            data: 'harga_beli',
-                            name: 'harga_beli',
-                            orderable: false,
-                            searchable: false
-                        },
-                     
+                        
+                        
+                        
+                       
                         // Kondisi untuk menampilkan kolom Action
                         (canShow || canEdit || canDelete) ? {
                             data: 'action',
@@ -807,48 +838,6 @@
                 });
 
 
-// Event inline edit
-$(document).on('change', '.inline-edit', function() {
-    const el = $(this);
-    const id = el.data('id');
-    const field = el.data('field');
-    let value = el.val();
-
-    // Hilangkan format rupiah sebelum kirim
-    if (el.hasClass('format-rupiah')) {
-        value = value.replace(/\./g, '').replace(/[^0-9]/g, '');
-    }
-
-    el.prop('disabled', true); // lock sementara
-
-    $.ajax({
-        url: "{{ route('barang.update-inline') }}",
-        type: "POST",
-        data: {
-            _token: "{{ csrf_token() }}",
-            id,
-            field,
-            value
-        },
-        success: function(res) {
-            el.prop('disabled', false);
-            if (res.success) {
-                toastr.success('Data berhasil diperbarui');
-            } else {
-                toastr.error('Gagal memperbarui data');
-            }
-        },
-        error: function(xhr) {
-            el.prop('disabled', false);
-            toastr.error('Terjadi kesalahan saat menyimpan');
-            console.error(xhr.responseText);
-        }
-    });
-});
-$(document).on('input', '.format-rupiah', function() {
-    let val = $(this).val().replace(/\D/g, '');
-    $(this).val(new Intl.NumberFormat('id-ID').format(val));
-});
 
 
                 $(document).ready(function() {
@@ -873,254 +862,173 @@ $(document).on('input', '.format-rupiah', function() {
                     table.search($(this).val()).draw();
                 }, 500));
 
-                $('#filter_kategori_id').on('change', function() {
-                    table.ajax.reload();
+                $('#btnResetSearch').click(function() {
+                    $('#filterrole').val(null).trigger('change');
+                    table.draw(true);
                 });
 
-                // Trigger reload saat brand berubah
-                $('#filter_brand_id').on('change', function() {
-                    table.ajax.reload();
+                $('#btnFiterSubmitSearch').click(function() {
+                    table.draw(true);
                 });
 
-               
 
-                $('#filter_size').on('keyup', debounce(function() {
-                    table.ajax.reload();
-                }, 500));
 
-                $('#filter_stok').on('change', function() {
-                    table.ajax.reload();
+             function reIndexRepeater() {
+    $('#kt_docs_repeater_nested [data-repeater-list="penjualan_list"] > [data-repeater-item]').each(function (i, outer) {
+        const $outer = $(outer);
+
+        // ✅ Jenis Pembayaran
+        $outer.find('[data-error-for="jenis_pembayaran_id"]')
+            .attr('class', `text-danger error-text penjualan_list_${i}_jenis_pembayaran_id_error_add`);
+
+        // ✅ Barang List
+        $outer.find('[data-repeater-list="barang_list"] > [data-repeater-item]').each(function (j, inner) {
+            const $inner = $(inner);
+
+            $inner.find('[data-error-for="barang_id"]')
+                .attr('class', `text-danger error-text penjualan_list_${i}_barang_list_${j}_barang_id_error_add`);
+
+            $inner.find('[data-error-for="qty"]')
+                .attr('class', `text-danger error-text penjualan_list_${i}_barang_list_${j}_qty_error_add`);
+        });
+    });
+}
+
+
+
+
+                // SHOW MODAL TAMBAH DATA
+                $('#btn_tambah_data').click(function() {
+                    $('#Modal_Tambah_Data').modal('show');
+
                 });
 
-                // === Filter Harga Jual (min–max) ===
-                $('#filter_min_jual, #filter_max_jual').on('keyup change', debounce(function() {
-                    table.ajax.reload();
-                }, 500));
+                var target = document.querySelector("#tambah-modal-content");
+                var blockUI = new KTBlockUI(target, {
+                    message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> <span class="text-white">Please Wait ...</span></div>',
+                    overlayClass: "bg-dark bg-opacity-50",
+                });
 
-                // === Filter Harga Beli (min–max) ===
-                $('#filter_min_beli, #filter_max_beli').on('keyup change', debounce(function() {
-                    table.ajax.reload();
-                }, 500));
+                $('#FormTambahModalID').on('submit', function(event) {
+                    event.preventDefault();
+                    blockUI.block();
+
+                    $('#btn-add-data .add-data-label').hide();
+                    $('#btn-add-data .add-data-progress').show();
+                    $('#btn-add-data').prop('disabled', true);
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        url: "{{ route('penjualan-online.store') }}",
+                        method: 'post',
+                        data: new FormData(this),
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+                        dataType: "json",
+                        beforeSend: function() {
+                            $(document).find("span.error-text").text("");
+                        },
+                        success: function(result) {
+                            if (result.errors) {
+                                reIndexRepeater(); // ✅ Pastikan span sudah sesuai index repeater saat ini
+
+                                $.each(result.errors, function (prefix, val) {
+                                    const fieldName = prefix.replace(/\./g, "_");
+                                    const $target = $("span." + fieldName + "_error_add");
+
+                                    if ($target.length) {
+                                        $target.text(val[0]);
+                                    } else {
+                                        console.warn("⚠️ span error tidak ditemukan:", fieldName);
+                                    }
+                                });
+
+                                blockUI.release();
+
+                                Swal.fire({
+                                    title: "Gagal",
+                                    text: "Terjadi kesalahan validasi, periksa kembali input Anda.",
+                                    icon: "error",
+                                    timer: 1500,
+                                    confirmButtonText: "Oke",
+                                });
+
+                                $('#btn-add-data .add-data-label').show();
+                                $('#btn-add-data .add-data-progress').hide();
+                                $('#btn-add-data').prop('disabled', false);
+                            }
+                            else if (result.error) {
+                                setTimeout(function() {
+                                    $("#Modal_Tambah_Data").modal("hide");
+                                    blockUI.release();
+
+                                    Swal.fire({
+                                        title: result.judul,
+                                        text: result.error,
+                                        icon: "error",
+                                        timer: 1500,
+                                        confirmButtonText: "Oke",
+                                    });
+
+                                    $('#btn-add-data .add-data-label').show();
+                                    $('#btn-add-data .add-data-progress').hide();
+                                    $('#btn-add-data').prop('disabled', false);
 
 
+                                }, 1000);
+                            } else {
 
+                                setTimeout(function() {
+                                    $("#Modal_Tambah_Data").modal("hide");
+                                    $(".chimox").DataTable().ajax.reload();
+                                    blockUI.release();
+                                    Swal.fire({
+                                        title: "Berhasil",
+                                        text: result.success,
+                                        icon: "success",
+                                        timer: 1500,
+                                        confirmButtonText: "Oke",
+                                    });
 
+                                    $('#btn-add-data .add-data-label').show();
+                                    $('#btn-add-data .add-data-progress').hide();
+                                    $('#btn-add-data').prop('disabled', false);
 
-              
+                                }, 1000);
+                            }
+                        },
 
+                        error: function(xhr) {
+        blockUI.release();
+        let msg = "Terjadi kesalahan di server.";
 
-// === TAMPILKAN MODAL ===
-$('#btn_tambah_data').on('click', function () {
-    $('#Modal_Tambah_Data').modal('show');
-});
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+            msg = xhr.responseJSON.error;
+        }
 
-// === CEGAH ENTER KIRIM FORM ===
-$(document).on('keypress', 'form input', function (e) {
-    if (e.which === 13) e.preventDefault();
-});
+        Swal.fire({
+            title: "Gagal",
+            text: msg,
+            icon: "error",
+            confirmButtonText: "Oke",
+        });
 
-// === ENTER DI KODE LANJUT KE KOLOM NAMA ===
-$(document).on('keypress', 'input[name="kode"], input[name="kode_variasi"]', function (e) {
-    if (e.which === 13) {
-        e.preventDefault();
-        $(this).closest('.row').find('input[name="nama"]').focus();
+         $('#btn-add-data .add-data-label').show();
+                                    $('#btn-add-data .add-data-progress').hide();
+                                    $('#btn-add-data').prop('disabled', false);
     }
-});
-
-// === BLOCK UI UNTUK MODAL ===
-const target = document.querySelector("#tambah-modal-content");
-const blockUI = new KTBlockUI(target, {
-    message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> <span class="text-white">Please Wait ...</span></div>',
-    overlayClass: "bg-dark bg-opacity-50",
-});
-// =======================================================
-// 🔁 REINDEX REPEATER (final fix - support sub repeater)
-// =======================================================
-function reIndexRepeater() {
-    $('#repeater-barang [data-repeater-item]').each(function () {
-        const $kelompok = $(this);
-        const scope = $kelompok.attr('data-scope');
-
-        // cari index outer (kelompok_barang)
-        const kIndex = $kelompok.closest('[data-repeater-list="kelompok_barang"]').find('> [data-repeater-item]').index($kelompok);
-
-        if (scope === 'kelompok_barang') {
-            // kategori & brand
-            $kelompok.find('> .row span.error-text').each(function () {
-                const base = $(this).data('error-field');
-                $(this)
-                    .removeAttr('class')
-                    .addClass('text-danger error-text kelompok_barang_' + kIndex + '_' + base + '_error_add');
-            });
-
-            // barang di dalam kelompok ini
-            $kelompok.find('[data-repeater-list="barang"] > [data-repeater-item]').each(function (bIndex) {
-                const $barang = $(this);
-
-                // error span di barang
-                $barang.find('> .row span.error-text').each(function () {
-                    const base = $(this).data('error-field');
-                    $(this)
-                        .removeAttr('class')
-                        .addClass(
-                            'text-danger error-text kelompok_barang_' +
-                                kIndex +
-                                '_barang_' +
-                                bIndex +
-                                '_' +
-                                base +
-                                '_error_add'
-                        );
+                    });
                 });
 
-                // variasi di dalam barang
-                $barang.find('[data-repeater-list="variasi"] > [data-repeater-item]').each(function (vIndex) {
-                    $(this)
-                        .find('span.error-text')
-                        .each(function () {
-                            const base = $(this).data('error-field');
-                            $(this)
-                                .removeAttr('class')
-                                .addClass(
-                                    'text-danger error-text kelompok_barang_' +
-                                        kIndex +
-                                        '_barang_' +
-                                        bIndex +
-                                        '_variasi_' +
-                                        vIndex +
-                                        '_' +
-                                        base +
-                                        '_error_add'
-                                );
-                        });
+
+                // Tombol "Batal"
+                $("#Modal_Tambah_Data").on("hidden.bs.modal", function() {
+                    resetForm();
                 });
-            });
-        }
-    });
-}
-
-// trigger ulang setiap create/delete di repeater
-$('#repeater-barang').on('repeaterCreate repeaterDelete', function () {
-    setTimeout(reIndexRepeater, 100);
-});
-$('#Modal_Tambah_Data').on('shown.bs.modal', reIndexRepeater);
-
-
-
-
-// =======================================================
-// 📨 FORM SUBMIT AJAX
-// =======================================================
-$('#FormTambahModalID').on('submit', function (event) {
-    event.preventDefault();
-    blockUI.block();
-
-    const $btn = $('#btn-add-data');
-    $btn.prop('disabled', true);
-    $btn.find('.add-data-label').hide();
-    $btn.find('.add-data-progress').show();
-
-    $.ajaxSetup({
-        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
-    });
-
-    $.ajax({
-        url: "{{ route('barang.store') }}",
-        method: "POST",
-        data: new FormData(this),
-        contentType: false,
-        processData: false,
-        cache: false,
-        dataType: "json",
-        beforeSend: function () {
-            $("span.error-text").text("");
-        },
-        success: function (result) {
-            setTimeout(function () {
-                // 🔴 VALIDASI ERROR
-               if (result.errors) {
-    reIndexRepeater(); // penting: pastikan index span sudah sesuai
-    $.each(result.errors, function (prefix, val) {
-        const fieldName = prefix.replace(/\./g, "_");
-        const $target = $("span." + fieldName + "_error_add");
-        if ($target.length) {
-            $target.text(val[0]);
-        } else {
-            console.warn("⚠️ span error tidak ditemukan:", fieldName);
-        }
-    });
-
-    Swal.fire({
-        title: "Gagal",
-        text: "Terjadi kesalahan validasi, periksa kembali input Anda.",
-        icon: "error",
-        timer: 2000,
-    });
-}
-
-
-                // ⚠️ APLIKASI ERROR
-                else if (result.error) {
-                    $("#Modal_Tambah_Data").modal("hide");
-                    Swal.fire({
-                        title: result.judul || "Error",
-                        text: result.error,
-                        icon: "error",
-                        timer: 1800,
-                    });
-                }
-
-                // ✅ SUKSES
-                else {
-                    $("#Modal_Tambah_Data").modal("hide");
-                    $(".chimox").DataTable().ajax.reload();
-
-                    Swal.fire({
-                        title: "Berhasil",
-                        text: result.success || "Data berhasil disimpan.",
-                        icon: "success",
-                        timer: 1500,
-                    });
-                }
-
-                // reset tombol
-                $btn.prop('disabled', false);
-                $btn.find('.add-data-label').show();
-                $btn.find('.add-data-progress').hide();
-                blockUI.release();
-            }, 700);
-        },
-        error: function (xhr) {
-            blockUI.release();
-            $btn.prop('disabled', false);
-            $btn.find('.add-data-label').show();
-            $btn.find('.add-data-progress').hide();
-
-            Swal.fire({
-                title: "Error",
-                text: "Terjadi kesalahan server: " + xhr.statusText,
-                icon: "error",
-            });
-        }
-    });
-});
-
-// =======================================================
-// 🔁 HAPUS PESAN ERROR SAAT INPUT BERUBAH
-// =======================================================
-$(document).on('input change select2:select select2:clear', 'input, select', function () {
-    const name = $(this).attr('name');
-    if (!name) return;
-    const fieldName = name.replace(/\[/g, '_').replace(/\]/g, '').replace(/\./g, '_');
-    $('span.' + fieldName + '_error_add').text('');
-});
-
-// === RESET FORM SAAT MODAL TERTUTUP ===
-$("#Modal_Tambah_Data").on("hidden.bs.modal", function () {
-    resetForm();
-});
-
-
 
 
 
@@ -1130,6 +1038,142 @@ $("#Modal_Tambah_Data").on("hidden.bs.modal", function () {
                     overlayClass: "bg-dark bg-opacity-50"
                 });
 
+                function initEditForm() {
+    const clean = s => parseInt(String(s).replace(/\D/g, '')) || 0;
+    const format = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+    // 🔹 Inisialisasi Repeater
+    $('#kt_repeater_edit_penjualan').repeater({
+        show: function () {
+        $(this).slideDown();
+
+        // tambahkan hidden input detail_id kosong untuk item baru
+        if ($(this).find('input[name="detail_id"]').length === 0) {
+            $(this).prepend('<input type="hidden" name="detail_id" value="">');
+        }
+
+        
+        initSelect2BarangEdit();
+        updateAllTotalsEdit();
+    },
+    hide: function (deleteElement) {
+        const item = $(this);
+        item.slideUp(300, function () {
+            item.remove(); // pastikan benar-benar hilang dari DOM
+            updateAllTotalsEdit(); // baru hitung ulang setelah terhapus
+        });
+    }
+    });
+
+    // 🔹 Barang Select2
+    function initSelect2BarangEdit() {
+        $('.edit-barang-select').each(function () {
+            if ($(this).data('select2')) $(this).select2('destroy');
+            $(this).select2({
+                dropdownParent: $('#Modal_Edit_Data'),
+                placeholder: 'Cari barang...',
+                ajax: {
+                    url: "{{ route('barang.select') }}",
+                    dataType: 'json',
+                    delay: 300,
+                    data: params => ({ q: params.term }),
+                    processResults: data => ({
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: `${item.kode_barang} — ${item.nama}`,
+                            stok: item.stok,
+                            harga_jual: item.harga_jual,
+                            disabled: item.stok <= 0
+                        }))
+                    }),
+                },
+                templateResult: d => {
+                    if (d.loading) return d.text;
+                    const warna = d.stok <= 0 ? 'text-danger' : 'text-muted';
+                    return $(`
+                        <div class="d-flex flex-column py-1">
+                            <span class="fw-bold ${d.stok <= 0 ? 'opacity-50' : ''}">
+                                ${d.text}
+                            </span>
+                            <small class="${warna}">
+                                Stok: ${d.stok} • Harga: Rp ${format(d.harga_jual ?? 0)}
+                            </small>
+                        </div>
+                    `);
+                },
+                templateSelection: d => d.text,
+                width: '100%'
+            });
+        });
+    }
+
+    // 🔹 Jenis Pembayaran Select2
+    $('.edit-jenis-pembayaran-select').each(function () {
+        if ($(this).data('select2')) $(this).select2('destroy');
+        $(this).select2({
+            dropdownParent: $('#Modal_Edit_Data'),
+            placeholder: 'Pilih jenis pembayaran...',
+            ajax: {
+                url: "{{ route('jenis-pembayaran.select') }}",
+                dataType: 'json',
+                delay: 300,
+                data: params => ({ q: params.term }),
+                processResults: data => ({
+                    results: data.map(i => ({ id: i.id, text: i.nama }))
+                }),
+            },
+            width: '100%'
+        });
+    });
+
+    // 🔹 Qty / Barang / Potongan trigger perhitungan
+    $(document)
+        .off('select2:select input', '.edit-barang-select, .qty-input') // hindari double binding
+        .on('select2:select input', '.edit-barang-select, .qty-input', function () {
+            const row = $(this).closest('[data-repeater-item]');
+            const harga = clean(row.find('.harga-jual').val());
+            const qty = parseInt(row.find('.qty-input').val()) || 0;
+            row.find('.subtotal-field').val(format(harga * qty));
+            updateAllTotalsEdit();
+        });
+
+    $(document)
+        .off('select2:select', '.edit-barang-select')
+        .on('select2:select', '.edit-barang-select', function (e) {
+            const data = e.params.data;
+            const row = $(this).closest('[data-repeater-item]');
+            row.find('.harga-jual').val(format(data.harga_jual));
+            row.find('.qty-input').val(1);
+            row.find('.subtotal-field').val(format(data.harga_jual));
+            updateAllTotalsEdit();
+        });
+
+    $(document)
+        .off('input', '.edit-potongan-input')
+        .on('input', '.edit-potongan-input', function () {
+            const angka = clean($(this).val());
+            $(this).val(format(angka));
+            updateAllTotalsEdit();
+        });
+
+    // 🔹 Hitung total & grand total
+    function updateAllTotalsEdit() {
+        let total = 0;
+        $('.subtotal-field').each(function () {
+            total += clean($(this).val());
+        });
+        $('.edit-total-harga').val(format(total));
+
+        const potongan = clean($('.edit-potongan-input').val());
+        const grand = Math.max(total - potongan, 0);
+        $('.edit-grand-total').val(format(grand));
+    }
+
+    // 🔹 Jalankan langsung saat pertama kali modal terbuka
+    updateAllTotalsEdit();
+}
+
+
                 // EDIT MODAL
 
                 var id;
@@ -1137,12 +1181,13 @@ $("#Modal_Tambah_Data").on("hidden.bs.modal", function () {
 
                     id = $(this).data('id');
                     $.ajax({
-                        url: "barang/" + id + "/edit",
+                        url: "penjualan-online/" + id + "/edit",
                         dataType: "json",
                         success: function(result) {
                             console.log(result);
                             $('#EditRowModalBody').html(result.html);
                             $('#Modal_Edit_Data').modal('show');
+                            initEditForm();
                         }
                     });
                 });
@@ -1161,7 +1206,7 @@ $("#Modal_Tambah_Data").on("hidden.bs.modal", function () {
                         }
                     });
                     $.ajax({
-                        url: "barang/" + id,
+                        url: "penjualan-online/" + id,
                         method: "POST",
                         data: new FormData(this),
                         contentType: false,
@@ -1237,6 +1282,20 @@ $("#Modal_Tambah_Data").on("hidden.bs.modal", function () {
                                 }, 1000);
                             }
                         },
+
+                         error: function(xhr) {
+        blockUIEdit.release();
+        const res = xhr.responseJSON || {};
+        Swal.fire({
+            title: res.judul || "Gagal",
+            text: res.errorMessage || "Terjadi kesalahan di server.",
+            icon: "error",
+            confirmButtonText: "Oke",
+        });
+        $('#btn-edit-data .edit-data-label').show();
+        $('#btn-edit-data .edit-data-progress').hide();
+        $('#btn-edit-data').prop('disabled', false);
+    }
                     });
                 });
 
@@ -1271,7 +1330,7 @@ $("#Modal_Tambah_Data").on("hidden.bs.modal", function () {
                         }
                     });
                     $.ajax({
-                        url: "barang/" + id,
+                        url: "brand/" + id,
                         method: 'DELETE',
                         success: function(result) {
                             if (result.error) {
@@ -1409,7 +1468,7 @@ $("#Modal_Tambah_Data").on("hidden.bs.modal", function () {
                             if (result.isConfirmed) {
                                 // Make an AJAX call to mass delete the users
                                 $.ajax({
-                                    url: "{{ route('barang.mass-delete') }}", // Pastikan route ini ada
+                                    url: "{{ route('brand.mass-delete') }}", // Pastikan route ini ada
                                     type: 'POST',
                                     data: {
                                         ids: selectedIds,
@@ -1509,46 +1568,5 @@ $("#Modal_Tambah_Data").on("hidden.bs.modal", function () {
                 }
             });
         </script>
-
-
-<script>
-    $(document).ready(function() {
-
-
-// === 1️⃣ KATEGORI (bebas) ===
-$('#filter_kategori_id').select2({
-    ajax: {
-        url: "{{ route('kategori.select') }}",
-        dataType: 'json',
-        delay: 250,
-        processResults: function (data) {
-            return {
-                results: data.map(function (item) {
-                    return { id: item.id, text: item.nama };
-                })
-            };
-        }
-    }
-});
-// === 2️⃣ BRAND (bebas) ===
-$('#filter_brand_id').select2({
-        ajax: {
-            url: "{{ route('brand.select') }}",
-            dataType: 'json',
-            delay: 250,
-            processResults: function (data) {
-                return {
-                    results: data.map(function (item) {
-                        return { id: item.id, text: item.nama };
-                    })
-                };
-            }
-        }
-    });
-
-   
-
-    });
-</script>
     @endpush
 @endsection
