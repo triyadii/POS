@@ -41,9 +41,10 @@
 
                 {{-- Kolom Jenis Pembayaran (Tidak berubah) --}}
                 <td>
-                    @if ($trx->pembayaran)
-                        <span style="font-weight: bold;">{{ $trx->pembayaran->nama }}</span><br>
-                        <small>{{ $trx->pembayaran->no_rekening }}</small>
+                    {{-- Ubah $trx->pembayaran menjadi $trx->jenis_pembayaran --}}
+                    @if ($trx->jenis_pembayaran)
+                        <span style="font-weight: bold;">{{ $trx->jenis_pembayaran->nama }}</span><br>
+                        <small>{{ $trx->jenis_pembayaran->no_rekening }}</small>
                     @else
                         -
                     @endif

@@ -117,7 +117,7 @@ class LaporanPenjualanController extends Controller
             'detail',
             'detail.barang:id,kode_barang,nama,brand_id',
             'detail.barang.brand:id,nama',
-            'pembayaran'
+            'jenis_pembayaran'
         ])->select('penjualan.*');
 
         // (Sisa fungsi DataTables tidak berubah)
@@ -130,11 +130,12 @@ class LaporanPenjualanController extends Controller
                 return $data->user->name ?? '-';
             })
             ->addColumn('jenis_pembayaran', function ($data) {
-                if (!$data->pembayaran) {
+                // Gunakan relasi 'jenis_pembayaran'
+                if (!$data->jenis_pembayaran) {
                     return '-';
                 }
-                $nama = e($data->pembayaran->nama);
-                $rekening = e($data->pembayaran->no_rekening);
+                $nama = e($data->jenis_pembayaran->nama);
+                $rekening = e($data->jenis_pembayaran->no_rekening);
                 return "<div>
                            <span class='fw-bold'>{$nama}</span><br>
                            <small class='text-muted'>{$rekening}</small>
@@ -194,7 +195,7 @@ class LaporanPenjualanController extends Controller
         $penjualan = Penjualan::with([
             'user:id,name',
             'detail.barang:id,kode_barang,nama',
-            'pembayaran'
+            'jenis_pembayaran'
         ])
             ->whereBetween('tanggal_penjualan', [$start, $end])
             ->orderBy('tanggal_penjualan', 'asc')

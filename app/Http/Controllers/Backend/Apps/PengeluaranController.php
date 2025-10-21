@@ -63,7 +63,7 @@ class PengeluaranController extends Controller
         $postsQuery = Pengeluaran::withCount('details')->orderBy('tanggal', 'desc');
         if (!empty($request->search['value'])) {
             $search = $request->search['value'];
-            $query->where(function ($q) use ($search) {
+            $postsQuery->where(function ($q) use ($search) {
                 $q->where('kode_transaksi', 'LIKE', "%{$search}%")
                   ->orWhere('catatan', 'LIKE', "%{$search}%");
             });
