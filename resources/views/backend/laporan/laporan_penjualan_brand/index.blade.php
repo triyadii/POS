@@ -104,9 +104,9 @@
                     </div>
                     <div class="card-body pt-5">
                         <div class="table-responsive">
-                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="chimox_brand_table">
+                            <table class="table align-middle table-row-dashed fs-8 gy-5" id="chimox_brand_table">
                                 <thead>
-                                    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                    <tr class="text-start text-muted fw-bold fs-8 text-uppercase gs-0">
                                         <th class="min-w-150px">Tanggal</th>
                                         <th class="min-w-125px">No. Transaksi</th>
                                         <th class="min-w-125px">Kategori Penjualan</th>

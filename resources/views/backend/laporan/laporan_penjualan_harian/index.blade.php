@@ -99,9 +99,9 @@
                             {{-- =================================== --}}
                             {{-- PERUBAHAN: Thead diubah (lebih sedikit kolom) --}}
                             {{-- =================================== --}}
-                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="chimox">
+                            <table class="table align-middle table-row-dashed fs-8 gy-5" id="chimox">
                                 <thead>
-                                    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                    <tr class="text-start text-muted fw-bold fs-8 text-uppercase gs-0">
                                         <th class="w-25px"></th> {{-- Kolom untuk tombol expander --}}
                                         <th class="min-w-100px">Tanggal</th>
                                         <th class="min-w-125px">No. Transaksi</th>
@@ -117,7 +117,7 @@
                                 {{-- =================================== --}}
                                 {{-- PERUBAHAN: tfoot disesuaikan --}}
                                 {{-- =================================== --}}
-                                <tfoot class="fw-bold fs-6">
+                                <tfoot class="fw-bold fs-8">
                                     <tr class="table-light">
                                         <th colspan="5" class="text-end">Total</th>
                                         <th class="text-end" id="footer-total-item">0</th>

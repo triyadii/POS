@@ -224,7 +224,7 @@
                     let totalPendapatan = data.reduce((sum, item) => sum + Number(item.total_pendapatan), 0);
                     let totalPembelian = data.reduce((sum, item) => sum + Number(item.pembelian_barang), 0);
                     let totalPengeluaran = data.reduce((sum, item) => sum + Number(item.pengeluaran_operasional),
-                    0); // Pastikan ini benar
+                        0); // Pastikan ini benar
                     let totalLaba = data.reduce((sum, item) => sum + Number(item.laba_bersih), 0);
 
                     // Update statistik & footer (pastikan ID elemen sudah benar)
@@ -267,7 +267,7 @@
                                 className: 'text-end',
                                 render: function(data, type, row) {
                                     if (data > 0)
-                                    return `<button class="btn btn-link p-0 btn-show-detail" data-tipe="pendapatan" data-tanggal="${row.tanggal}">${formatRupiah(data)}</button>`;
+                                        return `<button class="btn btn-link p-0 btn-show-detail" data-tipe="pendapatan" data-tanggal="${row.tanggal}">${formatRupiah(data)}</button>`;
                                     return formatRupiah(data);
                                 }
                             },
@@ -276,7 +276,7 @@
                                 className: 'text-end',
                                 render: function(data, type, row) {
                                     if (data > 0)
-                                    return `<button class="btn btn-link p-0 btn-show-detail" data-tipe="pembelian" data-tanggal="${row.tanggal}">${formatRupiah(data)}</button>`;
+                                        return `<button class="btn btn-link p-0 btn-show-detail" data-tipe="pembelian" data-tanggal="${row.tanggal}">${formatRupiah(data)}</button>`;
                                     return formatRupiah(data);
                                 }
                             }

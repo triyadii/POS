@@ -1,31 +1,123 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Laporan Laba Rugi Harian</title>
     <style>
-        body { font-family: 'Helvetica', sans-serif; font-size: 10px; color: #333; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { margin: 0; font-size: 20px; }
-        .header p { margin: 5px 0; font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        th, td { border: 1px solid #ddd; padding: 6px; text-align: left; vertical-align: top; }
-        th { background-color: #4A5568; color: #FFFFFF; font-weight: bold; text-transform: uppercase; }
-        .text-right { text-align: right !important; }
-        .text-center { text-align: center !important; }
-        .total-row { font-weight: bold; background-color: #f1f5f9; }
-        .footer { position: fixed; bottom: 0px; left: 0px; right: 0px; height: 50px; font-size: 9px; border-top: 1px solid #ccc; padding-top: 5px; }
-        .footer-left { float: left; width: 50%; }
-        .footer-right { float: right; width: 50%; text-align: right; color: #888; }
-        .page-break { page-break-after: always; }
-        .summary-table { width: 60%; margin: 20px 0 30px 0; }
-        .summary-table td { border: none; padding: 8px; font-size: 12px; }
-        .summary-table .label { font-weight: bold; width: 50%; }
-        .summary-table .value { text-align: right; font-weight: bold; }
-        .summary-table .profit { color: #007bff; }
-        .summary-table .loss { color: #dc3545; }
+        body {
+            font-family: 'Helvetica', sans-serif;
+            font-size: 10px;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .header p {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #4A5568;
+            color: #FFFFFF;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .text-center {
+            text-align: center !important;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #f1f5f9;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            height: 50px;
+            font-size: 9px;
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+        }
+
+        .footer-left {
+            float: left;
+            width: 50%;
+        }
+
+        .footer-right {
+            float: right;
+            width: 50%;
+            text-align: right;
+            color: #888;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .summary-table {
+            width: 60%;
+            margin: 20px 0 30px 0;
+        }
+
+        .summary-table td {
+            border: none;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .summary-table .label {
+            font-weight: bold;
+            width: 50%;
+        }
+
+        .summary-table .value {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .summary-table .profit {
+            color: #007bff;
+        }
+
+        .summary-table .loss {
+            color: #dc3545;
+        }
     </style>
 </head>
+
 <body>
     {{-- Nomor Halaman --}}
     <script type="text/php">
@@ -37,7 +129,7 @@
             $pdf->page_text($x, $y, $text, $font, $size);
         }
     </script>
-    
+
     <div class="header">
         <h1>Laporan Laba Rugi Harian (Detail)</h1>
         <p><strong>DISKON BESAR 22</strong></p>
@@ -66,7 +158,7 @@
                 </td>
             </tr>
         </table>
-        
+
         <hr style="border: 0; border-top: 1px dashed #ccc;">
 
         <h3>Detail Penjualan (Pendapatan)</h3>
@@ -86,7 +178,9 @@
                         <td class="text-right">{{ number_format($item->subtotal, 0, ',', '.') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" class="text-center">Tidak ada penjualan</td></tr>
+                    <tr>
+                        <td colspan="3" class="text-center">Tidak ada penjualan</td>
+                    </tr>
                 @endforelse
             </tbody>
             <tfoot>
@@ -116,7 +210,9 @@
                         <td class="text-right">{{ number_format($item->subtotal, 0, ',', '.') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="text-center">Tidak ada pembelian</td></tr>
+                    <tr>
+                        <td colspan="4" class="text-center">Tidak ada pembelian</td>
+                    </tr>
                 @endforelse
             </tbody>
             <tfoot>
@@ -144,17 +240,20 @@
                         <td class="text-right">{{ number_format($item->jumlah, 0, ',', '.') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" class="text-center">Tidak ada pengeluaran</td></tr>
+                    <tr>
+                        <td colspan="3" class="text-center">Tidak ada pengeluaran</td>
+                    </tr>
                 @endforelse
             </tbody>
             <tfoot>
                 <tr class="total-row">
                     <td colspan="2" class="text-right"><strong>Total Pengeluaran</strong></td>
-                    <td class="text-right"><strong>Rp {{ number_format($total_pengeluaran, 0, ',', '.') }}</strong></td>
+                    <td class="text-right"><strong>Rp {{ number_format($total_pengeluaran, 0, ',', '.') }}</strong>
+                    </td>
                 </tr>
             </tfoot>
         </table>
-    
+
 
         <h3>Komparasi Profit Item Terjual</h3>
         <table>
@@ -170,7 +269,7 @@
             <tbody>
                 @forelse ($detail_penjualan as $item)
                     @php
-                        $profit = $item->subtotal - ($item->harga_beli * $item->qty);
+                        $profit = $item->subtotal - $item->harga_beli * $item->qty;
                     @endphp
                     <tr>
                         <td>{{ $item->barang->nama ?? 'N/A' }}</td>
@@ -180,26 +279,32 @@
                         <td class="text-right">{{ number_format($profit, 0, ',', '.') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="text-center">Tidak ada penjualan</td></tr>
+                    <tr>
+                        <td colspan="5" class="text-center">Tidak ada penjualan</td>
+                    </tr>
                 @endforelse
             </tbody>
             <tfoot>
                 <tr class="total-row">
                     <td colspan="4" class="text-right"><strong>Total Profit Kotor (Margin)</strong></td>
-                    <td class="text-right"><strong>Rp {{ number_format($total_profit_kotor, 0, ',', '.') }}</strong></td>
+                    <td class="text-right"><strong>Rp {{ number_format($total_profit_kotor, 0, ',', '.') }}</strong>
+                    </td>
                 </tr>
             </tfoot>
         </table>
+
+        <footer class="footer">
+            <div class="footer-left">
+                Dicetak oleh: <strong>{{ $namaUser }}</strong> <br>
+                Tanggal Cetak: {{ $tanggalCetak->translatedFormat('d F Y, H:i:s') }}
+            </div>
+            <div class="footer-right">
+                Dokumen ini dibuat secara otomatis oleh sistem.
+            </div>
+        </footer>
     </main>
 
-    <footer class="footer">
-        <div class="footer-left">
-            Dicetak oleh: <strong>{{ $namaUser }}</strong> <br>
-            Tanggal Cetak: {{ $tanggalCetak->translatedFormat('d F Y, H:i:s') }}
-        </div>
-        <div class="footer-right">
-            Dokumen ini dibuat secara otomatis oleh sistem.
-        </div>
-    </footer>
+
 </body>
+
 </html>
