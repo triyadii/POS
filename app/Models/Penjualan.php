@@ -24,6 +24,7 @@ class Penjualan extends Model
         'total_harga',
         'catatan',
         'potongan',
+        'pembayaran',
         'jenis_pembayaran_id',
         'kategori_penjualan',
     ];
@@ -40,11 +41,12 @@ class Penjualan extends Model
     }
 
     // Tambahkan properti ini di file Penjualan.php
-    protected $casts = [
-        'tanggal_penjualan' => 'datetime', // atau 'datetime'
-        'total_item' => 'integer',
-        'total_harga' => 'float',
-    ];
+   protected $casts = [
+    'tanggal_penjualan' => 'datetime',
+    'total_item' => 'integer',
+    'total_harga' => 'float',
+    'potongan' => 'float', // ✅ baru
+];
 
     // ==========================
     // 🔗 RELASI MODEL

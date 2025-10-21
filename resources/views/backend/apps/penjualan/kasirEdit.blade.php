@@ -504,14 +504,16 @@
         const rows = $('#purchase_cart_list tr');
         const items = [];
         rows.each(function() {
-            const id = $(this).attr('id').replace('row-', '');
+            const detailId = $(this).data('detail-id') || null;
+            const barangId = $(this).attr('id').replace('row-', '');
             const nama = $(this).find('td:nth-child(1)').text();
             const qty = parseInt($(this).find('.qty').val());
             const harga = parseId($(this).find('td:nth-child(3)').text());
             const hargaBeli = parseInt($(this).find('.harga-beli').val()) || 0;
             const subtotal = harga * qty;
             items.push({
-                barang_id: id,
+                id: detailId, // 🔥 kirim id detail lama
+                barang_id: barangId,
                 barang_nama: nama,
                 qty,
                 harga_beli: hargaBeli,
@@ -542,7 +544,6 @@
     }
 
     function generateStrukHTML(payload) {
-        const numToId = (n) => parseInt(n || 0).toLocaleString('id-ID');
         const tanggalCetak = new Date(payload.tanggal_raw || payload.tanggal_penjualan || payload.tanggal).toLocaleString(
             'id-ID', {
                 day: '2-digit',
@@ -596,8 +597,6 @@
             <div>Tanggal : ${tanggalCetak}</div>
             <div>Kode    : ${payload.no_penjualan ?? payload.kode_transaksi ?? '-'}</div>
             <div>Kasir   : {{ Auth::user()->name }}</div>
-            <div>Pembayaran : ${payload.pembayaran_nama ?? payload.pembayaran?.nama ?? '-'}</div>
-            <div>Kategori : Offline</div>
         </div>
 
         <hr style="border-top:1px dashed #000;">
@@ -608,21 +607,25 @@
 
         <div style="display:flex;justify-content:space-between;">
             <span>Potongan</span>
-            <span>Rp ${numToId(payload.potongan ?? 0)}</span>
+            <span>${potonganStr}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
             <span>Total</span>
-            <span>Rp ${numToId(payload.total ?? payload.total_harga ?? 0)}</span>
+            <span>${payload.total ?? 'Rp ' + numToId(payload.total_harga ?? 0)}</span>
+
         </div>
         <div style="display:flex;justify-content:space-between;">
             <span>Bayar</span>
-            <span>Rp ${numToId(payload.pembayaran ?? payload.uang ?? 0)}</span>
+            <span>${payload.uang ?? '-'}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
             <span>Kembalian</span>
-            <span>Rp ${numToId(payload.kembalian ?? 0)}</span>
+            <span>${payload.kembalian ?? '-'}</span>
         </div>
-
+        <div style="display:flex;justify-content:space-between;">
+            <span>Metode</span>
+            <span>${payload.pembayaran_nama ?? payload.pembayaran?.nama ?? '-'}</span>
+        </div>
 
         <hr style="border-top:1px dashed #000;">
         <div style="text-align:center;font-size:14px;margin-top:4px;">
@@ -676,41 +679,9 @@
                 Swal.fire('⚠️', 'Data transaksi tidak ditemukan', 'warning');
                 return;
             }
-
-            const detail = Array.isArray(trx.detail) ? trx.detail : [];
-
-            // Hitung total harga dari detail
-            const total_harga = detail.reduce((sum, d) => {
-                const subtotal = parseInt(d.subtotal ?? (d.harga_jual * d.qty) ?? 0);
-                return sum + (isNaN(subtotal) ? 0 : subtotal);
-            }, 0);
-
-            // Ambil nilai sesuai database
-            const potongan = parseInt(trx.potongan ?? trx.diskon ?? 0);
-            const pembayaran = parseInt(trx.pembayaran ?? trx.uang_diterima ?? 0);
-
-            // Perhitungan akhir
-            const total = total_harga - potongan; // total bayar setelah potongan
-            const kembalian = pembayaran - total; // uang kembalian
-
-            // Payload untuk cetak struk
-            const payload = {
-                ...trx,
-                detail,
-                total_harga,
-                potongan,
-                total,
-                pembayaran,
-                kembalian
-            };
-
-            // Cetak struk
-            cetakStruk(payload);
+            cetakStruk(trx); // langsung gunakan template sama
         });
     }
-
-
-
 
 
     function prosesTransaksi({
@@ -728,14 +699,9 @@
         const total = parseId($('#total-penjualan').val());
         const uangDiterima = parseId($('#uang-diterima-penjualan').val());
         const kembalian = uangDiterima - total;
-
         const pembayaran = $('#pembayaran-penjualan').val();
         if (!pembayaran) {
-            Swal.fire('Oops!', 'Silakan pilih jenis pembayaran terlebih dahulu.', 'warning');
-            return;
-        }
-        if (cetak && kembalian < 0) {
-            Swal.fire('⚠️', 'Nominal uang diterima belum cukup.', 'warning');
+            Swal.fire('Oops!', 'Silakan pilih metode pembayaran', 'warning');
             return;
         }
 
@@ -743,28 +709,27 @@
 
         const payload = {
             _token: $('input[name="_token"]').val(),
+            id: window.editPenjualanId || null,
             no_penjualan: $('#no_penjualan').val(),
-            tanggal: $('#tanggal').val(),
-            tanggal_raw: $('#tanggal').data('raw'),
+            tanggal: $('#tanggal').data('raw'),
             potongan: parseId($('#potongan-penjualan').val()) || 0,
-            customer: $('#customer_id option:selected').text(),
             total_item: items.length,
-            total: `Rp ${numToId(total)}`,
-            uang: `Rp ${numToId(uangDiterima)}`,
-            kembalian: `Rp ${numToId(kembalian)}`,
+            total_harga: total,
             catatan: $('#catatan').val(),
-            jumlahPembayaran: parseId($('#uang-diterima-penjualan').val()) || 0,
-            pembayaran: pembayaran,
-            pembayaran_nama: $('#pembayaran-penjualan option:selected').text(),
+            jenis_pembayaran_id: pembayaran,
             items
         };
+
+        const url = window.modeEditPenjualan ?
+            "{{ route('penjualan.updateBarang') }}" :
+            "{{ route('penjualan.store') }}";
 
         const btnTarget = cetak ? btnBayar : btnSimpan;
         btnTarget.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...');
 
         $.ajax({
-            url: "{{ route('penjualan.store') }}",
-            method: "POST",
+            url: url,
+            type: "POST",
             data: payload,
             success: function(res) {
                 btnTarget.prop('disabled', false).html(cetak ?
@@ -772,63 +737,97 @@
                     '<i class="fas fa-save me-1"></i> Simpan');
 
                 if (res.status === 'success') {
-                    // 1) Optimistic update stok -> UI langsung turun
-                    optimisticKurangiStok(items);
-
-                    // 2) Simpan transaksi terakhir (buat cetak)
-                    window.transaksiTerakhir = payload;
-
-                    // 3) Isi modal sukses
-                    $('#modal-total').text(`Rp ${numToId(total)}`);
-                    $('#modal-uang-diterima').text(`Rp ${numToId(uangDiterima)}`);
-                    $('#modal-kembalian').text(`Rp ${numToId(kembalian)}`);
-
-                    const modalSukses = new bootstrap.Modal('#modalPenjualanSelesai');
-                    modalSukses.show();
-
-                    // 4) Saat klik Selesai -> reset, ambil no transaksi baru, refetch stok
-                    $('#modalPenjualanSelesai .btn-secondary').off('click').one('click', function() {
-                        modalSukses.hide();
-
-                        // reset form
-                        $('#form-penjualan')[0].reset();
-                        $('#purchase_cart_list').html('');
-                        updateTotal();
-                        $('#barcode').focus();
-
-                        // nomor transaksi baru
-                        $.get("{{ route('penjualan.no_otomatis') }}", function(r) {
-                            if (r.no_penjualan) $('#no_penjualan').val(r.no_penjualan);
-                        });
-
-                        // sinkron ulang stok ke server (jaga-jaga)
-                        setTimeout(refetchProduk, 350);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: res.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Redirect setelah swal selesai
+                        window.location.href = "{{ route('penjualan.daftar') }}";
                     });
-
-                    // 5) Kalau user pilih "Bayar & Cetak", langsung cetak
-                    if (cetak) cetakStruk(payload);
                 } else {
-                    Swal.fire('Gagal', res.message ?? 'Gagal menyimpan transaksi', 'error');
-                    // fallback: refetch stok biar aman kalau backend update tapi UI gagal
-                    refetchProduk();
+                    Swal.fire('Gagal', res.message || 'Terjadi kesalahan', 'error');
                 }
             },
-            error: function() {
-                btnTarget.prop('disabled', false).html(cetak ?
-                    '<i class="fas fa-cash-register me-1"></i> Bayar & Cetak' :
-                    '<i class="fas fa-save me-1"></i> Simpan');
-                Swal.fire('Error', 'Terjadi kesalahan di server', 'error');
+            error: function(xhr) {
+                btnTarget.prop('disabled', false);
+                Swal.fire('Error', xhr.responseJSON?.message || 'Tidak dapat menyimpan data', 'error');
             }
         });
     }
+
 
     /* =========================
        EVENT BINDINGS
        ========================= */
     $(document).ready(function() {
+        window.modeEditPenjualan = false;
+        window.editPenjualanId = null;
 
         // Render awal
         window.renderProduk(window.produkData);
+        (function cekEditPenjualan() {
+            $('#btn-bayar-penjualan').remove();
+            const raw = localStorage.getItem('editPenjualanData');
+            if (!raw) return;
+
+            try {
+                const data = JSON.parse(raw);
+                localStorage.removeItem('editPenjualanData');
+                console.log('🔄 Mode edit penjualan aktif:', data);
+
+                // Isi field utama
+                $('#no_penjualan').val(data.kode_transaksi);
+                $('#tanggal').val(new Date(data.tanggal_penjualan).toLocaleString('id-ID'));
+                $('#catatan').val(data.catatan || '');
+                $('#pembayaran-penjualan').val(data.jenis_pembayaran_id);
+
+                // Hapus item lama, isi ulang detail produk
+                const tbody = $('#purchase_cart_list');
+                tbody.html('');
+
+                if (data.detail && data.detail.length > 0) {
+                    data.detail.forEach(d => {
+                        const produk = window.produkData.find(p => p.id == d.barang_id);
+                        const harga = parseInt(d.harga_jual);
+                        const subtotal = harga * d.qty;
+
+                        tbody.append(`
+                    <tr id="row-${d.barang_id}" data-detail-id="${d.id}">
+                        <td>${produk ? produk.nama : (d.barang?.nama ?? '-')}</td>
+                        <td>${produk ? produk.kode_barang : '-'}</td>
+                        <td>Rp ${numToId(harga)}</td>
+                        <td><input type="number" class="form-control qty" value="${d.qty}" min="1" style="width:80px"></td>
+                        <td class="subtotal">Rp ${numToId(subtotal)}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm text-danger hapus-item"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `);
+                    });
+                }
+
+                // Hitung total & bind event
+                updateTotal();
+                $('.qty').on('input', function() {
+                    updateSubtotal(this);
+                });
+                $('.hapus-item').on('click', function() {
+                    $(this).closest('tr').remove();
+                    updateTotal();
+                });
+
+                // Tandai mode edit
+                window.modeEditPenjualan = true;
+                window.editPenjualanId = data.id;
+
+                Swal.fire('✏️ Mode Edit Aktif', 'Transaksi dimuat ke form kasir.', 'info');
+            } catch (e) {
+                console.error('Gagal parsing editPenjualanData', e);
+            }
+        })();
 
         // Input uang diterima → format & kembalian
         $('#uang-diterima-penjualan').on('input', function(e) {
