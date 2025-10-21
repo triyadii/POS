@@ -44,6 +44,15 @@
                         </div>
 
                         <div class="position-relative">
+                            <select class="form-select form-select-sm" data-control="select2" data-hide-search="true"
+                                id="filter_kategori_penjualan">
+                                <option value="all">Semua Kategori Penjualan</option>
+                                <option value="offline">Offline</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+
+                        <div class="position-relative">
                             <input type="text" class="form-control form-control-sm" placeholder="Pilih Tanggal"
                                 name="filter_tanggal" id="filter_tanggal" autocomplete="off" />
                         </div>
@@ -210,6 +219,7 @@
                                     .endDate.format('YYYY-MM-DD');
                             }
                             d.filter_brand = $('#filter_brand').val(); // Kirim filter brand
+                            d.filter_kategori_penjualan = $('#filter_kategori_penjualan').val();
                         },
                         dataSrc: function(json) {
                             $('#stat-total-transaksi').text(json.total_transaksi ?? 0);
@@ -264,6 +274,9 @@
                 }
 
                 $('#filter_brand').on('change', function() {
+                    reloadData();
+                });
+                $('#filter_kategori_penjualan').on('change', function() {
                     reloadData();
                 });
 
@@ -340,10 +353,12 @@
 
                 function fetchChart(startDate, endDate) {
                     const brandId = $('#filter_brand').val();
+                    const kategoriPenjualan = $('#filter_kategori_penjualan').val(); // Ambil filter baru
                     $.get("{{ route('laporan.penjualan.brand.chart') }}", {
                         filter_tanggal_start: startDate,
                         filter_tanggal_end: endDate,
-                        filter_brand: brandId // Kirim filter brand
+                        filter_brand: brandId,
+                        filter_kategori_penjualan: kategoriPenjualan
                     }, function(data) {
                         renderApexChart(data);
                     });
@@ -471,6 +486,7 @@
                     const tipe = $('input[name="tipe_laporan"]:checked').val();
                     const tanggal = $('#filter_tanggal').val();
                     const brandId = $('#filter_brand').val(); // Ambil filter brand
+                    const kategoriPenjualan = $('#filter_kategori_penjualan').val(); // Ambil filter baru
 
                     if (!tanggal) return Swal.fire('Perhatian',
                         'Rentang tanggal wajib dipilih.', 'warning');
@@ -483,6 +499,7 @@
                     url.searchParams.set('start', start);
                     url.searchParams.set('end', end);
                     url.searchParams.set('brand_id', brandId); // Kirim filter brand
+                    url.searchParams.set('kategori_penjualan', kategoriPenjualan); // Kirim filter baru
                     window.open(url.toString(), '_blank');
                 });
             });

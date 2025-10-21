@@ -48,12 +48,21 @@ class LaporanPenjualanKategoriController extends Controller
                 $q->where('kategori_id', $kategoriId);
             });
         }
+        $kategoriPenjualan = ($request->filled('filter_kategori_penjualan') && $request->filter_kategori_penjualan != 'all') ? $request->filter_kategori_penjualan : null;
+        if ($kategoriPenjualan) {
+            $query->where('kategori_penjualan', $kategoriPenjualan);
+        }
         $dateRangeExists = isset($startDate) && isset($endDate);
         $totalTransaksi = $dateRangeExists ? (clone $query)->count() : 0;
         $detailQuery = PenjualanDetail::query();
-        if ($dateRangeExists) {
-            $detailQuery->whereHas('penjualan', function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
+        if ($dateRangeExists || $kategoriPenjualan) { // Cek salah satu
+            $detailQuery->whereHas('penjualan', function ($q) use ($startDate, $endDate, $kategoriPenjualan, $dateRangeExists) {
+                if ($dateRangeExists) {
+                    $q->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
+                }
+                if ($kategoriPenjualan) {
+                    $q->where('kategori_penjualan', $kategoriPenjualan);
+                }
             });
         }
         if ($kategoriId) {
@@ -144,6 +153,9 @@ class LaporanPenjualanKategoriController extends Controller
                 $q->where('kategori_id', $kategoriId);
             });
         }
+        if ($request->filled('filter_kategori_penjualan') && $request->filter_kategori_penjualan != 'all') {
+            $query->where('kategori_penjualan', $request->filter_kategori_penjualan);
+        }
         $penjualanData = $query->pluck('total', 'tanggal');
         $periode = [];
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
@@ -169,6 +181,9 @@ class LaporanPenjualanKategoriController extends Controller
             $query->whereHas('detail.barang', function ($q) use ($kategoriId) {
                 $q->where('kategori_id', $kategoriId);
             });
+        }
+        if ($request->filled('kategori_penjualan') && $request->kategori_penjualan != 'all') {
+            $query->where('kategori_penjualan', $request->kategori_penjualan);
         }
         $penjualan = $query->get();
         $totalTransaksi = $penjualan->count();

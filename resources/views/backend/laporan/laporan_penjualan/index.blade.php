@@ -24,12 +24,25 @@
                 <div class="card-title flex-column">
                     <h3 class="fw-semibold mb-1">Data Laporan Penjualan</h3>
                 </div>
+                {{-- =================================== --}}
+                {{-- PERUBAHAN: Penambahan Filter Kategori --}}
+                {{-- =================================== --}}
                 <div class="card-toolbar">
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         <button type="button" class="btn btn-sm btn-primary btn-export d-none" data-bs-toggle="modal"
                             data-bs-target="#btn-export">
                             <i class="ki-outline ki-printer fs-2 me-2"></i> Export
                         </button>
+                        {{-- FILTER KATEGORI BARU --}}
+                        <div class="position-relative">
+                            <select class="form-select form-select-sm" name="filter_kategori_penjualan"
+                                id="filter_kategori_penjualan">
+                                <option value="">Semua Kategori Penjualan</option>
+                                <option value="offline">Offline</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+                        {{-- FILTER TANGGAL --}}
                         <div class="position-relative">
                             <input type="text" class="form-control form-control-sm" placeholder="Pilih Tanggal"
                                 name="filter_tanggal" id="filter_tanggal" autocomplete="off" />
@@ -38,7 +51,7 @@
                 </div>
             </div>
             <div class="card-body py-4">
-                {{-- Statistik Box --}}
+                {{-- Statistik Box (Tidak berubah) --}}
                 <div class="row g-5 g-xl-8">
                     <div class="col-xl-4 d-none" id="statistik-total-transaksi-wrapper">
                         <div class="card bg-light-info hoverable card-xl-stretch">
@@ -66,12 +79,12 @@
                     </div>
                 </div>
 
-                {{-- Chart (diganti dari canvas ke div) --}}
+                {{-- Chart (Tidak berubah) --}}
                 <div class="row my-10 d-none" id="chart-wrapper">
                     <div id="penjualanChart" style="height: 350px;"></div>
                 </div>
 
-                {{-- Tabel Data --}}
+                {{-- Tabel Data (Tidak berubah) --}}
                 <div class="card border border-dashed border-dark card-flush h-xl-100 d-none mt-5" id="table-wrapper">
                     <div class="card-header pt-7">
                         <h3 class="card-title align-items-start flex-column">
@@ -89,9 +102,6 @@
                                         <th class="min-w-125px">Kategori Penjualan</th>
                                         <th class="min-w-125px">Kasir</th>
                                         <th class="min-w-150px">Jenis Pembayaran</th>
-                                        {{-- =================================== --}}
-                                        {{-- PENAMBAHAN TH POTONGAN --}}
-                                        {{-- =================================== --}}
                                         <th class="min-w-125px text-end">Potongan</th>
                                         <th class="min-w-125px text-end">Total</th>
                                         <th class="min-w-100px text-center">Aksi</th>
@@ -113,7 +123,8 @@
                         <h3 class="modal-title">Export Laporan Penjualan</h3>
                         <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
                             aria-label="Close">
-                            <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                            <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span
+                                    class="path2"></span></i>
                         </div>
                     </div>
                     <div class="modal-body">
@@ -185,13 +196,13 @@
         </div>
     </div>
 
+
     @push('stylesheets')
         <link rel="stylesheet" href="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.css') }}">
     @endpush
 
     @push('scripts')
         <script src="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
-        {{-- ApexCharts sudah ada di plugins.bundle.js jika Anda menggunakannya --}}
 
         <script>
             $(document).ready(function() {
@@ -207,6 +218,9 @@
                     ],
                     ajax: {
                         url: "{{ route('laporan.penjualan.data') }}",
+                        // ===================================
+                        // PERUBAHAN: Kirim data filter kategori
+                        // ===================================
                         data: function(d) {
                             if ($('#filter_tanggal').val() !== "") {
                                 d.filter_tanggal_start = $('#filter_tanggal').data('daterangepicker')
@@ -214,6 +228,8 @@
                                 d.filter_tanggal_end = $('#filter_tanggal').data('daterangepicker').endDate
                                     .format('YYYY-MM-DD');
                             }
+                            // Tambahkan baris ini
+                            d.filter_kategori_penjualan = $('#filter_kategori_penjualan').val();
                         },
                         dataSrc: function(json) {
                             $('#stat-total-transaksi').text(json.total_transaksi ?? 0);
@@ -222,9 +238,7 @@
                             return json.data;
                         }
                     },
-                    // ===================================
-                    // PENAMBAHAN KOLOM POTONGAN
-                    // ===================================
+                    // Definisi kolom (Tidak berubah)
                     columns: [{
                             data: 'tanggal',
                             name: 'tanggal_penjualan'
@@ -247,9 +261,9 @@
                             orderable: false,
                             searchable: false
                         },
-                        { // Kolom Potongan Baru
+                        {
                             data: 'potongan',
-                            className: 'text-end text-danger', // Rata kanan dan merah
+                            className: 'text-end text-danger',
                             name: 'potongan'
                         },
                         {
@@ -293,6 +307,19 @@
                     $('#chart-wrapper, #table-wrapper, .btn-export').removeClass('d-none');
                     table.ajax.reload();
                     fetchChart(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                });
+
+                // ===================================
+                // JAVASCRIPT BARU: Handle filter kategori
+                // ===================================
+                $('#filter_kategori_penjualan').on('change', function() {
+                    // Hanya reload jika tanggal sudah dipilih
+                    if ($('#filter_tanggal').val() !== "") {
+                        table.ajax.reload();
+                        // (Opsional) Anda juga bisa memuat ulang chart di sini jika perlu
+                        // const [start, end] = $('#filter_tanggal').val().split(' to ');
+                        // fetchChart(start, end); 
+                    }
                 });
 
                 // Modal Detail Penjualan (Tidak berubah)
@@ -344,16 +371,19 @@
                     $.get("{{ route('laporan.penjualan.chart') }}", {
                         filter_tanggal_start: startDate,
                         filter_tanggal_end: endDate
+                        // (Opsional) Tambahkan filter kategori ke chart juga
+                        // filter_kategori_penjualan: $('#filter_kategori_penjualan').val() 
                     }, function(data) {
                         renderApexChart(data);
                     });
                 }
 
+                // Fungsi renderApexChart (Tidak berubah)
                 function renderApexChart(data) {
+                    // ... (Isi fungsi renderApexChart tidak berubah) ...
                     const chartElement = document.getElementById('penjualanChart');
                     if (!chartElement) return;
                     if (chart) chart.destroy();
-
                     const options = {
                         series: [{
                             name: 'Total Penjualan',
@@ -460,17 +490,19 @@
                             strokeWidth: 3
                         }
                     };
-
                     chart = new ApexCharts(chartElement, options);
                     chart.render();
                 }
 
-                // Fungsi Tombol Print (Tidak berubah)
+                // ===================================
+                // PERUBAHAN: Kirim data filter kategori ke PDF
+                // ===================================
                 $('#btn-print-laporan').on('click', function() {
                     const ukuran = $('#ukuran_kertas').val();
                     const orientasi = $('#orientasi_kertas').val();
                     const tipe = $('input[name="tipe_laporan"]:checked').val();
                     const tanggal = $('#filter_tanggal').val();
+                    const kategori = $('#filter_kategori_penjualan').val(); // <-- Tambahkan ini
 
                     if (!tanggal) return Swal.fire('Perhatian',
                         'Silakan pilih rentang tanggal terlebih dahulu.', 'warning');
@@ -484,6 +516,7 @@
                     url.searchParams.set('tipe', tipe);
                     url.searchParams.set('start', start);
                     url.searchParams.set('end', end);
+                    url.searchParams.set('kategori_penjualan', kategori); // <-- Tambahkan ini
 
                     window.open(url.toString(), '_blank');
                 });

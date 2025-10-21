@@ -19,9 +19,7 @@
     <main>
         @include('backend.laporan.laporan_penjualan._partials.pdf-table')
 
-        {{-- ======================================= --}}
-        {{-- PERUBAHAN: Footer dipindah ke DALAM main --}}
-        {{-- ======================================= --}}
+        {{-- Footer dipindah ke DALAM main --}}
         <footer class="footer">
             <div class="footer-left">
                 Dicetak oleh: <strong>{{ $namaUser }}</strong> <br>
@@ -32,8 +30,6 @@
             </div>
         </footer>
     </main>
-
-    {{-- Footer sudah tidak di sini lagi --}}
 
 </body>
 
