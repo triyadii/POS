@@ -165,6 +165,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/PencarianBarang', [BarangController::class, 'pencarianBarang'])->name('barang.pencarian');
     Route::get('/PencarianBarangList', [BarangController::class, 'pencarianBarangList'])->name('pencarianList.barang');
+    Route::get('/barang/{id}/history', [BarangController::class, 'historyPenjualanPage'])
+    ->name('barang.history.page');
+    Route::get('/barang/{id}/history/data', [BarangController::class, 'historyPenjualanData'])
+    ->name('barang.history.data');
+
+
 
     // Route::resource('barang-masuk', BarangMasukController::class);
     // Route::get('get-barang-masuk', [BarangMasukController::class, 'getData'])->name('get-barang-masuk');

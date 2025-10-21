@@ -89,24 +89,24 @@
                     <!--end::Separator-->
     
                    <!--begin::Row-->
-<div class="row g-8 mb-8">
-    <!-- Kategori -->
-    <div class="col-xxl-4 col-md-4">
-        <label class="fs-6 form-label fw-bold text-gray-900">Kategori Item</label>
-        <select id="filter_kategori_id" name="filter_kategori_id"
-                class="form-select form-select-sm" data-control="select2"
-                data-placeholder="Pilih Kategori">
-        </select>
-    </div>
+                    <div class="row g-8 mb-8">
+                        <!-- Kategori -->
+                        <div class="col-xxl-4 col-md-4">
+                            <label class="fs-6 form-label fw-bold text-gray-900">Kategori Item</label>
+                            <select id="filter_kategori_id" name="filter_kategori_id"
+                                    class="form-select form-select-sm" data-control="select2"
+                                    data-placeholder="Pilih Kategori">
+                            </select>
+                        </div>
 
-    <!-- Brand -->
-    <div class="col-xxl-4 col-md-4">
-        <label class="fs-6 form-label fw-bold text-gray-900">Brand Item</label>
-        <select id="filter_brand_id" name="filter_brand_id"
-                class="form-select form-select-sm" data-control="select2"
-                data-placeholder="Pilih Brand">
-        </select>
-    </div>
+                        <!-- Brand -->
+                        <div class="col-xxl-4 col-md-4">
+                            <label class="fs-6 form-label fw-bold text-gray-900">Brand Item</label>
+                            <select id="filter_brand_id" name="filter_brand_id"
+                                    class="form-select form-select-sm" data-control="select2"
+                                    data-placeholder="Pilih Brand">
+                            </select>
+                        </div>
             
                 
 
@@ -156,18 +156,22 @@
 
 
 
-        <!--begin::Card-->
-        <div class="card border-top-accent shadow-sm mb-xl-10 mb-5">
+        
+    </div>
+
+
+    <!--begin::Card-->
+        <div class="card  border-top-accent shadow-sm mb-xl-10 mb-5">
             <!--begin::Card header-->
             <div class="card-header d-flex justify-content-between align-items-center border-gray-400">
                 <!--begin::Card title-->
                 <div class="card-title">
                     <!--begin::Search-->
-                    {{-- <div class="d-flex align-items-center position-relative my-1">
-                        <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
-                        <input type="text" data-kt-user-table-filter="search" id="search"
-                            class="form-control w-250px ps-13" placeholder="Search data" />
-                    </div> --}}
+                    <div class="d-flex align-items-center position-relative my-1">
+                       <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+                   Data Item Barang
+                </h1>
+                    </div>
                     <!--end::Search-->
                 </div>
                 <!--begin::Card title-->
@@ -242,7 +246,6 @@
             <!--end::Card body-->
         </div>
         <!--end::Card-->
-    </div>
 
 
 
