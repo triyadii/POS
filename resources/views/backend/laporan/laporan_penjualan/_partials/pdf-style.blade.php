@@ -36,10 +36,10 @@
         /* PERUBAHAN: HAPUS 'position: fixed' */
         /* ======================================= */
         .footer {
-            /* position: fixed; -- DINONAKTIFKAN */
-            /* bottom: 0px; -- DINONAKTIFKAN */
-            /* right: 0px; -- DINONAKTIFKAN */
-            /* left: 0px; -- DINONAKTIFKAN */
+            position: fixed;
+            bottom: 0px;
+            right: 0px;
+            left: 0px;
 
             /* Style baru sebagai footer standar di akhir dokumen */
             width: 100%;
