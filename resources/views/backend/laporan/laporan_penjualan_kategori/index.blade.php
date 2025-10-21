@@ -36,10 +36,19 @@
                         <div class="position-relative">
                             <select class="form-select form-select-sm" data-control="select2" data-hide-search="true"
                                 id="filter_kategori">
-                                <option value="all">Semua Kategori</option>
+                                <option value="all">Semua Kategori Barang</option>
                                 @foreach ($kategori as $item)
                                     <option value="{{ $item->id }}">{{ $item->nama }}</option>
                                 @endforeach
+                            </select>
+                        </div>
+
+                        <div class="position-relative">
+                            <select class="form-select form-select-sm" data-control="select2" data-hide-search="true"
+                                id="filter_kategori_penjualan">
+                                <option value="all">Semua Kategori Penjualan</option>
+                                <option value="offline">Offline</option>
+                                <option value="online">Online</option>
                             </select>
                         </div>
 
@@ -211,6 +220,7 @@
                                     .endDate.format('YYYY-MM-DD');
                             }
                             d.filter_kategori = $('#filter_kategori').val();
+                            d.filter_kategori_penjualan = $('#filter_kategori_penjualan').val();
                         },
                         dataSrc: function(json) {
                             // Update statistik box
@@ -269,6 +279,10 @@
 
                 // Event listener untuk filter Kategori
                 $('#filter_kategori').on('change', function() {
+                    reloadData();
+                });
+
+                $('#filter_kategori_penjualan').on('change', function() {
                     reloadData();
                 });
 
@@ -346,10 +360,12 @@
 
                 function fetchChart(startDate, endDate) {
                     const kategoriId = $('#filter_kategori').val();
+                    const kategoriPenjualan = $('#filter_kategori_penjualan').val();
                     $.get("{{ route('laporan.penjualan.kategori.chart') }}", {
                         filter_tanggal_start: startDate,
                         filter_tanggal_end: endDate,
-                        filter_kategori: kategoriId // Kirim filter kategori
+                        filter_kategori: kategoriId,
+                        filter_kategori_penjualan: kategoriPenjualan
                     }, function(data) {
                         renderApexChart(data);
                     });
@@ -477,6 +493,7 @@
                     const tipe = $('input[name="tipe_laporan"]:checked').val();
                     const tanggal = $('#filter_tanggal').val();
                     const kategoriId = $('#filter_kategori').val(); // Ambil filter kategori
+                    const kategoriPenjualan = $('#filter_kategori_penjualan').val();
 
                     if (!tanggal) return Swal.fire('Perhatian',
                         'Rentang tanggal wajib dipilih.', 'warning');
@@ -489,6 +506,7 @@
                     url.searchParams.set('start', start);
                     url.searchParams.set('end', end);
                     url.searchParams.set('kategori_id', kategoriId); // Kirim filter kategori
+                    url.searchParams.set('kategori_penjualan', kategoriPenjualan);
                     window.open(url.toString(), '_blank');
                 });
             });

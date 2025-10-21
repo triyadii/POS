@@ -60,30 +60,58 @@ class LaporanPenjualanController extends Controller
     }
 
     // DISESUAIKAN: Mengambil data untuk DataTables dan Statistik
-    // DISESUAIKAN: Mengambil data untuk DataTables dan Statistik
     public function getLaporanData(Request $request)
     {
         $query = Penjualan::query();
+        $kategoriPenjualan = $request->filter_kategori_penjualan; // Ambil filter
+
+        // Inisialisasi variabel tanggal
+        $startDate = null;
+        $endDate = null;
+        $dateRangeExists = false; // Set default ke false
 
         if (!empty($request->filter_tanggal_start) && !empty($request->filter_tanggal_end)) {
             $startDate = Carbon::parse($request->filter_tanggal_start)->startOfDay();
             $endDate = Carbon::parse($request->filter_tanggal_end)->endOfDay();
             $query->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
+            $dateRangeExists = true; // Set flag ke true jika tanggal ada
+        }
+
+        // Terapkan filter kategori
+        if (!empty($kategoriPenjualan)) {
+            $query->where('kategori_penjualan', $kategoriPenjualan);
         }
 
         // Clone query untuk statistik agar tidak terpengaruh oleh DataTables
         $statsQuery = clone $query;
-        $dateRangeExists = isset($startDate) && isset($endDate);
 
-        // Menghitung Statistik
+        // Menghitung Statistik (Sudah otomatis terfilter karena $statsQuery)
         $totalTransaksi = $dateRangeExists ? $statsQuery->count() : 0;
         $totalPendapatan = $dateRangeExists ? $statsQuery->sum('total_harga') : 0;
 
-        $jumlahProdukTerjual = $dateRangeExists ? PenjualanDetail::whereHas('penjualan', function ($q) use ($startDate, $endDate) {
-            $q->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
-        })->sum('qty') : 0;
+        // ===================================
+        // PERBAIKAN: Pindahkan query ini ke dalam cek 'dateRangeExists'
+        // ===================================
+        $jumlahProdukTerjual = 0; // Set default 0
 
-        // Query utama untuk DataTables dengan Eager Loading
+        if ($dateRangeExists) { // Hanya jalankan query ini jika tanggal ada
+            $jumlahProdukQuery = PenjualanDetail::whereHas('penjualan', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
+            });
+
+            if (!empty($kategoriPenjualan)) {
+                $jumlahProdukQuery->whereHas('penjualan', function ($q) use ($kategoriPenjualan) {
+                    $q->where('kategori_penjualan', $kategoriPenjualan);
+                });
+            }
+            $jumlahProdukTerjual = $jumlahProdukQuery->sum('qty');
+        }
+        // ===================================
+        // AKHIR PERBAIKAN
+        // ===================================
+
+
+        // Query utama untuk DataTables (Sudah terfilter dari $query di atas)
         $data = $query->with([
             'user:id,name',
             'detail',
@@ -92,6 +120,7 @@ class LaporanPenjualanController extends Controller
             'pembayaran'
         ])->select('penjualan.*');
 
+        // (Sisa fungsi DataTables tidak berubah)
         return \DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('tanggal', function ($data) {
@@ -106,26 +135,18 @@ class LaporanPenjualanController extends Controller
                 }
                 $nama = e($data->pembayaran->nama);
                 $rekening = e($data->pembayaran->no_rekening);
-                // Membuat HTML dengan nama dan no rekening di bawahnya
                 return "<div>
-                            <span class='fw-bold'>{$nama}</span><br>
-                            <small class='text-muted'>{$rekening}</small>
-                        </div>";
+                           <span class='fw-bold'>{$nama}</span><br>
+                           <small class='text-muted'>{$rekening}</small>
+                       </div>";
             })
-
-            // ===================================
-            // PENAMBAHAN KOLOM POTONGAN
-            // ===================================
             ->addColumn('potongan', function ($data) {
-                // Asumsi 'potongan' adalah angka, format sebagai mata uang
                 return '<span class_exists="text-danger">Rp ' . number_format($data->potongan ?? 0, 0, ',', '.') . '</span>';
             })
-
             ->addColumn('total', function ($data) {
                 return 'Rp ' . number_format($data->total_harga, 0, ',', '.');
             })
             ->addColumn('action', function ($data) {
-                // 1. Siapkan data detail
                 $detailsArray = $data->detail->map(function ($item) {
                     return [
                         'nama_barang' => $item->barang->nama ?? 'N/A',
@@ -135,27 +156,17 @@ class LaporanPenjualanController extends Controller
                         'subtotal' => $item->subtotal,
                     ];
                 });
-
-                // 2. Ubah array menjadi JSON
                 $detailsJson = htmlspecialchars(json_encode($detailsArray));
-
-                // 3. Buat tombol
                 $button = '<button type="button" class="btn btn-sm btn-light-primary" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#kt_modal_detail_penjualan" 
-                    data-kode="' . e($data->kode_transaksi) . '"
-                    data-details="' . $detailsJson . '">
-                    Lihat Detail
-                </button>';
-
+                   data-bs-toggle="modal" 
+                   data-bs-target="#kt_modal_detail_penjualan" 
+                   data-kode="' . e($data->kode_transaksi) . '"
+                   data-details="' . $detailsJson . '">
+                   Lihat Detail
+               </button>';
                 return $button;
             })
-
-            // ===================================
-            // 'potongan' ditambahkan ke rawColumns
-            // ===================================
             ->rawColumns(['action', 'jenis_pembayaran', 'potongan'])
-
             ->with([
                 'total_transaksi' => $totalTransaksi,
                 'total_penjualan' => $totalPendapatan,

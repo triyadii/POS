@@ -42,6 +42,14 @@
                             </select>
                         </div>
                         <div class="position-relative">
+                            <select class="form-select form-select-sm" name="filter_kategori_penjualan"
+                                id="filter_kategori_penjualan">
+                                <option value="">Semua Tipe</option>
+                                <option value="offline">Offline</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+                        <div class="position-relative">
                             <input class="form-control form-control-sm" placeholder="Pilih tanggal" name="filter_tanggal"
                                 id="filter_tanggal" autocomplete="off" />
                         </div>
@@ -97,6 +105,7 @@
                                         <th class="w-25px"></th> {{-- Kolom untuk tombol expander --}}
                                         <th class="min-w-100px">Tanggal</th>
                                         <th class="min-w-125px">No. Transaksi</th>
+                                        <th class="min-w-100px">Kategori Penjualan</th>
                                         <th class="min-w-100px">Jenis Pembayaran</th>
                                         <th class="min-w-50px text-end">Total Item</th>
                                         <th class="min-w-100px text-end">Sub Total</th>
@@ -110,7 +119,7 @@
                                 {{-- =================================== --}}
                                 <tfoot class="fw-bold fs-6">
                                     <tr class="table-light">
-                                        <th colspan="4" class="text-end">Total</th>
+                                        <th colspan="5" class="text-end">Total</th>
                                         <th class="text-end" id="footer-total-item">0</th>
                                         <th class="text-end" id="footer-subtotal">Rp 0</th>
                                         <th class="text-end" id="footer-potongan">Rp 0</th>
@@ -253,6 +262,7 @@
                                 d.filter_tanggal_end = selectedDate;
                             }
                             d.filter_jenis_pembayaran = $('#filter_jenis_pembayaran').val();
+                            d.filter_kategori_penjualan = $('#filter_kategori_penjualan').val();
                         },
                         dataSrc: function(json) {
                             // --- Statistik Box Atas ---
@@ -299,6 +309,10 @@
                             name: 'kode_transaksi'
                         },
                         {
+                            data: 'kategori_penjualan', // Data dari controller
+                            name: 'kategori_penjualan' // Nama untuk sorting/filtering
+                        },
+                        {
                             data: 'jenis_pembayaran',
                             name: 'pembayaran.nama',
                             orderable: true,
@@ -342,12 +356,21 @@
                     }
                 });
 
-                // Filter jenis pembayaran (Tidak Berubah)
-                $('#filter_jenis_pembayaran').on('change', function() {
+                // Fungsi reload helper
+                function reloadTableIfDateSelected() {
                     const flatpickr = document.querySelector("#filter_tanggal")._flatpickr;
                     if (flatpickr && flatpickr.selectedDates[0]) {
                         table.ajax.reload();
                     }
+                }
+
+                // Filter jenis pembayaran
+                $('#filter_jenis_pembayaran').on('change', function() {
+                    reloadTableIfDateSelected();
+                });
+
+                $('#filter_kategori_penjualan').on('change', function() {
+                    reloadTableIfDateSelected();
                 });
 
                 // ===================================
@@ -382,7 +405,7 @@
                                 tr.addClass('shown');
                                 $btn.html(
                                     '<i class="ki-outline ki-arrows-circle fs-3"></i>'
-                                    ); // Icon Error/Refresh
+                                ); // Icon Error/Refresh
                             });
                     }
                 });
@@ -395,6 +418,7 @@
                     const tipe = $('input[name="tipe_laporan"]:checked').val();
                     const tanggal = $('#filter_tanggal').val();
                     const jenisPembayaran = $('#filter_jenis_pembayaran').val();
+                    const kategoriPenjualan = $('#filter_kategori_penjualan').val();
 
                     if (!tanggal) return Swal.fire('Perhatian',
                         'Silakan pilih tanggal terlebih dahulu.', 'warning');
@@ -411,6 +435,7 @@
                     url.searchParams.set('start', start);
                     url.searchParams.set('end', end);
                     url.searchParams.set('jenis_pembayaran', jenisPembayaran);
+                    url.searchParams.set('kategori_penjualan', kategoriPenjualan);
 
                     window.open(url.toString(), '_blank');
                 });

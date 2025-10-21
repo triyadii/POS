@@ -33,14 +33,18 @@
         }
 
         /* ======================================= */
-        /* PERUBAHAN UTAMA: HAPUS 'position: fixed' */
+        /* PERUBAHAN: HAPUS 'position: fixed' */
         /* ======================================= */
         .footer {
-            position: fixed;
-            bottom: 0px;
-            left: 0px;
-            right: 0px;
-            height: 50px;
+            /* position: fixed; -- DINONAKTIFKAN */
+            /* bottom: 0px; -- DINONAKTIFKAN */
+            /* right: 0px; -- DINONAKTIFKAN */
+            /* left: 0px; -- DINONAKTIFKAN */
+
+            /* Style baru sebagai footer standar di akhir dokumen */
+            width: 100%;
+            margin-top: 20px;
+            /* Beri jarak dari tabel */
             font-size: 9px;
             border-top: 1px solid #ccc;
             padding-top: 5px;
@@ -61,7 +65,7 @@
             color: #888;
         }
 
-        /* Tabel Utama (Tidak berubah) */
+        /* Sisa style (Tidak berubah) */
         .main-table {
             width: 100%;
             border-collapse: collapse;
@@ -84,7 +88,6 @@
             text-transform: uppercase;
         }
 
-        /* CSS untuk header berulang kita nonaktifkan agar stabil */
         .main-table thead {
             /* display: table-header-group; -- DINONAKTIFKAN */
         }
@@ -97,7 +100,6 @@
             text-align: right !important;
         }
 
-        /* Style Baris Total (Tidak berubah) */
         .main-table tr.total-row {
             background-color: #f2f2f2;
             font-weight: bold;

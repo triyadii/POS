@@ -31,6 +31,8 @@ class LaporanPenjualanHarianController extends Controller
         $dateRangeExists = false;
         $jenisPembayaranId = $request->filter_jenis_pembayaran;
 
+        $kategoriPenjualan = $request->filter_kategori_penjualan;
+
         if (!empty($request->filter_tanggal_start) && !empty($request->filter_tanggal_end)) {
             $startDate = Carbon::parse($request->filter_tanggal_start)->startOfDay();
             $endDate = Carbon::parse($request->filter_tanggal_end)->endOfDay();
@@ -41,6 +43,10 @@ class LaporanPenjualanHarianController extends Controller
 
         if (!empty($jenisPembayaranId)) {
             $query->where('jenis_pembayaran_id', $jenisPembayaranId);
+        }
+
+        if (!empty($kategoriPenjualan)) {
+            $query->where('kategori_penjualan', $kategoriPenjualan);
         }
 
         // --- Statistik Box Atas & Footer ---
@@ -94,6 +100,9 @@ class LaporanPenjualanHarianController extends Controller
             })
             ->addColumn('jenis_pembayaran', function ($data) {
                 return optional($data->pembayaran)->nama ?? '-';
+            })
+            ->addColumn('kategori_penjualan', function ($data) {
+                return ucwords($data->kategori_penjualan); // Format: 'offline' -> 'Offline'
             })
             ->addColumn('total_item', function ($data) {
                 return $data->total_item; // Asumsi ada kolom total_item di tabel 'penjualan'
@@ -160,11 +169,18 @@ class LaporanPenjualanHarianController extends Controller
             'start' => 'required|date',
             'end' => 'required|date',
             'jenis_pembayaran' => 'nullable|string',
+            'kategori_penjualan' => 'nullable|string',
         ]);
 
         $start = Carbon::parse($request->start)->startOfDay();
         $end = Carbon::parse($request->end)->endOfDay();
         $jenisPembayaranId = $request->jenis_pembayaran;
+        $kategoriPenjualan = $request->kategori_penjualan;
+
+        $namaKategoriPenjualan = 'Semua';
+        if (!empty($kategoriPenjualan)) {
+            $namaKategoriPenjualan = ucwords($kategoriPenjualan); // 'offline' -> 'Offline'
+        }
 
         $namaJenisPembayaran = 'Semua';
         if (!empty($jenisPembayaranId)) {
@@ -189,6 +205,10 @@ class LaporanPenjualanHarianController extends Controller
 
         if (!empty($jenisPembayaranId)) {
             $query->where('jenis_pembayaran_id', $jenisPembayaranId);
+        }
+
+        if (!empty($kategoriPenjualan)) {
+            $query->where('kategori_penjualan', $kategoriPenjualan);
         }
 
         // Variabel baru untuk view (daftar transaksi)
@@ -236,7 +256,8 @@ class LaporanPenjualanHarianController extends Controller
             'end',
             'namaUser',
             'tanggalCetak',
-            'namaJenisPembayaran'
+            'namaJenisPembayaran',
+            'namaKategoriPenjualan'
         );
 
         $viewPath = 'backend.laporan.laporan_penjualan_harian.';
