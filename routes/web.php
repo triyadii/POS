@@ -264,6 +264,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('penjualan', PenjualanController::class)->except(['show']);
     Route::get('/penjualan/daftar', [PenjualanController::class, 'daftarPenjualan'])->name('penjualan.daftar');
+    Route::get('/penjualan/edit', [PenjualanController::class, 'kasirEdit'])->name('penjualan.kasirEdit');
     // Route::get('/penjualan/daftar/data', [PenjualanController::class, 'dataPenjualan'])
     //     ->name('penjualan.daftar.data');
     Route::get('/penjualan/data', [PenjualanController::class, 'getData'])->name('penjualan.daftar.data');
@@ -274,8 +275,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/penjualan/produk/data', [PenjualanController::class, 'produkData'])->name('penjualan.produk.data');
     Route::get('/penjualan/no-otomatis', [PenjualanController::class, 'generateNoTransaksi'])
         ->name('penjualan.no_otomatis');
-    Route::post('/penjualan/update', [PenjualanController::class, 'update'])->name('penjualan.updateBarang');
+    // Route::post('/penjualan/update', [PenjualanController::class, 'update'])->name('penjualan.updateBarang');
     Route::post('/penjualan/hapus', [PenjualanController::class, 'hapus'])->name('penjualan.hapus');
+    Route::post('penjualan/update', [PenjualanController::class, 'updateBarang'])->name('penjualan.updateBarang');
 
 
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');
