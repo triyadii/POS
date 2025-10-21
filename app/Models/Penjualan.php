@@ -46,6 +46,7 @@ class Penjualan extends Model
     'total_item' => 'integer',
     'total_harga' => 'float',
     'potongan' => 'float', // ✅ baru
+    'pembayaran' => 'float',
 ];
 
     // ==========================
