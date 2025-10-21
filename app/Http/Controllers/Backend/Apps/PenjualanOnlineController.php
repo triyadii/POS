@@ -186,9 +186,123 @@ public function print($id)
 }
 
 
+// public function store(Request $request)
+// {
+//     $formattedTime = Carbon::now()->diffForHumans();
+
+//     // 🧩 Validasi input nested repeater
+//     $validator = Validator::make($request->all(), [
+//         'penjualan_list' => 'required|array|min:1',
+//         'penjualan_list.*.jenis_pembayaran_id' => 'required|string|exists:jenis_pembayaran,id',
+//         'penjualan_list.*.barang_list' => 'required|array|min:1',
+//         'penjualan_list.*.barang_list.*.barang_id'  => 'required|string|exists:barang,id',
+//         'penjualan_list.*.barang_list.*.harga_jual' => 'required|string',
+//         'penjualan_list.*.barang_list.*.qty'        => 'required|numeric|min:1',
+//         'penjualan_list.*.barang_list.*.subtotal'   => 'required|string',
+//     ], [
+//         'penjualan_list.*.jenis_pembayaran_id.required' => 'Jenis pembayaran wajib dipilih.',
+//         'penjualan_list.*.jenis_pembayaran_id.exists'   => 'Jenis pembayaran tidak valid.',
+//         'penjualan_list.*.barang_list.*.barang_id.required' => 'Barang wajib dipilih.',
+//         'penjualan_list.*.barang_list.*.barang_id.exists'   => 'Barang tidak valid.',
+//         'penjualan_list.*.barang_list.*.qty.required'   => 'Qty wajib diisi.',
+//         'penjualan_list.*.barang_list.*.qty.min'        => 'Qty minimal 1.',
+//     ]);
+
+//     if ($validator->fails()) {
+//         return response()->json(['errors' => $validator->errors()]);
+//     }
+
+//     try {
+//         DB::beginTransaction();
+
+//         // 🔁 Loop setiap transaksi penjualan
+//         foreach ($request->penjualan_list as $trx) {
+
+//             $total_harga = $this->cleanRupiah($trx['total_harga'] ?? 0);
+//             $potongan    = $this->cleanRupiah($trx['potongan'] ?? 0);
+//             $grand_total = $this->cleanRupiah($trx['grand_total'] ?? 0);
+
+//             // 🧠 Simpan header penjualan
+//             $penjualan = Penjualan::create([
+//                 'id'                 => Str::uuid(),
+//                 'kode_transaksi'     => $this->generateKodeTransaksi(),
+//                 'tanggal_penjualan'  => now(),
+//                 'user_id'            => Auth::id(),
+//                 'jenis_pembayaran_id'=> $trx['jenis_pembayaran_id'],
+//                 'total_item'         => count($trx['barang_list']),
+//                 'total_harga'        => $total_harga,
+//                 'potongan'           => $potongan,
+//                 'grand_total'        => $grand_total,
+//                 'kategori_penjualan' => 'online',
+//                 'catatan'            => $trx['catatan'] ?? null,
+//             ]);
+
+//             // 🔹 Simpan detail & cek stok
+//             foreach ($trx['barang_list'] as $barang) {
+//                 $barang_id = $barang['barang_id'];
+//                 $qty       = (int) $barang['qty'];
+
+//                 // 🧾 Ambil stok barang saat ini
+//                 $barangModel = Barang::lockForUpdate()->find($barang_id);
+
+//                 if (!$barangModel) {
+//                     throw new \Exception("Barang dengan ID $barang_id tidak ditemukan.");
+//                 }
+
+//                 if ($barangModel->stok <= 0) {
+//                     throw new \Exception("Stok barang '{$barangModel->nama}' kosong!");
+//                 }
+
+//                 if ($barangModel->stok < $qty) {
+//                     throw new \Exception("Stok barang '{$barangModel->nama}' tidak mencukupi. Sisa stok: {$barangModel->stok}");
+//                 }
+
+//                 // 🧮 Kurangi stok
+//                 $barangModel->decrement('stok', $qty);
+
+//                 // 💾 Simpan detail penjualan
+//                 PenjualanDetail::create([
+//                     'id'           => Str::uuid(),
+//                     'penjualan_id' => $penjualan->id,
+//                     'barang_id'    => $barang_id,
+//                     'harga_jual'   => $this->cleanRupiah($barang['harga_jual']),
+//                     'qty'          => $qty,
+//                     'subtotal'     => $this->cleanRupiah($barang['subtotal']),
+//                 ]);
+//             }
+
+//             // 🧠 Catat aktivitas
+//             activity('tambah penjualan')
+//                 ->causedBy(Auth::user() ?? null)
+//                 ->performedOn($penjualan)
+//                 ->withProperties(['penjualan_id' => $penjualan->id])
+//                 ->log('Menambahkan transaksi penjualan baru.');
+//         }
+
+//         DB::commit();
+
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'Data penjualan berhasil disimpan.',
+//             'time'    => $formattedTime,
+//         ]);
+
+//     } catch (\Exception $e) {
+//         DB::rollBack();
+
+//         return response()->json([
+//             'error'        => 'Gagal menyimpan data: ' . $e->getMessage(),
+//             'time'         => $formattedTime,
+//             'judul'        => 'Gagal',
+//             'errorMessage' => $e->getMessage(),
+//         ], 500);
+//     }
+// }
+
+
 public function store(Request $request)
 {
-    $formattedTime = Carbon::now()->diffForHumans();
+    $formattedTime = \Carbon\Carbon::now()->diffForHumans();
 
     // 🧩 Validasi input nested repeater
     $validator = Validator::make($request->all(), [
@@ -213,7 +327,7 @@ public function store(Request $request)
     }
 
     try {
-        DB::beginTransaction();
+        \DB::beginTransaction();
 
         // 🔁 Loop setiap transaksi penjualan
         foreach ($request->penjualan_list as $trx) {
@@ -223,11 +337,11 @@ public function store(Request $request)
             $grand_total = $this->cleanRupiah($trx['grand_total'] ?? 0);
 
             // 🧠 Simpan header penjualan
-            $penjualan = Penjualan::create([
-                'id'                 => Str::uuid(),
+            $penjualan = \App\Models\Penjualan::create([
+                'id'                 => \Str::uuid(),
                 'kode_transaksi'     => $this->generateKodeTransaksi(),
                 'tanggal_penjualan'  => now(),
-                'user_id'            => Auth::id(),
+                'user_id'            => \Auth::id(),
                 'jenis_pembayaran_id'=> $trx['jenis_pembayaran_id'],
                 'total_item'         => count($trx['barang_list']),
                 'total_harga'        => $total_harga,
@@ -242,8 +356,8 @@ public function store(Request $request)
                 $barang_id = $barang['barang_id'];
                 $qty       = (int) $barang['qty'];
 
-                // 🧾 Ambil stok barang saat ini
-                $barangModel = Barang::lockForUpdate()->find($barang_id);
+                // 🧾 Ambil stok & harga beli barang saat ini
+                $barangModel = \App\Models\Barang::lockForUpdate()->find($barang_id);
 
                 if (!$barangModel) {
                     throw new \Exception("Barang dengan ID $barang_id tidak ditemukan.");
@@ -260,26 +374,27 @@ public function store(Request $request)
                 // 🧮 Kurangi stok
                 $barangModel->decrement('stok', $qty);
 
-                // 💾 Simpan detail penjualan
-                PenjualanDetail::create([
-                    'id'           => Str::uuid(),
+                // 💾 Simpan detail penjualan + isi harga_beli otomatis
+                \App\Models\PenjualanDetail::create([
+                    'id'           => \Str::uuid(),
                     'penjualan_id' => $penjualan->id,
                     'barang_id'    => $barang_id,
-                    'harga_jual'   => $this->cleanRupiah($barang['harga_jual']),
                     'qty'          => $qty,
+                    'harga_jual'   => $this->cleanRupiah($barang['harga_jual']),
+                    'harga_beli'   => $barangModel->harga_beli ?? 0, // ✅ tambahkan ini
                     'subtotal'     => $this->cleanRupiah($barang['subtotal']),
                 ]);
             }
 
             // 🧠 Catat aktivitas
             activity('tambah penjualan')
-                ->causedBy(Auth::user() ?? null)
+                ->causedBy(\Auth::user() ?? null)
                 ->performedOn($penjualan)
                 ->withProperties(['penjualan_id' => $penjualan->id])
-                ->log('Menambahkan transaksi penjualan baru.');
+                ->log('Menambahkan transaksi penjualan baru (online).');
         }
 
-        DB::commit();
+        \DB::commit();
 
         return response()->json([
             'success' => true,
@@ -288,7 +403,7 @@ public function store(Request $request)
         ]);
 
     } catch (\Exception $e) {
-        DB::rollBack();
+        \DB::rollBack();
 
         return response()->json([
             'error'        => 'Gagal menyimpan data: ' . $e->getMessage(),
@@ -299,6 +414,7 @@ public function store(Request $request)
     }
 }
 
+
 // 🔹 Helper: bersihkan format rupiah
 private function cleanRupiah($value)
 {
@@ -308,10 +424,38 @@ private function cleanRupiah($value)
 // 🔹 Helper: generate kode transaksi otomatis
 private function generateKodeTransaksi()
 {
-    $prefix = 'DB22-' . now()->format('Ymd');
-    $last = Penjualan::where('kode_transaksi', 'like', "$prefix%")->count() + 1;
-    return sprintf('%s-%04d', $prefix, $last);
+    $kasirId = 'DB22';
+    $tanggal = \Carbon\Carbon::now()->format('Ymd');
+    $today   = \Carbon\Carbon::now()->toDateString();
+
+    // Jalankan dalam transaksi agar aman dari duplikasi
+    return \DB::transaction(function () use ($kasirId, $tanggal, $today) {
+
+        // 🔒 Kunci baris transaksi terakhir (hindari race condition)
+        $lastPenjualan = \DB::table('penjualan')
+            ->whereDate('created_at', $today)
+            ->where('kode_transaksi', 'like', "{$kasirId}-ONLINE-{$tanggal}-%")
+            ->orderByDesc('kode_transaksi')
+            ->lockForUpdate()
+            ->value('kode_transaksi');
+
+        // Tentukan nomor urut berikutnya
+        if ($lastPenjualan) {
+            // Ambil 6 digit terakhir
+            $lastNumber = (int) substr($lastPenjualan, -6);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        // Format 6 digit angka
+        $urutan = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+        // Contoh hasil: DB22-ONLINE-20251021-000123
+        return "{$kasirId}-ONLINE-{$tanggal}-{$urutan}";
+    });
 }
+
 
 
 
@@ -437,6 +581,158 @@ private function generateKodeTransaksi()
 
     return response()->json(['html' => $html]);
 }
+
+
+public function update(Request $request, $id)
+{
+    $formattedTime = \Carbon\Carbon::now()->diffForHumans();
+
+    $validator = \Validator::make($request->all(), [
+        'jenis_pembayaran_id' => 'required|uuid|exists:jenis_pembayaran,id',
+        'barang_list' => 'required|array|min:1',
+        'barang_list.*.detail_id'  => 'nullable|uuid',
+        'barang_list.*.barang_id'  => 'required|uuid|exists:barang,id',
+        'barang_list.*.harga_jual' => 'required|string',
+        'barang_list.*.qty'        => 'required|numeric|min:1',
+        'barang_list.*.subtotal'   => 'required|string',
+        'potongan' => 'nullable|string',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()]);
+    }
+
+    try {
+        \DB::beginTransaction();
+
+        $penjualan = \App\Models\Penjualan::with('detail')->findOrFail($id);
+
+        $total_harga = $this->cleanRupiah($request->input('total_harga'));
+        $potongan    = $this->cleanRupiah($request->input('potongan'));
+        $grand_total = $this->cleanRupiah($request->input('grand_total'));
+
+        // 🧾 Update header penjualan
+        $penjualan->update([
+            'jenis_pembayaran_id' => $request->jenis_pembayaran_id,
+            'total_harga'         => $total_harga,
+            'potongan'            => $potongan,
+            'grand_total'         => $grand_total,
+            'catatan'             => $request->catatan,
+        ]);
+
+        // Simpan detail lama berdasarkan ID
+        $oldDetailsById = $penjualan->detail->keyBy('id');
+
+        // Ambil ID detail yang masih ada di request
+        $keepIds = collect($request->barang_list)
+            ->pluck('detail_id')
+            ->filter()
+            ->values();
+
+        // 🗑️ 1) Detail lama yang dihapus → kembalikan stok & hapus
+        foreach ($oldDetailsById as $oldId => $oldDetail) {
+            if (!$keepIds->contains($oldId)) {
+                $barangOld = \App\Models\Barang::lockForUpdate()->find($oldDetail->barang_id);
+                if ($barangOld) {
+                    $barangOld->increment('stok', $oldDetail->qty);
+                }
+                $oldDetail->delete();
+            }
+        }
+
+        // 🔁 2) Proses semua baris yang dikirim
+        $barangList = collect($request->barang_list);
+
+        foreach ($barangList as $row) {
+            $detailId   = $row['detail_id'] ?? null;
+            $barangId   = $row['barang_id'];
+            $qtyBaru    = (int) $row['qty'];
+            $hargaJual  = $this->cleanRupiah($row['harga_jual']);
+            $subtotal   = $this->cleanRupiah($row['subtotal']);
+
+            if ($detailId && isset($oldDetailsById[$detailId])) {
+                // === Baris lama (update) ===
+                $old = $oldDetailsById[$detailId];
+
+                $barangOld = \App\Models\Barang::lockForUpdate()->find($old->barang_id);
+                $barangNew = \App\Models\Barang::lockForUpdate()->find($barangId);
+                if (!$barangNew) throw new \Exception("Barang baru tidak ditemukan.");
+
+                if ($old->barang_id !== $barangId) {
+                    // Barang berubah → kembalikan stok lama, kurangi stok baru
+                    if ($barangOld) {
+                        $barangOld->increment('stok', $old->qty);
+                    }
+                    if ($barangNew->stok < $qtyBaru) {
+                        throw new \Exception("Stok barang '{$barangNew->nama}' tidak mencukupi. Sisa stok: {$barangNew->stok}");
+                    }
+                    $barangNew->decrement('stok', $qtyBaru);
+                } else {
+                    // Barang sama → sesuaikan selisih qty
+                    $selisih = $qtyBaru - (int) $old->qty;
+                    if ($selisih > 0) {
+                        if ($barangNew->stok < $selisih) {
+                            throw new \Exception("Stok barang '{$barangNew->nama}' tidak mencukupi. Sisa stok: {$barangNew->stok}");
+                        }
+                        $barangNew->decrement('stok', $selisih);
+                    } elseif ($selisih < 0) {
+                        $barangNew->increment('stok', abs($selisih));
+                    }
+                }
+
+                // 💾 Update detail lama + harga beli terbaru
+                $old->update([
+                    'barang_id'  => $barangId,
+                    'harga_jual' => $hargaJual,
+                    'harga_beli' => $barangNew->harga_beli ?? 0, // ✅ tambahkan ini
+                    'qty'        => $qtyBaru,
+                    'subtotal'   => $subtotal,
+                ]);
+
+            } else {
+                // === Baris baru (create) ===
+                $barang = \App\Models\Barang::lockForUpdate()->find($barangId);
+                if (!$barang) throw new \Exception("Barang tidak ditemukan.");
+                if ($barang->stok < $qtyBaru) {
+                    throw new \Exception("Stok barang '{$barang->nama}' tidak mencukupi. Sisa stok: {$barang->stok}");
+                }
+                $barang->decrement('stok', $qtyBaru);
+
+                \App\Models\PenjualanDetail::create([
+                    'id'           => (string) \Str::uuid(),
+                    'penjualan_id' => $penjualan->id,
+                    'barang_id'    => $barangId,
+                    'harga_jual'   => $hargaJual,
+                    'harga_beli'   => $barang->harga_beli ?? 0, // ✅ sama seperti store
+                    'qty'          => $qtyBaru,
+                    'subtotal'     => $subtotal,
+                ]);
+            }
+        }
+
+        // 🔢 Update total_item
+        $penjualan->update([
+            'total_item' => \App\Models\PenjualanDetail::where('penjualan_id', $penjualan->id)->count(),
+        ]);
+
+        \DB::commit();
+
+        return response()->json([
+            'success' => 'Transaksi penjualan berhasil diperbarui.',
+            'time'    => $formattedTime,
+        ]);
+
+    } catch (\Exception $e) {
+        \DB::rollBack();
+        return response()->json([
+            'error'        => 'Terjadi kesalahan di aplikasi, hubungi Developer.',
+            'judul'        => 'Aplikasi Error',
+            'errorMessage' => $e->getMessage(),
+            'time'         => $formattedTime,
+        ], 422);
+    }
+}
+
 
 
     
@@ -584,152 +880,152 @@ private function generateKodeTransaksi()
 //     }
 // }
 
-public function update(Request $request, $id)
-{
-    $formattedTime = Carbon::now()->diffForHumans();
+// public function update(Request $request, $id)
+// {
+//     $formattedTime = Carbon::now()->diffForHumans();
 
-    $validator = \Validator::make($request->all(), [
-        'jenis_pembayaran_id' => 'required|uuid|exists:jenis_pembayaran,id',
-        'barang_list' => 'required|array|min:1',
-        'barang_list.*.detail_id'  => 'nullable|uuid',
-        'barang_list.*.barang_id'  => 'required|uuid|exists:barang,id',
-        'barang_list.*.harga_jual' => 'required|string',
-        'barang_list.*.qty'        => 'required|numeric|min:1',
-        'barang_list.*.subtotal'   => 'required|string',
-        'potongan' => 'nullable|string',
-    ]);
+//     $validator = \Validator::make($request->all(), [
+//         'jenis_pembayaran_id' => 'required|uuid|exists:jenis_pembayaran,id',
+//         'barang_list' => 'required|array|min:1',
+//         'barang_list.*.detail_id'  => 'nullable|uuid',
+//         'barang_list.*.barang_id'  => 'required|uuid|exists:barang,id',
+//         'barang_list.*.harga_jual' => 'required|string',
+//         'barang_list.*.qty'        => 'required|numeric|min:1',
+//         'barang_list.*.subtotal'   => 'required|string',
+//         'potongan' => 'nullable|string',
+//     ]);
 
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()]);
-    }
+//     if ($validator->fails()) {
+//         return response()->json(['errors' => $validator->errors()]);
+//     }
 
-    try {
-        \DB::beginTransaction();
+//     try {
+//         \DB::beginTransaction();
 
-        $penjualan = Penjualan::with('detail')->findOrFail($id);
+//         $penjualan = Penjualan::with('detail')->findOrFail($id);
 
-        $total_harga = $this->cleanRupiah($request->input('total_harga'));
-        $potongan    = $this->cleanRupiah($request->input('potongan'));
-        $grand_total = $this->cleanRupiah($request->input('grand_total'));
+//         $total_harga = $this->cleanRupiah($request->input('total_harga'));
+//         $potongan    = $this->cleanRupiah($request->input('potongan'));
+//         $grand_total = $this->cleanRupiah($request->input('grand_total'));
 
-        // Header
-        $penjualan->update([
-            'jenis_pembayaran_id' => $request->jenis_pembayaran_id,
-            'total_harga'         => $total_harga,
-            'potongan'            => $potongan,
-            'grand_total'         => $grand_total,
-            'catatan'             => $request->catatan,
-        ]);
+//         // Header
+//         $penjualan->update([
+//             'jenis_pembayaran_id' => $request->jenis_pembayaran_id,
+//             'total_harga'         => $total_harga,
+//             'potongan'            => $potongan,
+//             'grand_total'         => $grand_total,
+//             'catatan'             => $request->catatan,
+//         ]);
 
-        // Index detail lama by ID
-        $oldDetailsById = $penjualan->detail->keyBy('id');
+//         // Index detail lama by ID
+//         $oldDetailsById = $penjualan->detail->keyBy('id');
 
-        // Kumpulkan id detail yang masih ada di request (baris lama yang dipertahankan/diubah)
-        $keepIds = collect($request->barang_list)
-            ->pluck('detail_id')
-            ->filter() // buang null/empty (baris baru tidak punya id)
-            ->values();
+//         // Kumpulkan id detail yang masih ada di request (baris lama yang dipertahankan/diubah)
+//         $keepIds = collect($request->barang_list)
+//             ->pluck('detail_id')
+//             ->filter() // buang null/empty (baris baru tidak punya id)
+//             ->values();
 
-        // 1) Detail lama yang dihapus → kembalikan stok & delete
-        foreach ($oldDetailsById as $oldId => $oldDetail) {
-            if (!$keepIds->contains($oldId)) {
-                $barangOld = Barang::lockForUpdate()->find($oldDetail->barang_id);
-                if ($barangOld) {
-                    $barangOld->increment('stok', $oldDetail->qty);
-                }
-                $oldDetail->delete();
-            }
-        }
+//         // 1) Detail lama yang dihapus → kembalikan stok & delete
+//         foreach ($oldDetailsById as $oldId => $oldDetail) {
+//             if (!$keepIds->contains($oldId)) {
+//                 $barangOld = Barang::lockForUpdate()->find($oldDetail->barang_id);
+//                 if ($barangOld) {
+//                     $barangOld->increment('stok', $oldDetail->qty);
+//                 }
+//                 $oldDetail->delete();
+//             }
+//         }
 
-        // 2) Proses semua baris yang dikirim dari form
-        $barangList = collect($request->barang_list);
+//         // 2) Proses semua baris yang dikirim dari form
+//         $barangList = collect($request->barang_list);
 
-        foreach ($barangList as $row) {
-            $detailId   = $row['detail_id'] ?? null;
-            $barangId   = $row['barang_id'];
-            $qtyBaru    = (int) $row['qty'];
-            $hargaJual  = $this->cleanRupiah($row['harga_jual']);
-            $subtotal   = $this->cleanRupiah($row['subtotal']);
+//         foreach ($barangList as $row) {
+//             $detailId   = $row['detail_id'] ?? null;
+//             $barangId   = $row['barang_id'];
+//             $qtyBaru    = (int) $row['qty'];
+//             $hargaJual  = $this->cleanRupiah($row['harga_jual']);
+//             $subtotal   = $this->cleanRupiah($row['subtotal']);
 
-            if ($detailId && isset($oldDetailsById[$detailId])) {
-                // === Baris lama (update) ===
-                $old = $oldDetailsById[$detailId];
+//             if ($detailId && isset($oldDetailsById[$detailId])) {
+//                 // === Baris lama (update) ===
+//                 $old = $oldDetailsById[$detailId];
 
-                $barangOld = Barang::lockForUpdate()->find($old->barang_id);
-                $barangNew = Barang::lockForUpdate()->find($barangId);
-                if (!$barangNew) throw new \Exception("Barang baru tidak ditemukan.");
+//                 $barangOld = Barang::lockForUpdate()->find($old->barang_id);
+//                 $barangNew = Barang::lockForUpdate()->find($barangId);
+//                 if (!$barangNew) throw new \Exception("Barang baru tidak ditemukan.");
 
-                if ($old->barang_id !== $barangId) {
-                    // Barang berubah → kembalikan stok yang lama, kurangi stok yang baru
-                    if ($barangOld) {
-                        $barangOld->increment('stok', $old->qty);
-                    }
-                    if ($barangNew->stok < $qtyBaru) {
-                        throw new \Exception("Stok barang '{$barangNew->nama}' tidak mencukupi. Sisa stok: {$barangNew->stok}");
-                    }
-                    $barangNew->decrement('stok', $qtyBaru);
+//                 if ($old->barang_id !== $barangId) {
+//                     // Barang berubah → kembalikan stok yang lama, kurangi stok yang baru
+//                     if ($barangOld) {
+//                         $barangOld->increment('stok', $old->qty);
+//                     }
+//                     if ($barangNew->stok < $qtyBaru) {
+//                         throw new \Exception("Stok barang '{$barangNew->nama}' tidak mencukupi. Sisa stok: {$barangNew->stok}");
+//                     }
+//                     $barangNew->decrement('stok', $qtyBaru);
 
-                } else {
-                    // Barang sama → sesuaikan selisih qty
-                    $selisih = $qtyBaru - (int)$old->qty;
-                    if ($selisih > 0) {
-                        if ($barangNew->stok < $selisih) {
-                            throw new \Exception("Stok barang '{$barangNew->nama}' tidak mencukupi. Sisa stok: {$barangNew->stok}");
-                        }
-                        $barangNew->decrement('stok', $selisih);
-                    } elseif ($selisih < 0) {
-                        $barangNew->increment('stok', abs($selisih));
-                    }
-                }
+//                 } else {
+//                     // Barang sama → sesuaikan selisih qty
+//                     $selisih = $qtyBaru - (int)$old->qty;
+//                     if ($selisih > 0) {
+//                         if ($barangNew->stok < $selisih) {
+//                             throw new \Exception("Stok barang '{$barangNew->nama}' tidak mencukupi. Sisa stok: {$barangNew->stok}");
+//                         }
+//                         $barangNew->decrement('stok', $selisih);
+//                     } elseif ($selisih < 0) {
+//                         $barangNew->increment('stok', abs($selisih));
+//                     }
+//                 }
 
-                // Update detail lama
-                $old->update([
-                    'barang_id'  => $barangId,
-                    'harga_jual' => $hargaJual,
-                    'qty'        => $qtyBaru,
-                    'subtotal'   => $subtotal,
-                ]);
+//                 // Update detail lama
+//                 $old->update([
+//                     'barang_id'  => $barangId,
+//                     'harga_jual' => $hargaJual,
+//                     'qty'        => $qtyBaru,
+//                     'subtotal'   => $subtotal,
+//                 ]);
 
-            } else {
-                // === Baris baru (create) ===
-                $barang = Barang::lockForUpdate()->find($barangId);
-                if (!$barang) throw new \Exception("Barang tidak ditemukan.");
-                if ($barang->stok < $qtyBaru) {
-                    throw new \Exception("Stok barang '{$barang->nama}' tidak mencukupi. Sisa stok: {$barang->stok}");
-                }
-                $barang->decrement('stok', $qtyBaru);
+//             } else {
+//                 // === Baris baru (create) ===
+//                 $barang = Barang::lockForUpdate()->find($barangId);
+//                 if (!$barang) throw new \Exception("Barang tidak ditemukan.");
+//                 if ($barang->stok < $qtyBaru) {
+//                     throw new \Exception("Stok barang '{$barang->nama}' tidak mencukupi. Sisa stok: {$barang->stok}");
+//                 }
+//                 $barang->decrement('stok', $qtyBaru);
 
-                PenjualanDetail::create([
-                    'id'           => (string) \Str::uuid(),
-                    'penjualan_id' => $penjualan->id,
-                    'barang_id'    => $barangId,
-                    'harga_jual'   => $hargaJual,
-                    'qty'          => $qtyBaru,
-                    'subtotal'     => $subtotal,
-                ]);
-            }
-        }
+//                 PenjualanDetail::create([
+//                     'id'           => (string) \Str::uuid(),
+//                     'penjualan_id' => $penjualan->id,
+//                     'barang_id'    => $barangId,
+//                     'harga_jual'   => $hargaJual,
+//                     'qty'          => $qtyBaru,
+//                     'subtotal'     => $subtotal,
+//                 ]);
+//             }
+//         }
 
-        // total_item
-        $penjualan->update(['total_item' => PenjualanDetail::where('penjualan_id', $penjualan->id)->count()]);
+//         // total_item
+//         $penjualan->update(['total_item' => PenjualanDetail::where('penjualan_id', $penjualan->id)->count()]);
 
-        \DB::commit();
+//         \DB::commit();
 
-        return response()->json([
-            'success' => 'Transaksi penjualan berhasil diperbarui.',
-            'time'    => $formattedTime,
-        ]);
+//         return response()->json([
+//             'success' => 'Transaksi penjualan berhasil diperbarui.',
+//             'time'    => $formattedTime,
+//         ]);
 
-    } catch (\Exception $e) {
-        \DB::rollBack();
-        return response()->json([
-            'error'        => 'Terjadi kesalahan di aplikasi, hubungi Developer.',
-            'judul'        => 'Aplikasi Error',
-            'errorMessage' => $e->getMessage(),
-            'time'         => $formattedTime,
-        ], 422);
-    }
-}
+//     } catch (\Exception $e) {
+//         \DB::rollBack();
+//         return response()->json([
+//             'error'        => 'Terjadi kesalahan di aplikasi, hubungi Developer.',
+//             'judul'        => 'Aplikasi Error',
+//             'errorMessage' => $e->getMessage(),
+//             'time'         => $formattedTime,
+//         ], 422);
+//     }
+// }
 
 
 
