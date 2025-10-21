@@ -542,6 +542,7 @@
     }
 
     function generateStrukHTML(payload) {
+        const numToId = (n) => parseInt(n || 0).toLocaleString('id-ID');
         const tanggalCetak = new Date(payload.tanggal_raw || payload.tanggal_penjualan || payload.tanggal).toLocaleString(
             'id-ID', {
                 day: '2-digit',
@@ -595,6 +596,8 @@
             <div>Tanggal : ${tanggalCetak}</div>
             <div>Kode    : ${payload.no_penjualan ?? payload.kode_transaksi ?? '-'}</div>
             <div>Kasir   : {{ Auth::user()->name }}</div>
+            <div>Pembayaran : ${payload.pembayaran_nama ?? payload.pembayaran?.nama ?? '-'}</div>
+            <div>Kategori : Offline</div>
         </div>
 
         <hr style="border-top:1px dashed #000;">
@@ -605,25 +608,21 @@
 
         <div style="display:flex;justify-content:space-between;">
             <span>Potongan</span>
-            <span>${potonganStr}</span>
+            <span>Rp ${numToId(payload.potongan ?? 0)}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
             <span>Total</span>
-            <span>${payload.total ?? 'Rp ' + numToId(payload.total_harga ?? 0)}</span>
-
+            <span>Rp ${numToId(payload.total ?? payload.total_harga ?? 0)}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
             <span>Bayar</span>
-            <span>${payload.uang ?? '-'}</span>
+            <span>Rp ${numToId(payload.pembayaran ?? payload.uang ?? 0)}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
             <span>Kembalian</span>
-            <span>${payload.kembalian ?? '-'}</span>
+            <span>Rp ${numToId(payload.kembalian ?? 0)}</span>
         </div>
-        <div style="display:flex;justify-content:space-between;">
-            <span>Metode</span>
-            <span>${payload.pembayaran_nama ?? payload.pembayaran?.nama ?? '-'}</span>
-        </div>
+
 
         <hr style="border-top:1px dashed #000;">
         <div style="text-align:center;font-size:14px;margin-top:4px;">
@@ -677,9 +676,41 @@
                 Swal.fire('⚠️', 'Data transaksi tidak ditemukan', 'warning');
                 return;
             }
-            cetakStruk(trx); // langsung gunakan template sama
+
+            const detail = Array.isArray(trx.detail) ? trx.detail : [];
+
+            // Hitung total harga dari detail
+            const total_harga = detail.reduce((sum, d) => {
+                const subtotal = parseInt(d.subtotal ?? (d.harga_jual * d.qty) ?? 0);
+                return sum + (isNaN(subtotal) ? 0 : subtotal);
+            }, 0);
+
+            // Ambil nilai sesuai database
+            const potongan = parseInt(trx.potongan ?? trx.diskon ?? 0);
+            const pembayaran = parseInt(trx.pembayaran ?? trx.uang_diterima ?? 0);
+
+            // Perhitungan akhir
+            const total = total_harga - potongan; // total bayar setelah potongan
+            const kembalian = pembayaran - total; // uang kembalian
+
+            // Payload untuk cetak struk
+            const payload = {
+                ...trx,
+                detail,
+                total_harga,
+                potongan,
+                total,
+                pembayaran,
+                kembalian
+            };
+
+            // Cetak struk
+            cetakStruk(payload);
         });
     }
+
+
+
 
 
     function prosesTransaksi({
@@ -722,6 +753,7 @@
             uang: `Rp ${numToId(uangDiterima)}`,
             kembalian: `Rp ${numToId(kembalian)}`,
             catatan: $('#catatan').val(),
+            jumlahPembayaran: parseId($('#uang-diterima-penjualan').val()) || 0,
             pembayaran: pembayaran,
             pembayaran_nama: $('#pembayaran-penjualan option:selected').text(),
             items

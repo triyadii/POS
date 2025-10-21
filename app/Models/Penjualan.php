@@ -24,6 +24,7 @@ class Penjualan extends Model
         'total_harga',
         'catatan',
         'potongan',
+        'pembayaran',
         'jenis_pembayaran_id',
         'kategori_penjualan',
     ];

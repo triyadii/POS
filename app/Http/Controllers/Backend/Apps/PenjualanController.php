@@ -44,12 +44,12 @@ class PenjualanController extends Controller
     }
     public function store(Request $request)
     {
-
         $validator = \Validator::make($request->all(), [
             'no_penjualan' => 'required|string|max:50',
             'tanggal'      => 'required|date',
             'pembayaran'   => 'required|uuid|exists:jenis_pembayaran,id',
             'potongan' => 'nullable|numeric',
+            'jumlahPembayaran' => 'nullable|numeric',
             'items'        => 'required|array|min:1',
             'items.*.barang_id' => 'required|uuid|exists:barang,id',
             'items.*.qty'       => 'required|numeric|min:1',
@@ -89,6 +89,7 @@ class PenjualanController extends Controller
                 'total_harga' => preg_replace('/[^\d]/', '', $request->total),
                 'catatan' => $request->catatan,
                 'potongan'      => $request->potongan,
+                'pembayaran'      => $request->jumlahPembayaran,
                 'kategori_penjualan' => "offline",
             ]);
 
