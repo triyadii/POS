@@ -740,31 +740,49 @@ public function update(Request $request, $id)
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+   public function destroy($id)
 {
-    $formattedTime = Carbon::now()->diffForHumans();
+    $formattedTime = \Carbon\Carbon::now()->diffForHumans();
 
     try {
         \DB::beginTransaction();
 
-        $data = Brand::findOrFail($id);
-        $data->delete();
+        // 🧱 Ambil data penjualan + detailnya
+        $penjualan = \App\Models\Penjualan::with('detail.barang')->findOrFail($id);
 
-        // 🧠 Log aktivitas
-        activity('hapus brand')
-            ->causedBy(Auth::user() ?? null)
-            ->performedOn($data)
-            ->withProperties(['attributes' => $data])
-            ->log('Menghapus Brand: ' . $data->nama);
+        // 🧠 Hanya jika kategori_penjualan = 'online', kembalikan stok
+        if ($penjualan->kategori_penjualan === 'online') {
+            foreach ($penjualan->detail as $detail) {
+                $barang = $detail->barang;
+
+                if ($barang) {
+                    // Tambahkan kembali stok
+                    $barang->stok += $detail->qty;
+                    $barang->save();
+                }
+            }
+        }
+
+        // 🗑️ Hapus detail terlebih dahulu (jaga integritas)
+        \App\Models\PenjualanDetail::where('penjualan_id', $penjualan->id)->delete();
+
+        // 🗑️ Hapus induk penjualan
+        $penjualan->delete();
+
+        // 🧾 Log aktivitas
+        activity('hapus penjualan')
+            ->causedBy(auth()->user() ?? null)
+            ->performedOn($penjualan)
+            ->withProperties(['attributes' => $penjualan])
+            ->log('Menghapus penjualan kode: ' . $penjualan->kode_transaksi);
 
         \DB::commit();
 
         return response()->json([
-            'success' => 'Data ' . $data->nama . ' berhasil dihapus.',
+            'success' => 'Transaksi ' . $penjualan->kode_transaksi . ' berhasil dihapus.',
             'time'    => $formattedTime,
             'judul'   => 'Berhasil',
         ]);
-
     } catch (\Exception $e) {
         \DB::rollBack();
 
@@ -780,7 +798,7 @@ public function update(Request $request, $id)
 
 public function massDelete(Request $request)
 {
-    $formattedTime = Carbon::now()->diffForHumans();
+    $formattedTime = \Carbon\Carbon::now()->diffForHumans();
 
     try {
         \DB::beginTransaction();
@@ -794,31 +812,55 @@ public function massDelete(Request $request)
             ]);
         }
 
-        // Ambil semua data sebelum dihapus (untuk log)
-        $records = Brand::whereIn('id', $ids)->get();
+        // Ambil semua data penjualan lengkap dengan detail & barang
+        $penjualans = \App\Models\Penjualan::with('detail.barang')
+            ->whereIn('id', $ids)
+            ->get();
 
-        // Hapus sekaligus
-        Brand::whereIn('id', $ids)->delete();
+        if ($penjualans->isEmpty()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Data penjualan tidak ditemukan.',
+            ]);
+        }
 
-        // Commit dulu sebelum log (supaya pasti sudah terhapus)
+        // 🔁 Loop tiap penjualan
+        foreach ($penjualans as $penjualan) {
+            // 🧠 Jika kategori = online → kembalikan stok
+            if ($penjualan->kategori_penjualan === 'online') {
+                foreach ($penjualan->detail as $detail) {
+                    $barang = $detail->barang;
+                    if ($barang) {
+                        $barang->stok += $detail->qty;
+                        $barang->save();
+                    }
+                }
+            }
+
+            // 🗑️ Hapus detail dulu
+            \App\Models\PenjualanDetail::where('penjualan_id', $penjualan->id)->delete();
+
+            // 🗑️ Hapus induk penjualan
+            $penjualan->delete();
+        }
+
         \DB::commit();
 
-        // Log setiap data di luar transaksi (aman & non-blocking)
-        foreach ($records as $record) {
-            activity('mass delete brand')
-                ->causedBy(Auth::user() ?? null)
-                ->performedOn($record)
-                ->withProperties(['attributes' => $record->toArray()])
-                ->log('Menghapus Brand: ' . $record->nama);
+        // 🧾 Catat log aktivitas (di luar transaksi supaya non-blocking)
+        foreach ($penjualans as $p) {
+            activity('mass delete penjualan')
+                ->causedBy(auth()->user() ?? null)
+                ->performedOn($p)
+                ->withProperties(['attributes' => $p->toArray()])
+                ->log('Menghapus penjualan kode: ' . $p->kode_transaksi);
         }
 
         return response()->json([
             'status'  => 'success',
-            'message' => count($ids) . ' data brand berhasil dihapus.',
+            'message' => count($ids) . ' data penjualan berhasil dihapus.',
             'time'    => $formattedTime,
             'judul'   => 'Berhasil',
         ]);
-
     } catch (\Exception $e) {
         \DB::rollBack();
 
@@ -830,6 +872,7 @@ public function massDelete(Request $request)
         ]);
     }
 }
+
 
 
 

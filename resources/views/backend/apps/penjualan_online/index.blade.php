@@ -389,7 +389,7 @@
 
     <!-- Modal Detail Brand -->
 <div class="modal fade" id="Modal_Show_Data" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered mw-950px">
       <div class="modal-content rounded-3 shadow">
         <div class="modal-header bg-light">
           <h5 class="modal-title fw-bold">Detail Data</h5>
@@ -1052,7 +1052,7 @@ initSelectJenisPembayaran();
             $(this).prepend('<input type="hidden" name="detail_id" value="">');
         }
 
-        
+
         initSelect2BarangEdit();
         updateAllTotalsEdit();
     },
@@ -1330,7 +1330,7 @@ initSelectJenisPembayaran();
                         }
                     });
                     $.ajax({
-                        url: "brand/" + id,
+                        url: "penjualan-online/" + id,
                         method: 'DELETE',
                         success: function(result) {
                             if (result.error) {
@@ -1468,7 +1468,7 @@ initSelectJenisPembayaran();
                             if (result.isConfirmed) {
                                 // Make an AJAX call to mass delete the users
                                 $.ajax({
-                                    url: "{{ route('brand.mass-delete') }}", // Pastikan route ini ada
+                                    url: "{{ route('penjualan-online.mass-delete') }}", // Pastikan route ini ada
                                     type: 'POST',
                                     data: {
                                         ids: selectedIds,

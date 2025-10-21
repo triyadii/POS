@@ -60,6 +60,7 @@
                         <thead class="bg-light">
                             <tr class="fw-semibold text-gray-700">
                                 <th>No</th>
+                                <th>Kode Item</th>
                                 <th>Nama Barang</th>
                                 <th class="text-end">Qty</th>
                                 <th class="text-end">Harga Jual</th>
@@ -70,6 +71,7 @@
                             @forelse ($data->detail as $no => $item)
                                 <tr>
                                     <td>{{ $no + 1 }}</td>
+                                    <td>{{ $item->barang?->kode_barang ?? '-' }}</td>
                                     <td>{{ $item->barang?->nama ?? '-' }}</td>
                                     <td class="text-end">{{ number_format($item->qty, 0, ',', '.') }}</td>
                                     <td class="text-end">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
