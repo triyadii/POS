@@ -173,9 +173,12 @@ class PenjualanOnlineController extends Controller
 public function print($id)
 {
     $penjualan = Penjualan::with('detail.barang')->findOrFail($id);
+        $metode = DB::table('jenis_pembayaran')
+        ->where('id', $penjualan->jenis_pembayaran_id)
+        ->value('nama');
 
     // view untuk struk
-    return view('backend.apps.penjualan_online.print', compact('penjualan'));
+    return view('backend.apps.penjualan_online.print', compact('penjualan','metode'));
 }
 
 
