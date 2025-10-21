@@ -32,14 +32,24 @@ class PenjualanController extends Controller
             'pembayaran' => $pembayaran
         ]);
     }
+    public function kasirEdit(Request $request)
+    {
+        $produk = Barang::all();
+        $pembayaran = JenisPembayaran::all();
+        return view('backend.apps.penjualan.kasirEdit', [
+            'no_penjualan' => $this->generateNoPenjualan(),
+            'produk' => $produk,
+            'pembayaran' => $pembayaran
+        ]);
+    }
     public function store(Request $request)
     {
-
         $validator = \Validator::make($request->all(), [
             'no_penjualan' => 'required|string|max:50',
             'tanggal'      => 'required|date',
             'pembayaran'   => 'required|uuid|exists:jenis_pembayaran,id',
             'potongan' => 'nullable|numeric',
+            'jumlahPembayaran' => 'nullable|numeric',
             'items'        => 'required|array|min:1',
             'items.*.barang_id' => 'required|uuid|exists:barang,id',
             'items.*.qty'       => 'required|numeric|min:1',
@@ -79,6 +89,7 @@ class PenjualanController extends Controller
                 'total_harga' => preg_replace('/[^\d]/', '', $request->total),
                 'catatan' => $request->catatan,
                 'potongan'      => $request->potongan,
+                'pembayaran'      => $request->jumlahPembayaran,
                 'kategori_penjualan' => "offline",
             ]);
 
@@ -491,5 +502,100 @@ class PenjualanController extends Controller
             'pembayaran' => $pembayaran,
             'no_penjualan' => $penjualan->no_penjualan, // gunakan kode lama
         ]);
+    }
+    public function updateBarang(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $penjualan = Penjualan::findOrFail($request->id);
+
+            // === Update informasi umum ===
+            $penjualan->customer_nama = $request->customer ?? $penjualan->customer_nama;
+            $penjualan->jenis_pembayaran_id = $request->jenis_pembayaran_id ?? $penjualan->jenis_pembayaran_id;
+            $penjualan->catatan = $request->catatan ?? '';
+            $penjualan->save();
+
+            $totalHarga = 0;
+            $totalItem = 0;
+
+            // === Loop data item dari frontend ===
+            foreach ($request->items as $item) {
+                $hapus = filter_var($item['hapus'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+                // === AMAN: cek apakah key id ada ===
+                $itemId = $item['id'] ?? null;
+                $barangId = $item['barang_id'] ?? null;
+                $qty = intval($item['qty'] ?? 0);
+                $hargaJual = intval($item['harga_jual'] ?? 0);
+
+                // === Baris baru (ID kosong atau "new-xxx") ===
+                if (!$itemId || str_starts_with($itemId, 'new-')) {
+                    if ($hapus || !$barangId) continue;
+
+                    $barang = Barang::find($barangId);
+                    if (!$barang) continue;
+
+                    $barang->stok = max(0, $barang->stok - $qty);
+                    $barang->save();
+
+                    PenjualanDetail::create([
+                        'penjualan_id' => $penjualan->id,
+                        'barang_id' => $barangId,
+                        'qty' => $qty,
+                        'harga_jual' => $hargaJual,
+                        'subtotal' => $qty * $hargaJual,
+                    ]);
+
+                    $totalHarga += $qty * $hargaJual;
+                    $totalItem += $qty;
+                    continue;
+                }
+
+                // === Item lama ===
+                $detail = PenjualanDetail::find($itemId);
+                if (!$detail) continue;
+
+                $barang = Barang::find($detail->barang_id);
+                if (!$barang) continue;
+
+                if ($hapus) {
+                    $barang->stok += $detail->qty;
+                    $barang->save();
+                    $detail->delete();
+                    continue;
+                }
+
+                $barang->stok += $detail->qty;
+                $barang->stok -= $qty;
+                if ($barang->stok < 0) $barang->stok = 0;
+                $barang->save();
+
+                $detail->qty = $qty;
+                $detail->harga_jual = $hargaJual;
+                $detail->subtotal = $qty * $hargaJual;
+                $detail->save();
+
+                $totalHarga += $detail->subtotal;
+                $totalItem += $qty;
+            }
+
+            // Update total transaksi
+            $penjualan->total_harga = $totalHarga;
+            $penjualan->total_item = $totalItem;
+            $penjualan->save();
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Penjualan berhasil diperbarui',
+                'data' => $penjualan->fresh('detail')
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui penjualan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

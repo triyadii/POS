@@ -39,11 +39,11 @@ License: For each use you must have a valid license purchased only from above li
     <!--end::Global Stylesheets Bundle-->
     <style>
         body {
-            background-image: url('{{ asset('assets/media/auth/bg10.jpeg') }}');
+            background-image: url('{{ asset(' assets/media/auth/bg10.jpeg') }}');
         }
 
         [data-bs-theme="dark"] body {
-            background-image: url('{{ asset('assets/media/auth/bg10-dark.jpeg') }}');
+            background-image: url('{{ asset(' assets/media/auth/bg10-dark.jpeg') }}');
         }
     </style>
 
@@ -66,20 +66,17 @@ License: For each use you must have a valid license purchased only from above li
     <div class="page-loader flex-column">
         {{-- Logo Light (background putih → pakai logo hitam) --}}
         @if ($appSetting && $appSetting->logo_black)
-            <img alt="Logo" class="theme-light-show max-h-50px"
-                src="{{ asset('storage/' . $appSetting->logo_black) }}" />
+        <img alt="Logo" class="theme-light-show max-h-50px" src="{{ asset('storage/' . $appSetting->logo_black) }}" />
         @else
-            <img alt="Logo" class="theme-light-show max-h-50px"
-                src="{{ asset('assets/media/logos/keenthemes.svg') }}" />
+        <img alt="Logo" class="theme-light-show max-h-50px" src="{{ asset('assets/media/logos/keenthemes.svg') }}" />
         @endif
 
         {{-- Logo Dark (background hitam → pakai logo putih) --}}
         @if ($appSetting && $appSetting->logo_white)
-            <img alt="Logo" class="theme-dark-show max-h-50px"
-                src="{{ asset('storage/' . $appSetting->logo_white) }}" />
+        <img alt="Logo" class="theme-dark-show max-h-50px" src="{{ asset('storage/' . $appSetting->logo_white) }}" />
         @else
-            <img alt="Logo" class="theme-dark-show max-h-50px"
-                src="{{ asset('assets/media/logos/keenthemes-dark.svg') }}" />
+        <img alt="Logo" class="theme-dark-show max-h-50px"
+            src="{{ asset('assets/media/logos/keenthemes-dark.svg') }}" />
         @endif
 
         <div class="d-flex align-items-center mt-5">
@@ -111,8 +108,8 @@ License: For each use you must have a valid license purchased only from above li
     </script>
     <!--end::Theme mode setup on page load-->
 
-   
-      
+
+
     <!--begin::App-->
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
 
@@ -142,30 +139,29 @@ License: For each use you must have a valid license purchased only from above li
 
                                     {{-- Logo Mobile --}}
                                     @if ($appSetting && $appSetting->logo_mobile)
-                                        <img alt="Logo Mobile" src="{{ asset('storage/' . $appSetting->logo_mobile) }}"
-                                            class="h-20px d-sm-none d-inline" />
+                                    <img alt="Logo Mobile" src="{{ asset('storage/' . $appSetting->logo_mobile) }}"
+                                        class="h-20px d-sm-none d-inline" />
                                     @else
-                                        <img alt="Logo Mobile"
-                                            src="{{ asset('assets/media/logos/demo-35-small.svg') }}"
-                                            class="h-20px d-sm-none d-inline" />
+                                    <img alt="Logo Mobile" src="{{ asset('assets/media/logos/demo-35-small.svg') }}"
+                                        class="h-20px d-sm-none d-inline" />
                                     @endif
 
                                     {{-- Logo Black (dipakai untuk tema light = background putih) --}}
                                     @if ($appSetting && $appSetting->logo_black)
-                                        <img alt="Logo Black" src="{{ asset('storage/' . $appSetting->logo_black) }}"
-                                            class="h-20px h-lg-25px theme-light-show d-none d-sm-inline" />
+                                    <img alt="Logo Black" src="{{ asset('storage/' . $appSetting->logo_black) }}"
+                                        class="h-20px h-lg-25px theme-light-show d-none d-sm-inline" />
                                     @else
-                                        <img alt="Logo Black" src="{{ asset('assets/media/logos/demo-35.svg') }}"
-                                            class="h-20px h-lg-25px theme-light-show d-none d-sm-inline" />
+                                    <img alt="Logo Black" src="{{ asset('assets/media/logos/demo-35.svg') }}"
+                                        class="h-20px h-lg-25px theme-light-show d-none d-sm-inline" />
                                     @endif
 
                                     {{-- Logo White (dipakai untuk tema dark = background hitam) --}}
                                     @if ($appSetting && $appSetting->logo_white)
-                                        <img alt="Logo White" src="{{ asset('storage/' . $appSetting->logo_white) }}"
-                                            class="h-20px h-lg-25px theme-dark-show d-none d-sm-inline" />
+                                    <img alt="Logo White" src="{{ asset('storage/' . $appSetting->logo_white) }}"
+                                        class="h-20px h-lg-25px theme-dark-show d-none d-sm-inline" />
                                     @else
-                                        <img alt="Logo White" src="{{ asset('assets/media/logos/demo-35-dark.png') }}"
-                                            class="h-20px h-lg-25px theme-dark-show d-none d-sm-inline" />
+                                    <img alt="Logo White" src="{{ asset('assets/media/logos/demo-35-dark.png') }}"
+                                        class="h-20px h-lg-25px theme-dark-show d-none d-sm-inline" />
                                     @endif
 
                                 </a>
@@ -198,8 +194,9 @@ License: For each use you must have a valid license purchased only from above li
                     $isFullPage = in_array(Route::currentRouteName(), ['barang-masuk.show']);
                 @endphp
                 
-                <div class="app-container {{ $isFullPage ? 'container-fluid px-0' : 'container-xxl' }} d-flex flex-row flex-column-fluid">
-                 --}}
+                <div class="app-container {{ $isFullPage ? 'container-fluid px-0' : 'container-xxl' }} d-flex flex-row
+                    flex-column-fluid">
+                    --}}
                     <!--begin::Main-->
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <!--begin::Content wrapper-->
