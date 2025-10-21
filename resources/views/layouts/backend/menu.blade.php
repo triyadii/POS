@@ -277,15 +277,13 @@
                                     <!--end:Menu item-->
                                 @endcan
                                 <!--begin:Menu item-->
-                                <div
-                                    class="menu-item {{ request()->routeIs('laporan-laba-rugi-harian.index') ? 'here show ' : '' }}">
-
-                                    <a class="menu-link py-3" href="{{ route('laporan-laba-rugi-harian.index') }}">
-                                        <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                        </span>
-                                        <span class="menu-title">Laba Rugi Harian</span>
-                                    </a>
+                                <div class="menu-item {{ request()->routeIs('laporan-laba-rugi-harian.index') ? 'here show ' : '' }}">
+                                  <a class="menu-link py-3" href="{{ route('laporan-laba-rugi-harian.index') }}">
+                                 <span class="menu-bullet">
+                                 <span class="bullet bullet-dot"></span>
+                                 </span>
+                                 <span class="menu-title">Laba Rugi Harian</span>
+                                </a>
                                     <!--end:Menu link-->
                                 </div>
                                 <!--end:Menu item-->
