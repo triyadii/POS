@@ -63,13 +63,12 @@ class LaporanPenjualanKategoriController extends Controller
         }
         $totalPendapatan = $dateRangeExists ? (clone $detailQuery)->sum('subtotal') : 0;
         $jumlahProdukTerjual = $dateRangeExists ? (clone $detailQuery)->sum('qty') : 0;
-        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,tipe_id,kategori_id', 'detail.barang.tipe:id,nama', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama', 'pembayaran']);
+        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,kategori_id', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama', 'pembayaran']);
 
         return \DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('tanggal', fn($data) => Carbon::parse($data->tanggal_penjualan)->translatedFormat('d F Y, H:i'))
             ->addColumn('user', fn($data) => $data->user->name ?? '-')
-            ->addColumn('customer', fn($data) => $data->customer_nama ?? 'Umum')
             ->addColumn('jenis_pembayaran', function ($data) {
                 if (!$data->pembayaran) {
                     return '-';
@@ -164,7 +163,7 @@ class LaporanPenjualanKategoriController extends Controller
         $start = Carbon::parse($request->start)->startOfDay();
         $end = Carbon::parse($request->end)->endOfDay();
         $kategoriId = $request->kategori_id;
-        $query = Penjualan::with(['user:id,name', 'detail.barang:id,kode_barang,nama', 'detail.barang.tipe:id,nama', 'pembayaran'])
+        $query = Penjualan::with(['user:id,name', 'detail.barang:id,kode_barang,nama', 'pembayaran'])
             ->whereBetween('tanggal_penjualan', [$start, $end])->orderBy('tanggal_penjualan', 'asc');
         if ($kategoriId && $kategoriId != 'all') {
             $query->whereHas('detail.barang', function ($q) use ($kategoriId) {

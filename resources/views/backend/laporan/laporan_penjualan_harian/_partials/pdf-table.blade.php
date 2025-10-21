@@ -1,82 +1,64 @@
-<table class="main-table">
-    <thead>
-        <tr>
-            {{-- Lebar kolom telah diatur ulang agar total 100% --}}
-            <th style="width: 8%;">Tanggal</th>
-            <th style="width: 12%;">No. Transaksi</th>
-            <th style="width: 7%;">Jenis Pembayaran</th>
-            <th style="width: 16%;">Nama Barang</th>
-            <th style="width: 3%;" class="text-right">Qty</th>
-            <th style="width: 7%;" class="text-right">Harga Jual</th>
-            <th style="width: 7%;" class="text-right">Harga Beli</th>
-            <th style="width: 8%;" class="text-right">Sub Total</th>
-            <th style="width: 7%;" class="text-right">Profit</th>
-            <th style="width: 4%;" class="text-right">Pot.</th>
-            <th style="width: 4%;" class="text-right">Pajak</th>
-            <th style="width: 4%;" class="text-right">Biaya Lain</th>
-            <th style="width: 8%;" class="text-right">Total Akhir</th>
-            <th style="width: 6%;" class="text-right">Tunai</th>
-            <th style="width: 6%;" class="text-right">Kredit</th>
-        </tr>
-    </thead>
-    <tbody>
-        @forelse ($penjualanDetails as $detail)
-            @php
-                $profit = $detail->subtotal - $detail->harga_beli * $detail->qty;
-                $isTunai = optional(optional($detail->penjualan)->pembayaran)->nama === 'Tunai';
-                $total_akhir = $detail->subtotal; // Sesuai permintaan
-            @endphp
-            <tr>
-                <td>{{ optional($detail->penjualan)->tanggal_penjualan ? $detail->penjualan->tanggal_penjualan->format('d-m-Y') : '-' }}
-                </td>
-                <td>{{ optional($detail->penjualan)->kode_transaksi ?? '-' }}</td>
-                <td>{{ optional(optional($detail->penjualan)->pembayaran)->nama ?? '-' }}</td>
-                <td>{{ optional($detail->barang)->nama ?? 'N/A' }}</td>
-                <td class="text-right">{{ $detail->qty }}</td>
-                <td class="text-right">{{ number_format($detail->harga_jual, 0, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($detail->harga_beli, 0, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($detail->subtotal, 0, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($profit, 0, ',', '.') }}</td>
-                <td class="text-right">0</td>
-                <td class="text-right">0</td>
-                <td class="text-right">0</td>
-                <td class="text-right">{{ number_format($total_akhir, 0, ',', '.') }}</td>
-                <td class="text-right">{{ $isTunai ? number_format($detail->subtotal, 0, ',', '.') : '0' }}</td>
-                <td class="text-right">{{ !$isTunai ? number_format($detail->subtotal, 0, ',', '.') : '0' }}</td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="15" style="text-align: center;">Tidak ada data transaksi.</td>
-            </tr>
-        @endforelse
-    </tbody>
-    <tfoot>
-        <tr class="total-row">
-            {{-- Sesuaikan colspan agar pas --}}
-            <td colspan="4" class="text-right"><strong>Total</strong></td>
-            <td class="text-right"><strong>{{ number_format($jumlahProdukTerjual, 0, ',', '.') }}</strong></td>
-            <td class="text-right"></td>
-            <td class="text-right"></td>
-            <td class="text-right"><strong>{{ number_format($total_subtotal, 0, ',', '.') }}</strong></td>
-            <td class="text-right"><strong>{{ number_format($total_profit, 0, ',', '.') }}</strong></td>
-            <td class="text-right"><strong>0</strong></td>
-            <td class="text-right"><strong>0</strong></td>
-            <td class="text-right"><strong>0</strong></td>
-            <td class="text-right"><strong>{{ number_format($total_subtotal, 0, ',', '.') }}</strong></td>
-            <td class="text-right"><strong>{{ number_format($total_tunai, 0, ',', '.') }}</strong></td>
-            <td class="text-right"><strong>{{ number_format($total_kredit, 0, ',', '.') }}</strong></td>
-        </tr>
-        <tr class="total-row">
-            <td colspan="15" style="font-style: italic; text-align: right;">
-                ({{ $totalTerbilang }})
-            </td>
-        </tr>
-    </tfoot>
-</table>
+{{-- Hapus tabel utama, kita akan buat per transaksi --}}
 
-{{-- Summary Box (Tidak berubah) --}}
+@forelse ($penjualanTransactions as $trx)
+
+    {{-- 1. HEADER TRANSAKSI --}}
+    <table class="transaction-header">
+        <tr>
+            <td><strong>Tanggal:</strong> {{ $trx->tanggal_penjualan->format('d-m-Y') }}</td>
+            <td><strong>No. Transaksi:</strong> {{ $trx->kode_transaksi }}</td>
+            <td><strong>Pembayaran:</strong> {{ optional($trx->pembayaran)->nama ?? '-' }}</td>
+            <td class="text-right"><strong>Sub Total:</strong>
+                {{ number_format($trx->detail->sum('subtotal'), 0, ',', '.') }}</td>
+            <td class="text-right"><strong>Potongan:</strong> {{ number_format($trx->potongan, 0, ',', '.') }}</td>
+            <td class="text-right"><strong>Total Akhir:</strong> {{ number_format($trx->total_harga, 0, ',', '.') }}</td>
+        </tr>
+    </table>
+
+    {{-- 2. TABEL DETAIL ITEM (Untuk Komparasi) --}}
+    <table class="item-table">
+        <thead>
+            <tr>
+                <th>Nama Barang</th>
+                <th class="text-right" style="width: 10%;">Qty</th>
+                <th class="text-right" style="width: 15%;">Harga Jual</th>
+                <th class="text-right" style="width: 15%;">Harga Beli</th>
+                <th class="text-right" style="width: 15%;">Sub Total</th>
+                <th class="text-right" style="width: 15%;">Profit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($trx->detail as $detail)
+                @php
+                    $profit = $detail->subtotal - $detail->harga_beli * $detail->qty;
+                @endphp
+                <tr>
+                    <td>{{ optional($detail->barang)->nama ?? 'N/A' }}</td>
+                    <td class="text-right">{{ $detail->qty }}</td>
+                    <td class="text-right">{{ number_format($detail->harga_jual, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($detail->harga_beli, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($profit, 0, ',', '.') }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="text-center text-muted">...Data detail tidak ditemukan...</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+@empty
+    <table class="item-table">
+        <tr>
+            <td colspan="6" style="text-align: center;">Tidak ada data transaksi.</td>
+        </tr>
+    </table>
+@endforelse
+
+
+{{-- 3. SUMMARY BOX (Pindahkan dari tfoot ke sini) --}}
 <div style="margin-top: 20px; width: 350px; margin-left: auto; font-size: 11px;">
-    {{-- ... (Isi summary box tidak perlu diubah) ... --}}
     <table style="width: 100%;">
         <tr>
             <td style="padding: 5px;">Jumlah Item :</td>
@@ -90,7 +72,8 @@
         </tr>
         <tr>
             <td style="padding: 5px;">Potongan :</td>
-            <td style="padding: 5px; text-align: right; font-weight: bold;">0</td>
+            <td style="padding: 5px; text-align: right; font-weight: bold;">
+                {{ number_format($total_potongan, 0, ',', '.') }}</td>
         </tr>
         <tr>
             <td style="padding: 5px;">Pajak :</td>

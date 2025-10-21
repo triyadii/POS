@@ -64,13 +64,12 @@ class LaporanPenjualanBrandController extends Controller
         }
         $totalPendapatan = $dateRangeExists ? (clone $detailQuery)->sum('subtotal') : 0;
         $jumlahProdukTerjual = $dateRangeExists ? (clone $detailQuery)->sum('qty') : 0;
-        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,tipe_id,kategori_id', 'detail.barang.tipe:id,nama', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama']);
+        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,kategori_id', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama']);
 
         return \DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('tanggal', fn($data) => Carbon::parse($data->tanggal_penjualan)->translatedFormat('d F Y, H:i'))
             ->addColumn('user', fn($data) => $data->user->name ?? '-')
-            ->addColumn('customer', fn($data) => $data->customer_nama ?? 'Umum')
             ->addColumn('jenis_pembayaran', function ($data) {
                 if (!$data->pembayaran) {
                     return '-';
@@ -176,7 +175,6 @@ class LaporanPenjualanBrandController extends Controller
         $query = Penjualan::with([
             'user:id,name',
             'detail.barang:id,kode_barang,nama,brand_id,kategori_id',
-            'detail.barang.tipe:id,nama',
             'detail.barang.brand:id,nama',
             'detail.barang.kategori:id,nama',
             'pembayaran'

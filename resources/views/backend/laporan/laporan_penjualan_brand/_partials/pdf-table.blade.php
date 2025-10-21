@@ -2,11 +2,12 @@
 <table class="main-table">
     <thead>
         <tr>
-            <th style="width: 15%;">No. Transaksi</th>
             <th style="width: 15%;">Tanggal</th>
-            <th style="width: 40%;">Detail Barang</th>
+            <th style="width: 15%;">No. Transaksi</th>
+            <th style="width: 15%;">Kategori Penjualan</th>
+            <th style="width: 45%;">Detail Barang</th>
             <th style="width: 15%;">Jenis Pembayaran</th>
-            <th class="text-right" style="width: 15%;">Total</th>
+            <th style="width: 15%;" class="text-right">Total</th>
         </tr>
     </thead>
     <tbody>
@@ -21,11 +22,12 @@
                         : $trx->total_harga;
             @endphp
             <tr>
+                <td>{{ $trx->tanggal_penjualan->translatedFormat('d M Y') }}</td>
                 <td>
                     {{ $trx->kode_transaksi }} <br>
                     <small style="color: #666;">Kasir: {{ $trx->user->name ?? 'N/A' }}</small>
                 </td>
-                <td>{{ $trx->tanggal_penjualan->translatedFormat('d M Y') }}</td>
+                <td>{{ $trx->kategori_penjualan ?? '-' }}</td>
                 <td>
                     <table class="detail-table">
                         @foreach ($trx->detail as $item)
@@ -64,17 +66,17 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5" style="text-align: center;">Tidak ada data transaksi.</td>
+                <td colspan="6" style="text-align: center;">Tidak ada data transaksi.</td>
             </tr>
         @endforelse
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="4" class="text-right"><strong>Total Keseluruhan</strong></td>
+            <td colspan="5" class="text-right"><strong>Total Keseluruhan</strong></td>
             <td class="text-right"><strong>Rp {{ number_format($totalPenjualan, 0, ',', '.') }}</strong></td>
         </tr>
         <tr>
-            <td colspan="5" class="terbilang">
+            <td colspan="6" class="terbilang">
                 ({{ $totalPenjualanTerbilang }})
             </td>
         </tr>
