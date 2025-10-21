@@ -137,7 +137,7 @@
                         <th width="5%">No</th>
                         <th>Barang</th>
                         <th>Kategori</th>
-                        <th>Brand & Tipe</th>
+                        <th>Brand</th>
                         <th>Size</th>
                         <th class="text-end min-w-80px">Qty</th>
 

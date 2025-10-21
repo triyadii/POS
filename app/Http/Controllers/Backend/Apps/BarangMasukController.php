@@ -159,7 +159,7 @@ class BarangMasukController extends Controller
      
      public function getDetailList($id)
      {
-         $details = BarangMasukDetail::with(['barang.kategori', 'barang.brand', 'barang.tipe'])
+         $details = BarangMasukDetail::with(['barang.kategori', 'barang.brand'])
              ->where('barang_masuk_id', $id)
              ->orderBy('created_at', 'desc');
      
@@ -198,12 +198,11 @@ class BarangMasukController extends Controller
              // 🔹 Kolom Brand & Tipe
              ->addColumn('brand_tipe', function ($row) {
                  $brand = e($row->barang?->brand?->nama ?? '-');
-                 $tipe = e($row->barang?->tipe?->nama ?? '-');
+               
      
                  return '
                      <div class="d-flex flex-column">
                          <span class="fw-semibold text-gray-800">' . $brand . '</span>
-                         <span class="text-muted fs-7">Tipe: ' . $tipe . '</span>
                      </div>
                  ';
              })

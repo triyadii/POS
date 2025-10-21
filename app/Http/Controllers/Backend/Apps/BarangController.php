@@ -58,7 +58,8 @@ class BarangController extends Controller
         if (!empty($request->search['value'])) {
             $searchValue = $request->search['value'];
             $postsQuery->where(function ($query) use ($searchValue) {
-                $query->where('kode_barang', 'LIKE', "%{$searchValue}%");
+                $query->where('kode_barang', 'LIKE', "%{$searchValue}%")
+                ->orWhere('nama', 'LIKE', "%{$searchValue}%");
             });
         }
 
@@ -70,9 +71,7 @@ class BarangController extends Controller
             $postsQuery->where('brand_id', $request->brand_id);
         }
         
-        if ($request->filled('tipe_id')) {
-            $postsQuery->where('tipe_id', $request->tipe_id);
-        }
+        
         
         if ($request->filled('size')) {
             $postsQuery->where('size', 'LIKE', "%{$request->size}%");
@@ -114,9 +113,9 @@ class BarangController extends Controller
                                                     <i class="ki-outline ki-down fs-5 ms-1"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">';
-                    if (auth()->user()->can('barang-show')) {
-                        $x .= ' <li><a class="dropdown-item btn px-3" href="' . route('barang.show', $row->id) . '" >Detail</a></li>';
-                    }
+                    // if (auth()->user()->can('barang-show')) {
+                    //     $x .= ' <li><a class="dropdown-item btn px-3" href="' . route('barang.show', $row->id) . '" >Detail</a></li>';
+                    // }
                     if (auth()->user()->can('barang-edit')) {
                         $x .= ' <li><a class="dropdown-item btn px-3" id="getEditRowData" data-id="' . $row->id . '" >Edit</a></li>';
                     }
@@ -158,7 +157,6 @@ class BarangController extends Controller
                 return '
                 <div class="d-flex flex-column">
                     <span class="fw-semibold text-gray-800">' . e($row->brand->nama ?? '-') . '</span>
-                    <span class="text-muted fs-7">Tipe: ' . e($row->tipe->nama ?? '-') . '</span>
                 </div>
             ';
             })
@@ -290,7 +288,6 @@ public function store(Request $request)
         'kelompok_barang.*.brand_id'    => 'required|uuid',
 
         'kelompok_barang.*.barang'      => 'required|array|min:1',
-        'kelompok_barang.*.barang.*.tipe_id'   => 'required|uuid',
         'kelompok_barang.*.barang.*.satuan_id' => 'required|uuid',
         'kelompok_barang.*.barang.*.nama'      => 'required|string|max:150',
         'kelompok_barang.*.barang.*.size_main' => 'required|string|max:150', // ✅ sesuai nama input
@@ -318,7 +315,6 @@ public function store(Request $request)
         'kelompok_barang.*.barang.*.nama.required' => 'Nama item wajib diisi.',
         'kelompok_barang.*.barang.*.size_main.required' => 'Size item wajib diisi.',
 
-        'kelompok_barang.*.barang.*.tipe_id.required' => 'Tipe wajib dipilih.',
         'kelompok_barang.*.barang.*.satuan_id.required' => 'Satuan wajib dipilih.',
         'kelompok_barang.*.barang.*.harga_beli.required' => 'Harga beli wajib diisi.',
         'kelompok_barang.*.barang.*.harga_jual.required' => 'Harga jual wajib diisi.',
@@ -411,7 +407,6 @@ $validator->after(function ($validator) use ($request) {
                     'nama'        => $barang['nama'],
                     'kategori_id' => $kategoriId,
                     'brand_id'    => $brandId,
-                    'tipe_id'     => $barang['tipe_id'],
                     'satuan_id'   => $barang['satuan_id'],
                     'stok'        => 0,
                     'harga_beli'  => $hargaBeli,
@@ -430,7 +425,6 @@ $validator->after(function ($validator) use ($request) {
                         'nama'        => $barang['nama'],
                         'kategori_id' => $kategoriId,
                         'brand_id'    => $brandId,
-                        'tipe_id'     => $barang['tipe_id'],
                         'satuan_id'   => $barang['satuan_id'],
                         'stok'        => 0,
                         'harga_beli'  => $hargaBeli,
@@ -484,7 +478,6 @@ $validator->after(function ($validator) use ($request) {
             'data' => $data,
             'kategoriSelected' => $data->findOrFail($id)->kategori,
             'brandSelected' => $data->findOrFail($id)->brand,
-            'tipeSelected' => $data->findOrFail($id)->tipe,
             'satuanSelected' => $data->findOrFail($id)->satuan,
         ])->render();
 
@@ -512,10 +505,9 @@ $validator->after(function ($validator) use ($request) {
         // 🧩 Validasi input
         $validator = \Validator::make($request->all(), [
             'kode_barang' => 'required|string|max:100|unique:barang,kode_barang,' . $id . ',id',
-            'nama'        => 'required|string|max:150|unique:barang,nama,' . $id . ',id',
+            'nama'        => 'required|string|max:150',
             'kategori_id' => 'required|uuid',
             'brand_id'    => 'required|uuid',
-            'tipe_id'     => 'required|uuid',
             'satuan_id'   => 'required|uuid',
             'stok'        => 'nullable|numeric|min:0',
             'harga_beli'  => 'required|numeric|min:0',
@@ -529,7 +521,6 @@ $validator->after(function ($validator) use ($request) {
             'nama.unique'          => 'Nama Barang sudah digunakan oleh barang lain',
             'kategori_id.required' => 'Kategori wajib dipilih',
             'brand_id.required'    => 'Brand wajib dipilih',
-            'tipe_id.required'     => 'Tipe wajib dipilih',
             'satuan_id.required'   => 'Satuan wajib dipilih',
             'harga_beli.required'  => 'Harga beli wajib diisi',
             'harga_jual.required'  => 'Harga jual wajib diisi',
@@ -555,7 +546,6 @@ $validator->after(function ($validator) use ($request) {
                 'nama'        => $request->input('nama'),
                 'kategori_id' => $request->input('kategori_id'),
                 'brand_id'    => $request->input('brand_id'),
-                'tipe_id'     => $request->input('tipe_id'),
                 'satuan_id'   => $request->input('satuan_id'),
                 'stok'        => $request->input('stok') ?? 0,
                 'harga_beli'  => $request->input('harga_beli'),
@@ -710,43 +700,217 @@ $validator->after(function ($validator) use ($request) {
         }
         return response()->json($barang);
     }
+    // public function pencarianBarangList(Request $request)
+    // {
+    //     $q = $request->get('q', '');
+
+    //     $data = Barang::query()
+    //         ->leftJoin('kategori', 'barang.kategori_id', '=', 'kategori.id')
+    //         ->leftJoin('brands', 'barang.brand_id', '=', 'brands.id')
+    //         ->when($q, function ($query) use ($q) {
+    //             $query->where(function ($sub) use ($q) {
+    //                 $sub->where('barang.nama', 'like', "%{$q}%")
+    //                     ->orWhere('barang.kode_barang', 'like', "%{$q}%");
+    //             });
+    //         })
+    //         ->select(
+    //             'barang.id',
+    //             'barang.kode_barang',
+    //             'barang.nama',
+    //             'barang.stok',
+    //             'barang.size',
+    //             'kategori.nama as kategori',
+    //             'brands.nama as brand'
+    //         )
+    //         ->orderBy('barang.nama')
+    //         ->limit(20)
+    //         ->get()
+    //         ->map(function ($item) {
+    //             return [
+    //                 'id'       => $item->id,
+    //                 'kode'     => $item->kode_barang,
+    //                 'nama'     => $item->nama,
+    //                 'stok'     => $item->stok,
+    //                 'size'     => $item->size,
+    //                 'kategori' => $item->kategori ?? '-',
+    //                 'brand'    => $item->brand ?? '-',
+    //             ];
+    //         });
+
+    //     return response()->json(['data' => $data]);
+    // }
+
+
     public function pencarianBarangList(Request $request)
     {
-        $q = $request->get('q', '');
-
-        $data = Barang::query()
-            ->leftJoin('kategori', 'barang.kategori_id', '=', 'kategori.id')
-            ->leftJoin('brands', 'barang.brand_id', '=', 'brands.id')
-            ->when($q, function ($query) use ($q) {
-                $query->where(function ($sub) use ($q) {
-                    $sub->where('barang.nama', 'like', "%{$q}%")
-                        ->orWhere('barang.kode_barang', 'like', "%{$q}%");
-                });
-            })
-            ->select(
-                'barang.id',
-                'barang.kode_barang',
-                'barang.nama',
-                'barang.stok',
-                'barang.size',
-                'kategori.nama as kategori',
-                'brands.nama as brand'
-            )
-            ->orderBy('barang.nama')
-            ->limit(20)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id'       => $item->id,
-                    'kode'     => $item->kode_barang,
-                    'nama'     => $item->nama,
-                    'stok'     => $item->stok,
-                    'size'     => $item->size,
-                    'kategori' => $item->kategori ?? '-',
-                    'brand'    => $item->brand ?? '-',
-                ];
+        $postsQuery = Barang::orderBy('created_at', 'desc');
+       
+        if (!empty($request->search['value'])) {
+            $searchValue = $request->search['value'];
+            $postsQuery->where(function ($query) use ($searchValue) {
+                $query->where('kode_barang', 'LIKE', "%{$searchValue}%")
+                ->orWhere('nama', 'LIKE', "%{$searchValue}%");
             });
+        }
 
-        return response()->json(['data' => $data]);
+       
+        
+        $data = $postsQuery->select('*');
+
+        return \DataTables::of($data)
+            ->addIndexColumn()
+
+            ->addColumn('action', function ($row) {
+                $x = '';
+
+                    $x .= '
+                    
+                     <div class="text-end">
+                <a href="' . route('barang.history.page', $row->id) . '"
+                    class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" >
+                    <i class="ki-outline ki-eye fs-2"></i>
+                </a>
+        
+            </div>';'
+                    
+                    
+                    ';
+                
+                return '
+            ' . $x . '
+            ';
+            })
+
+
+            ->addColumn('nama', function ($row) {
+                return '
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-gray-800">' . e($row->nama) . '</span>
+                </div>
+            ';
+            })
+
+            
+            ->addColumn('kode', function ($row) {
+                return '
+                <div class="d-flex flex-column">
+                    <span class="">' . e($row->kode_barang) . '</span>
+                </div>
+            ';
+            })
+
+
+            ->addColumn('kategori_id', function ($row) {
+                $namaKategori = $row->kategori->nama ?? '-';
+                $hash = substr(md5(strtolower($namaKategori)), 0, 6); // ambil 6 digit pertama hex
+                $badgeColor = '#' . $hash;
+
+                return '
+                <span class="badge fw-semibold" style="background-color:' . $badgeColor . '; color:#fff;">
+                    ' . e($namaKategori) . '
+                </span>
+            ';
+            })
+
+
+            ->addColumn('brand_id', function ($row) {
+                return '
+                <div class="d-flex flex-column">
+                    <span class="fw-semibold text-gray-800">' . e($row->brand->nama ?? '-') . '</span>
+                </div>
+            ';
+            })
+
+            ->addColumn('size', function ($row) {
+                return '
+                <div class="">
+                    <span class="fw-semibold badge badge-secondary">' . e($row->size ?? '-') . '</span>
+                </div>
+            ';
+            })
+
+
+            ->addColumn('stok', function ($row) {
+                return '
+                    <div class="d-flex flex-column">
+                        <span class="fw-semibold text-gray-800">'
+                            . e($row->stok) . ' ' . e($row->satuan->singkatan ?? '-') .
+                        '</span>
+                    </div>
+                ';
+            })
+
+            ->rawColumns(['action', 'nama', 'kategori_id', 'brand_id', 'stok', 'size','kode'])
+            ->make(true);
     }
+
+
+    public function historyPenjualanPage($id)
+{
+    $barang = Barang::with(['kategori', 'brand', 'penjualanDetail.penjualan'])
+        ->findOrFail($id);
+
+    
+
+    return view('backend.apps.barang.history', compact('barang'));
+}
+
+
+// public function historyPenjualanData($id)
+// {
+//     $barang = Barang::findOrFail($id);
+
+//     $query = $barang->penjualanDetail()
+//         ->with('penjualan')
+//         ->orderByDesc('created_at');
+
+//     return \DataTables::eloquent($query)
+//         ->addColumn('tanggal', fn($row) => optional($row->penjualan->tanggal_penjualan)->format('d/m/Y H:i'))
+//         ->addColumn('kode', fn($row) => $row->penjualan->kode_transaksi ?? '-')
+//         ->addColumn('customer', fn($row) => $row->penjualan->customer_nama ?? '-')
+//         ->addColumn('qty', fn($row) => $row->qty)
+//         ->addColumn('harga_jual', fn($row) => 'Rp ' . number_format($row->harga_jual, 0, ',', '.'))
+//         ->addColumn('subtotal', fn($row) => 'Rp ' . number_format($row->subtotal, 0, ',', '.'))
+//         ->rawColumns(['harga_jual', 'subtotal'])
+//         ->make(true);
+// }
+
+
+public function historyPenjualanData(Request $request, $id)
+{
+    $barang = Barang::findOrFail($id);
+
+    $query = $barang->penjualanDetail()
+        ->with('penjualan')
+        ->orderByDesc('created_at');
+// 🧩 Tambahkan log untuk memastikan input frontend
+    \Log::info('Filter tanggal:', [
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date
+    ]);
+
+    if ($request->filled('start_date')) {
+    $start = $request->start_date;
+    $end = $request->end_date ?: $start;
+
+    $query->whereHas('penjualan', function ($q) use ($start, $end) {
+        $q->whereRaw('DATE(tanggal_penjualan) >= ?', [$start])
+          ->whereRaw('DATE(tanggal_penjualan) <= ?', [$end]);
+    });
+}
+
+
+    return \DataTables::eloquent($query)
+        ->addColumn('tanggal', fn($row) => optional($row->penjualan->tanggal_penjualan)->format('d/m/Y H:i'))
+        ->addColumn('kode', fn($row) => $row->penjualan->kode_transaksi ?? '-')
+        ->addColumn('customer', fn($row) => $row->penjualan->customer_nama ?? '-')
+        ->addColumn('qty', fn($row) => $row->qty)
+        ->addColumn('harga_jual', fn($row) => 'Rp ' . number_format($row->harga_jual, 0, ',', '.'))
+        ->addColumn('subtotal', fn($row) => 'Rp ' . number_format($row->subtotal, 0, ',', '.'))
+        ->rawColumns(['harga_jual', 'subtotal'])
+        ->make(true);
+}
+
+
+
 }
