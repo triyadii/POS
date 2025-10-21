@@ -39,11 +39,11 @@ License: For each use you must have a valid license purchased only from above li
     <!--end::Global Stylesheets Bundle-->
     <style>
         body {
-            background-image: url('{{ asset(' assets/media/auth/bg10.jpeg') }}');
+            background-image: url('{{ asset('assets/media/auth/bg10.jpeg') }}');
         }
 
         [data-bs-theme="dark"] body {
-            background-image: url('{{ asset(' assets/media/auth/bg10-dark.jpeg') }}');
+            background-image: url('{{ asset('assets/media/auth/bg10-dark.jpeg') }}');
         }
     </style>
 
