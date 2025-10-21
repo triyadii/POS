@@ -72,18 +72,18 @@ class LaporanPenjualanKategoriController extends Controller
         }
         $totalPendapatan = $dateRangeExists ? (clone $detailQuery)->sum('subtotal') : 0;
         $jumlahProdukTerjual = $dateRangeExists ? (clone $detailQuery)->sum('qty') : 0;
-        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,kategori_id', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama', 'pembayaran']);
+        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,kategori_id', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama', 'jenis_pembayaran']);
 
         return \DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('tanggal', fn($data) => Carbon::parse($data->tanggal_penjualan)->translatedFormat('d F Y, H:i'))
             ->addColumn('user', fn($data) => $data->user->name ?? '-')
             ->addColumn('jenis_pembayaran', function ($data) {
-                if (!$data->pembayaran) {
+                if (!$data->jenis_pembayaran) {
                     return '-';
                 }
-                $nama = e($data->pembayaran->nama);
-                $rekening = e($data->pembayaran->no_rekening);
+                $nama = e($data->jenis_pembayaran->nama);
+                $rekening = e($data->jenis_pembayaran->no_rekening);
                 // Membuat HTML dengan nama dan no rekening di bawahnya
                 return "<div>
                             <span class='fw-bold'>{$nama}</span><br>
@@ -175,7 +175,7 @@ class LaporanPenjualanKategoriController extends Controller
         $start = Carbon::parse($request->start)->startOfDay();
         $end = Carbon::parse($request->end)->endOfDay();
         $kategoriId = $request->kategori_id;
-        $query = Penjualan::with(['user:id,name', 'detail.barang:id,kode_barang,nama', 'pembayaran'])
+        $query = Penjualan::with(['user:id,name', 'detail.barang:id,kode_barang,nama', 'jenis_pembayaran'])
             ->whereBetween('tanggal_penjualan', [$start, $end])->orderBy('tanggal_penjualan', 'asc');
         if ($kategoriId && $kategoriId != 'all') {
             $query->whereHas('detail.barang', function ($q) use ($kategoriId) {

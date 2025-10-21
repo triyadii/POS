@@ -80,11 +80,11 @@ class LaporanPenjualanBrandController extends Controller
             ->addColumn('tanggal', fn($data) => Carbon::parse($data->tanggal_penjualan)->translatedFormat('d F Y, H:i'))
             ->addColumn('user', fn($data) => $data->user->name ?? '-')
             ->addColumn('jenis_pembayaran', function ($data) {
-                if (!$data->pembayaran) {
+                if (!$data->jenis_pembayaran) {
                     return '-';
                 }
-                $nama = e($data->pembayaran->nama);
-                $rekening = e($data->pembayaran->no_rekening);
+                $nama = e($data->jenis_pembayaran->nama);
+                $rekening = e($data->jenis_pembayaran->no_rekening);
                 // Membuat HTML dengan nama dan no rekening di bawahnya
                 return "<div>
                             <span class='fw-bold'>{$nama}</span><br>
@@ -189,7 +189,7 @@ class LaporanPenjualanBrandController extends Controller
             'detail.barang:id,kode_barang,nama,brand_id,kategori_id',
             'detail.barang.brand:id,nama',
             'detail.barang.kategori:id,nama',
-            'pembayaran'
+            'jenis_pembayaran'
         ])
             ->whereBetween('tanggal_penjualan', [$start, $end])
             ->orderBy('tanggal_penjualan', 'asc');
