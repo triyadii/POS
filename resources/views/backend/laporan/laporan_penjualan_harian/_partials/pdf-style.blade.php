@@ -28,9 +28,10 @@
         }
 
         main {
-            margin-bottom: 60px;
+            /* (margin-bottom: 60px; -- DINONAKTIFKAN) */
         }
 
+        /* Footer "Dicetak Oleh" (Sudah benar, tidak fixed) */
         .footer {
             position: fixed;
             bottom: 0px;
@@ -57,59 +58,63 @@
             color: #888;
         }
 
-        .main-table {
+        /* ======================================= */
+        /* STYLE BARU UNTUK STRUKTUR PDF BARU */
+        /* ======================================= */
+
+        /* Style untuk tabel header transaksi */
+        .transaction-header {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            background-color: #f2f2f2;
+            font-size: 11px;
+            border: 1px solid #ccc;
         }
 
-        .main-table th,
-        .main-table td {
+        .transaction-header td {
+            border: none;
+            padding: 8px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+
+        /* Style untuk tabel detail item */
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            /* Jarak antar transaksi */
+        }
+
+        .item-table th,
+        .item-table td {
             border: 1px solid #ddd;
-            /* =================================== */
-            /* PERBAIKAN: Padding dikecilkan */
-            /* =================================== */
             padding: 5px;
             text-align: left;
             vertical-align: top;
             word-wrap: break-word;
-            /* Membantu memecah teks jika terpaksa */
         }
 
-        .main-table th {
+        .item-table th {
             background-color: #4A5568;
             color: #FFFFFF;
             font-weight: bold;
+            font-size: 9px;
             text-transform: uppercase;
         }
 
-        .main-table tbody tr:nth-child(even) {
+        .item-table tbody tr:nth-child(even) {
             background-color: #f9f9f9;
         }
 
+        /* ======================================= */
+        /* AKHIR STYLE BARU */
+        /* ======================================= */
+
+
         .text-right {
             text-align: right !important;
-        }
-
-        /* Tabel Detail Barang (tidak terpakai di layout ini) */
-        .detail-table {
-            width: 100%;
-            border: none;
-        }
-
-        .detail-table td {
-            border: none;
-            padding: 4px 0;
-        }
-
-        /* Footer Tabel */
-        .main-table tfoot tr {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-
-        .main-table tfoot td {
-            font-size: 11px;
         }
 
         .terbilang {

@@ -49,12 +49,21 @@ class LaporanPenjualanBrandController extends Controller
                 $q->where('brand_id', $brandId);
             });
         }
+        $kategoriPenjualan = ($request->filled('filter_kategori_penjualan') && $request->filter_kategori_penjualan != 'all') ? $request->filter_kategori_penjualan : null;
+        if ($kategoriPenjualan) {
+            $query->where('kategori_penjualan', $kategoriPenjualan);
+        }
         $dateRangeExists = isset($startDate) && isset($endDate);
         $totalTransaksi = $dateRangeExists ? (clone $query)->count() : 0;
         $detailQuery = PenjualanDetail::query();
-        if ($dateRangeExists) {
-            $detailQuery->whereHas('penjualan', function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
+        if ($dateRangeExists || $kategoriPenjualan) { // Cek salah satu
+            $detailQuery->whereHas('penjualan', function ($q) use ($startDate, $endDate, $kategoriPenjualan, $dateRangeExists) {
+                if ($dateRangeExists) {
+                    $q->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
+                }
+                if ($kategoriPenjualan) {
+                    $q->where('kategori_penjualan', $kategoriPenjualan);
+                }
             });
         }
         if ($brandId) {
@@ -64,13 +73,12 @@ class LaporanPenjualanBrandController extends Controller
         }
         $totalPendapatan = $dateRangeExists ? (clone $detailQuery)->sum('subtotal') : 0;
         $jumlahProdukTerjual = $dateRangeExists ? (clone $detailQuery)->sum('qty') : 0;
-        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,tipe_id,kategori_id', 'detail.barang.tipe:id,nama', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama']);
+        $data = $query->with(['user:id,name', 'detail.barang:id,kode_barang,nama,brand_id,kategori_id', 'detail.barang.brand:id,nama', 'detail.barang.kategori:id,nama']);
 
         return \DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('tanggal', fn($data) => Carbon::parse($data->tanggal_penjualan)->translatedFormat('d F Y, H:i'))
             ->addColumn('user', fn($data) => $data->user->name ?? '-')
-            ->addColumn('customer', fn($data) => $data->customer_nama ?? 'Umum')
             ->addColumn('jenis_pembayaran', function ($data) {
                 if (!$data->pembayaran) {
                     return '-';
@@ -143,6 +151,9 @@ class LaporanPenjualanBrandController extends Controller
                 $q->where('brand_id', $brandId);
             });
         }
+        if ($request->filled('filter_kategori_penjualan') && $request->filter_kategori_penjualan != 'all') {
+            $query->where('kategori_penjualan', $request->filter_kategori_penjualan);
+        }
 
         $penjualanData = $query->pluck('total', 'tanggal');
         $periode = [];
@@ -176,7 +187,6 @@ class LaporanPenjualanBrandController extends Controller
         $query = Penjualan::with([
             'user:id,name',
             'detail.barang:id,kode_barang,nama,brand_id,kategori_id',
-            'detail.barang.tipe:id,nama',
             'detail.barang.brand:id,nama',
             'detail.barang.kategori:id,nama',
             'pembayaran'
@@ -188,6 +198,10 @@ class LaporanPenjualanBrandController extends Controller
             $query->whereHas('detail.barang', function ($q) use ($brandId) {
                 $q->where('brand_id', $brandId);
             });
+        }
+
+        if ($request->filled('kategori_penjualan') && $request->kategori_penjualan != 'all') {
+            $query->where('kategori_penjualan', $request->kategori_penjualan);
         }
 
         $penjualan = $query->get();

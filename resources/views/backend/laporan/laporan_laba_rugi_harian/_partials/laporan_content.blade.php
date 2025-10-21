@@ -1,4 +1,4 @@
-{{-- Statistik Box --}}
+{{-- Statistik Box (Ini tidak berubah) --}}
 <div class="row g-5 g-xl-8 mb-10">
     <div class="col-xl-3">
         <div class="card bg-light-success hoverable card-xl-stretch">
@@ -35,19 +35,22 @@
 </div>
 {{-- End Statistik Box --}}
 
+
+{{-- BARIS 1: Detail Penjualan --}}
 <div class="row g-5 g-xl-8">
-    {{-- KOLOM KIRI (PENJUALAN & PEMBELIAN) --}}
-    <div class="col-lg-6">
-        <div class="card card-flush mb-8">
+    <div class="col-lg-12">
+        <div class="card card-flush">
             <div class="card-header">
                 <h3 class="card-title">Detail Penjualan (Pendapatan)</h3>
             </div>
-            <div class="card-body p-0">
+            {{-- MODIFIKASI: Hapus p-0 untuk padding --}}
+            <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
                         <thead>
                             <tr class="fw-bold text-muted">
-                                <th>Nama Barang</th>
+                                {{-- MODIFIKASI: Tambah text-center --}}
+                                <th class="text-center">Nama Barang</th>
                                 <th class="text-end">Qty</th>
                                 <th class="text-end">Subtotal</th>
                             </tr>
@@ -69,17 +72,25 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+{{-- BARIS 2: Detail Pembelian --}}
+<div class="row g-5 g-xl-8">
+    <div class="col-lg-12">
         <div class="card card-flush">
             <div class="card-header">
                 <h3 class="card-title">Detail Pembelian (Barang Masuk)</h3>
             </div>
-            <div class="card-body p-0">
+            {{-- MODIFIKASI: Hapus p-0 untuk padding --}}
+            <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
                         <thead>
                             <tr class="fw-bold text-muted">
-                                <th>No. Transaksi</th>
-                                <th>Nama Barang</th>
+                                {{-- MODIFIKASI: Tambah text-center --}}
+                                <th class="text-center">No. Transaksi</th>
+                                <th class="text-center">Nama Barang</th>
                                 <th class="text-end">Qty</th>
                                 <th class="text-end">Subtotal</th>
                             </tr>
@@ -102,22 +113,25 @@
                 </div>
             </div>
         </div>
-    </div> {{-- Penutup col-lg-6 KIRI --}}
+    </div>
+</div>
 
-
-    {{-- KOLOM KANAN (PENGELUARAN & KOMPARASI PROFIT) --}}
-    <div class="col-lg-6">
-        <div class="card card-flush mb-8">
+{{-- BARIS 3: Detail Pengeluaran --}}
+<div class="row g-5 g-xl-8">
+    <div class="col-lg-12">
+        <div class="card card-flush">
             <div class="card-header">
                 <h3 class="card-title">Detail Pengeluaran (Biaya)</h3>
             </div>
-            <div class="card-body p-0">
+            {{-- MODIFIKASI: Hapus p-0 untuk padding --}}
+            <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
                         <thead>
                             <tr class="fw-bold text-muted">
-                                <th>Keterangan</th>
-                                <th>Kategori</th>
+                                {{-- MODIFIKASI: Tambah text-center --}}
+                                <th class="text-center">Keterangan</th>
+                                <th class="text-center">Kategori</th>
                                 <th class="text-end">Jumlah</th>
                             </tr>
                         </thead>
@@ -138,16 +152,24 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+{{-- BARIS 4: Komparasi Profit --}}
+<div class="row g-5 g-xl-8">
+    <div class="col-lg-12">
         <div class="card card-flush">
             <div class="card-header">
                 <h3 class="card-title">Komparasi Profit Item Terjual</h3>
             </div>
-            <div class="card-body p-0">
+            {{-- MODIFIKASI: Hapus p-0 untuk padding --}}
+            <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
                         <thead>
                             <tr class="fw-bold text-muted">
-                                <th>Nama Barang</th>
+                                {{-- MODIFIKASI: Tambah text-center --}}
+                                <th class="text-center">Nama Barang</th>
                                 <th class="text-end">Hrg. Beli</th>
                                 <th class="text-end">Hrg. Jual</th>
                                 <th class="text-end">Qty</th>
@@ -183,4 +205,4 @@
             </div>
         </div>
     </div>
-</div> {{-- Penutup div.row.g-5.g-xl-8 --}}
+</div>

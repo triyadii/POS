@@ -15,17 +15,19 @@ class Penjualan extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-    'id',
-    'kode_transaksi',
-    'tanggal_penjualan',
-    'user_id',
-    'total_item',
-    'total_harga',
-    'potongan',             // ✅ baru
-    'kategori_penjualan',   // ✅ baru
-    'catatan',
-    'jenis_pembayaran_id',
-];
+        'id', // ❗ wajib ada
+        'kode_transaksi',
+        'tanggal_penjualan',
+        'customer_nama',
+        'user_id',
+        'total_item',
+        'total_harga',
+        'catatan',
+        'potongan',
+        'pembayaran',
+        'jenis_pembayaran_id',
+        'kategori_penjualan',
+    ];
 
     protected static function boot()
     {

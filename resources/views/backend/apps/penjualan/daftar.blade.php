@@ -286,18 +286,17 @@
                     className: 'text-end',
                     render: function(data) {
                         return `
-                        <div class="d-flex justify-content-end gap-2">
-                            <button class="btn btn-sm btn-light-primary" onclick="lihatDetail('${data.id}')">
-                                <i class="fas fa-eye"></i> Lihat
-                            </button>
-                            <button class="btn btn-sm btn-light-warning" onclick="editPenjualan('${data.id}')">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn btn-sm btn-light-danger" onclick="hapusPenjualan('${data.id}')">
-                                <i class="fas fa-trash"></i> Hapus
-                            </button>
-                        </div>
-                        `;
+                    <div class="d-flex justify-content-end gap-2">
+                        <button class="btn btn-sm btn-light-primary" onclick="lihatDetail('${data.id}')">
+                            <i class="fas fa-eye"></i> Lihat
+                        </button>
+                        <button class="btn btn-sm btn-light-warning" onclick="lemparKeKasir('${data.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-light-danger" onclick="hapusPenjualan('${data.id}')">
+                            <i class="fas fa-trash"></i> Hapus
+                        </button>
+                    </div>`;
                     }
                 }
             ],
@@ -621,6 +620,41 @@
                         Swal.fire('Error', 'Tidak dapat menghapus data', 'error');
                     }
                 });
+            }
+        });
+    }
+
+    function lemparKeKasir(id) {
+        $.ajax({
+            url: "{{ route('penjualan.detail') }}",
+            type: "GET",
+            data: {
+                id
+            },
+            success: function(res) {
+                if (!res) {
+                    Swal.fire('Gagal', 'Tidak dapat memuat data penjualan', 'error');
+                    return;
+                }
+
+                // Simpan ke localStorage agar bisa diambil di halaman Kasir
+                localStorage.setItem('editPenjualanData', JSON.stringify(res));
+
+                Swal.fire({
+                    title: 'Pindah ke Halaman Kasir?',
+                    text: 'Data akan dimuat otomatis untuk diedit.',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Pindah Sekarang',
+                    cancelButtonText: 'Batal'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('penjualan.kasirEdit') }}";
+                    }
+                });
+            },
+            error: function() {
+                Swal.fire('Error', 'Gagal mengambil data transaksi', 'error');
             }
         });
     }
