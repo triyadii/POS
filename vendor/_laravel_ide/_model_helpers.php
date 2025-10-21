@@ -4510,6 +4510,7 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property string|null $catatan
      * @property mixed $kategori_penjualan
+     * @property float $pembayaran
      * @property float $potongan
      * @property float $total_harga
      * @property integer $total_item
@@ -4533,6 +4534,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Penjualan>|Penjualan whereTotalItem($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Penjualan>|Penjualan whereTotalHarga($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Penjualan>|Penjualan wherePotongan($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Penjualan>|Penjualan wherePembayaran($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Penjualan>|Penjualan whereKategoriPenjualan($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Penjualan>|Penjualan whereCatatan($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Penjualan>|Penjualan whereCreatedAt($value)
