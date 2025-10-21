@@ -60,6 +60,7 @@ class LaporanPenjualanController extends Controller
     }
 
     // DISESUAIKAN: Mengambil data untuk DataTables dan Statistik
+    // DISESUAIKAN: Mengambil data untuk DataTables dan Statistik
     public function getLaporanData(Request $request)
     {
         $query = Penjualan::query();
@@ -83,12 +84,11 @@ class LaporanPenjualanController extends Controller
         })->sum('qty') : 0;
 
         // Query utama untuk DataTables dengan Eager Loading
-        // Eager loading sangat penting untuk performa, agar tidak terjadi N+1 query problem
         $data = $query->with([
             'user:id,name',
             'detail',
-            'detail.barang:id,kode_barang,nama,brand_id', // Ambil relasi barang
-            'detail.barang.brand:id,nama', // Ambil relasi brand dari barang
+            'detail.barang:id,kode_barang,nama,brand_id',
+            'detail.barang.brand:id,nama',
             'pembayaran'
         ])->select('penjualan.*');
 
@@ -99,9 +99,6 @@ class LaporanPenjualanController extends Controller
             })
             ->addColumn('user', function ($data) {
                 return $data->user->name ?? '-';
-            })
-            ->addColumn('customer', function ($data) {
-                return $data->customer_nama ?? 'Umum';
             })
             ->addColumn('jenis_pembayaran', function ($data) {
                 if (!$data->pembayaran) {
@@ -115,12 +112,20 @@ class LaporanPenjualanController extends Controller
                             <small class='text-muted'>{$rekening}</small>
                         </div>";
             })
+
+            // ===================================
+            // PENAMBAHAN KOLOM POTONGAN
+            // ===================================
+            ->addColumn('potongan', function ($data) {
+                // Asumsi 'potongan' adalah angka, format sebagai mata uang
+                return '<span class_exists="text-danger">Rp ' . number_format($data->potongan ?? 0, 0, ',', '.') . '</span>';
+            })
+
             ->addColumn('total', function ($data) {
                 return 'Rp ' . number_format($data->total_harga, 0, ',', '.');
             })
-            // KODE BARU
             ->addColumn('action', function ($data) {
-                // 1. Siapkan data detail dalam format array yang bersih
+                // 1. Siapkan data detail
                 $detailsArray = $data->detail->map(function ($item) {
                     return [
                         'nama_barang' => $item->barang->nama ?? 'N/A',
@@ -131,10 +136,10 @@ class LaporanPenjualanController extends Controller
                     ];
                 });
 
-                // 2. Ubah array menjadi JSON dan escape agar aman di HTML
+                // 2. Ubah array menjadi JSON
                 $detailsJson = htmlspecialchars(json_encode($detailsArray));
 
-                // 3. Buat tombol dengan atribut data-* untuk menyimpan JSON dan kode transaksi
+                // 3. Buat tombol
                 $button = '<button type="button" class="btn btn-sm btn-light-primary" 
                     data-bs-toggle="modal" 
                     data-bs-target="#kt_modal_detail_penjualan" 
@@ -145,7 +150,11 @@ class LaporanPenjualanController extends Controller
 
                 return $button;
             })
-            ->rawColumns(['action', 'jenis_pembayaran'])
+
+            // ===================================
+            // 'potongan' ditambahkan ke rawColumns
+            // ===================================
+            ->rawColumns(['action', 'jenis_pembayaran', 'potongan'])
 
             ->with([
                 'total_transaksi' => $totalTransaksi,

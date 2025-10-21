@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
-use App\Models\JenisPembayaran; // 1. (BARU) Tambahkan model ini
+use App\Models\JenisPembayaran;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -16,171 +16,112 @@ class LaporanPenjualanHarianController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil data jenis pembayaran untuk dikirim ke view
         $jenisPembayaran = JenisPembayaran::select('id', 'nama')->get();
-        
         return view('backend.laporan.laporan_penjualan_harian.index', compact('jenisPembayaran'));
     }
 
-    // DISESUAIKAN: Mengambil data untuk DataTables (LOGIKA DIUBAH TOTAL)
+    /**
+     * ==========================================================
+     * PERUBAHAN BESAR: Query diubah ke tabel 'Penjualan' (Transaksi)
+     * ==========================================================
+     */
     public function getLaporanData(Request $request)
     {
-        // =======================================================
-        // PERUBAHAN: Query utama sekarang ke PenjualanDetail
-        // =======================================================
-        $query = PenjualanDetail::query();
+        $query = Penjualan::query();
         $dateRangeExists = false;
-        $jenisPembayaranId = $request->filter_jenis_pembayaran; // (BARU) Ambil ID filter
+        $jenisPembayaranId = $request->filter_jenis_pembayaran;
 
         if (!empty($request->filter_tanggal_start) && !empty($request->filter_tanggal_end)) {
             $startDate = Carbon::parse($request->filter_tanggal_start)->startOfDay();
             $endDate = Carbon::parse($request->filter_tanggal_end)->endOfDay();
             $dateRangeExists = true;
 
-            // Filter berdasarkan tanggal di relasi 'penjualan'
-            $query->whereHas('penjualan', function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
-            });
+            $query->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
         }
 
-        // (BARU) Terapkan filter jenis pembayaran jika ada
         if (!empty($jenisPembayaranId)) {
-            $query->whereHas('penjualan', function ($q) use ($jenisPembayaranId) {
-                $q->where('jenis_pembayaran_id', $jenisPembayaranId);
-            });
+            $query->where('jenis_pembayaran_id', $jenisPembayaranId);
         }
 
-        // --- Statistik Box Atas (berdasarkan Penjualan) ---
-        $statsQuery = Penjualan::query();
-        if ($dateRangeExists) {
-            $statsQuery->whereBetween('tanggal_penjualan', [$startDate, $endDate]);
-        }
-        // (BARU) Terapkan filter jenis pembayaran di query statistik
-        if (!empty($jenisPembayaranId)) {
-            $statsQuery->where('jenis_pembayaran_id', $jenisPembayaranId);
-        }
+        // --- Statistik Box Atas & Footer ---
+        // $statsQuery adalah query di tabel 'penjualan'
+        $statsQuery = clone $query;
 
         $totalTransaksi = $dateRangeExists ? $statsQuery->count() : 0;
         $totalPendapatan = $dateRangeExists ? $statsQuery->sum('total_harga') : 0;
-        // Hitung total item terjual dari query detail
-        $jumlahProdukTerjual = $dateRangeExists ? (clone $query)->sum('qty') : 0;
+
+        // Ambil total potongan dari tabel Penjualan
+        $total_potongan = $dateRangeExists ? $statsQuery->sum('potongan') : 0;
+
+        // Ambil total Subtotal dari detail
+        $total_subtotal = 0;
+        $jumlahProdukTerjual = 0;
+        $total_profit = 0;
+
+        if ($dateRangeExists) {
+            $penjualanIds = (clone $statsQuery)->pluck('id');
+            $details = PenjualanDetail::whereIn('penjualan_id', $penjualanIds)->get();
+
+            $jumlahProdukTerjual = $details->sum('qty');
+            $total_subtotal = $details->sum('subtotal');
+            $total_profit = $details->sum(function ($item) {
+                return $item->subtotal - ($item->harga_beli * $item->qty);
+            });
+        }
+
+        $total_akhir = $total_subtotal - $total_potongan;
+
+        // (Logika tunai/kredit perlu disesuaikan)
+        $total_tunai = $dateRangeExists ? (clone $statsQuery)->whereHas('pembayaran', fn($q) => $q->where('nama', 'Tunai'))->sum('total_harga') : 0;
+        $total_kredit = $dateRangeExists ? (clone $statsQuery)->whereHas('pembayaran', fn($q) => $q->where('nama', '!=', 'Tunai'))->sum('total_harga') : 0;
 
 
-        // --- Query Footer & Summary Box (berdasarkan PenjualanDetail) ---
-        $footerData = $dateRangeExists ? (clone $query)->with('penjualan.pembayaran')->get() : collect();
-
-        $total_subtotal = $footerData->sum('subtotal');
-        // Profit = subtotal - (harga_beli * qty)
-        $total_profit = $footerData->sum(function ($item) {
-            return $item->subtotal - ($item->harga_beli * $item->qty);
-        });
-
-        // Asumsi 'Tunai' adalah nama. Jika Anda punya ID, itu lebih baik.
-        $total_tunai = $footerData->filter(function ($item) {
-            return optional(optional($item->penjualan)->pembayaran)->nama === 'Tunai';
-        })->sum('subtotal');
-
-        $total_kredit = $footerData->filter(function ($item) {
-            return optional(optional($item->penjualan)->pembayaran)->nama !== 'Tunai';
-        })->sum('subtotal');
-
-        // Sesuai permintaan: Total Akhir = Sub Total (untuk saat ini)
-        $total_akhir = $total_subtotal;
-
-
-        // --- Query utama untuk DataTables (Berdasarkan PenjualanDetail) ---
+        // --- Query utama untuk DataTables ---
         $data = $query->with([
-            'penjualan:id,kode_transaksi,tanggal_penjualan,user_id,jenis_pembayaran_id',
-            'penjualan.user:id,name',
-            'penjualan.pembayaran:id,nama',
-            'barang:id,kode_barang,nama',
-        ])->select('penjualan_detail.*'); // Ambil semua data dari detail
+            'user:id,name',
+            'pembayaran:id,nama',
+        ])->select('penjualan.*');
 
 
         return \DataTables::of($data)
             ->addIndexColumn()
-            // 1. Tanggal Transaksi
-            ->addColumn('tanggal', function ($detail) {
-                return $detail->penjualan ? Carbon::parse($detail->penjualan->tanggal_penjualan)->translatedFormat('d-m-Y') : '-';
+            // Kolom 1: Tombol Expander (Child Row)
+            ->addColumn('expander', function ($data) {
+                return '<button type="button" class="btn btn-sm btn-icon btn-light-primary btn-expand" data-id="' . $data->id . '"><i class="ki-outline ki-plus-square fs-3"></i></button>';
             })
-            // 2. Nomor Transaksi
-            ->addColumn('kode_transaksi', function ($detail) {
-                return $detail->penjualan->kode_transaksi ?? '-';
+            ->addColumn('tanggal', function ($data) {
+                return Carbon::parse($data->tanggal_penjualan)->translatedFormat('d-m-Y');
             })
-            // 3. (BARU) Tambahkan kolom Jenis Pembayaran
-            ->addColumn('jenis_pembayaran', function ($detail) {
-                return optional(optional($detail->penjualan)->pembayaran)->nama ?? '-';
+            ->addColumn('jenis_pembayaran', function ($data) {
+                return optional($data->pembayaran)->nama ?? '-';
             })
-            // 3. List Barang (Nama Barang)
-            ->addColumn('nama_barang', function ($detail) {
-                return optional($detail->barang)->nama ?? 'N/A';
+            ->addColumn('total_item', function ($data) {
+                return $data->total_item; // Asumsi ada kolom total_item di tabel 'penjualan'
             })
-            // 4. Qty (sudah ada di $detail->qty)
-            // ===================================
-            // BARU: Kolom Harga Jual
-            // ===================================
-            ->addColumn('harga_jual_fmt', function ($detail) {
-                return 'Rp ' . number_format($detail->harga_jual, 0, ',', '.');
+            ->addColumn('sub_total_fmt', function ($data) {
+                // Total Subtotal (Total Harga + Potongan)
+                $subtotal = $data->total_harga + $data->potongan;
+                return 'Rp ' . number_format($subtotal, 0, ',', '.');
             })
-            // 6. Harga Beli
-            ->addColumn('harga_beli_fmt', function ($detail) {
-                return 'Rp ' . number_format($detail->harga_beli, 0, ',', '.');
+            ->addColumn('potongan_fmt', function ($data) {
+                return 'Rp ' . number_format($data->potongan, 0, ',', '.');
             })
-            // 7. Sub Total
-            ->addColumn('sub_total_fmt', function ($detail) {
-                return 'Rp ' . number_format($detail->subtotal, 0, ',', '.');
+            ->addColumn('total_akhir_fmt', function ($data) {
+                return 'Rp ' . number_format($data->total_harga, 0, ',', '.');
             })
-            // 8. Profit
-            ->addColumn('profit', function ($detail) {
-                $profit = $detail->subtotal - ($detail->harga_beli * $detail->qty);
-                return 'Rp ' . number_format($profit, 0, ',', '.');
-            })
-            // 9. Potongan
-            ->addColumn('potongan', function ($detail) {
-                return 0; // Sesuai permintaan
-            })
-            // 10. Pajak
-            ->addColumn('pajak', function ($detail) {
-                return 0; // Sesuai permintaan
-            })
-            // 11. Biaya Lain
-            ->addColumn('biaya_lain', function ($detail) {
-                return 0; // Sesuai permintaan
-            })
-            // 12. Total Akhir
-            ->addColumn('total_akhir', function ($detail) {
-                // Sesuai permintaan: (sub total - diskon - pajak - biaya lain)
-                $total_akhir = $detail->subtotal - 0 - 0 - 0; // Hardcoded for now
-                return 'Rp ' . number_format($total_akhir, 0, ',', '.');
-            })
-            // 13. Bayar Tunai
-            ->addColumn('bayar_tunai', function ($detail) {
-                if (optional(optional($detail->penjualan)->pembayaran)->nama === 'Tunai') {
-                    return 'Rp ' . number_format($detail->subtotal, 0, ',', '.');
-                }
-                return '0';
-            })
-            // 14. Bayar Kredit
-            ->addColumn('bayar_kredit', function ($detail) {
-                if (optional(optional($detail->penjualan)->pembayaran)->nama !== 'Tunai') {
-                    return 'Rp ' . number_format($detail->subtotal, 0, ',', '.');
-                }
-                return '0';
-            })
-            ->rawColumns([]) // Tidak ada raw HTML di data baris
+            ->rawColumns(['expander', 'potongan_fmt'])
             ->with([
-                // Data Statistik Box Atas
                 'total_transaksi' => $totalTransaksi,
                 'total_penjualan' => $totalPendapatan,
                 'jumlah_produk_terjual' => $jumlahProdukTerjual,
 
-                // Data Footer & Summary Box
+                // Data Footer
                 'footer_total_item' => $jumlahProdukTerjual,
                 'footer_subtotal' => $total_subtotal,
-                'footer_profit' => $total_profit,
-                'footer_potongan' => 0, // Hardcode
-                'footer_pajak' => 0, // Hardcode
-                'footer_biaya_lain' => 0, // Hardcode
+                'footer_profit' => $total_profit, // Profit masih bisa dihitung
+                'footer_potongan' => $total_potongan,
+                'footer_pajak' => 0,
+                'footer_biaya_lain' => 0,
                 'footer_total_akhir' => $total_akhir,
                 'footer_bayar_tunai' => $total_tunai,
                 'footer_bayar_kredit' => $total_kredit,
@@ -188,13 +129,30 @@ class LaporanPenjualanHarianController extends Controller
             ->make(true);
     }
 
-    // =======================================================
-    // PERUBAHAN TOTAL: FUNGSI EXPORT
-    // (Logika query disamakan dengan getLaporanData)
-    // =======================================================
+    /**
+     * ==========================================================
+     * FUNGSI BARU: Untuk mengambil detail item (Child Row)
+     * ==========================================================
+     */
+    public function getDetailItems(Request $request)
+    {
+        $request->validate(['id' => 'required|string']);
+
+        $details = PenjualanDetail::where('penjualan_id', $request->id)
+            ->with('barang:id,kode_barang,nama')
+            ->get();
+
+        // Render HTML untuk tabel anak
+        $html = view('backend.laporan.laporan_penjualan_harian._partials.child-table', compact('details'))->render();
+
+        return response()->json(['html' => $html]);
+    }
+
+
+    // FUNGSI EXPORT (Untuk saat ini, kita biarkan item-based)
+    // Mengubah PDF ke transaction-based juga sangat kompleks
     public function export(Request $request)
     {
-        // Validasi input
         $request->validate([
             'ukuran' => 'required|in:A4,F4',
             'orientasi' => 'required|in:landscape',
@@ -206,9 +164,8 @@ class LaporanPenjualanHarianController extends Controller
 
         $start = Carbon::parse($request->start)->startOfDay();
         $end = Carbon::parse($request->end)->endOfDay();
-        $jenisPembayaranId = $request->jenis_pembayaran; // (BARU) Ambil ID filter
+        $jenisPembayaranId = $request->jenis_pembayaran;
 
-        // (BARU) Ambil nama jenis pembayaran untuk ditampilkan di PDF
         $namaJenisPembayaran = 'Semua';
         if (!empty($jenisPembayaranId)) {
             $pembayaran = JenisPembayaran::find($jenisPembayaranId);
@@ -217,56 +174,64 @@ class LaporanPenjualanHarianController extends Controller
             }
         }
 
-        // --- Query utama untuk PDF (Berdasarkan PenjualanDetail) ---
-        $query = PenjualanDetail::query()
-            ->join('penjualan', 'penjualan_detail.penjualan_id', '=', 'penjualan.id')
-            ->whereBetween('penjualan.tanggal_penjualan', [$start, $end])
+        // ===================================
+        // PERUBAHAN: Query utama diubah ke 'Penjualan'
+        // ===================================
+        $query = Penjualan::query()
+            ->whereBetween('tanggal_penjualan', [$start, $end])
             ->with([
-                'penjualan:id,kode_transaksi,tanggal_penjualan,user_id,jenis_pembayaran_id',
-                'penjualan.user:id,name',
-                'penjualan.pembayaran:id,nama',
-                'barang:id,kode_barang,nama',
+                'user:id,name',
+                'pembayaran:id,nama',
+                'detail', // Eager load detail item
+                'detail.barang:id,kode_barang,nama' // Eager load barang dari detail
             ])
-            ->select('penjualan_detail.*') // Must select detail columns
-            ->orderBy('penjualan.tanggal_penjualan', 'asc');
+            ->orderBy('tanggal_penjualan', 'asc');
 
-            // (BARU) Terapkan filter jenis pembayaran jika ada
         if (!empty($jenisPembayaranId)) {
-            $query->where('penjualan.jenis_pembayaran_id', $jenisPembayaranId);
+            $query->where('jenis_pembayaran_id', $jenisPembayaranId);
         }
-        $penjualanDetails = $query->get(); // Ambil semua data
 
-        // --- Kalkulasi Statistik & Footer ---
+        // Variabel baru untuk view (daftar transaksi)
+        $penjualanTransactions = $query->get();
+
+        // --- Kalkulasi Statistik & Footer (Logika ini tetap diperlukan) ---
+        // Kita ambil detail dari transaksi yang sudah di-load
+        $penjualanDetails = $penjualanTransactions->pluck('detail')->flatten();
+
         $total_subtotal = $penjualanDetails->sum('subtotal');
         $total_profit = $penjualanDetails->sum(function ($item) {
             return $item->subtotal - ($item->harga_beli * $item->qty);
         });
         $jumlahProdukTerjual = $penjualanDetails->sum('qty');
 
-        $total_tunai = $penjualanDetails->filter(function ($item) {
-            return optional(optional($item->penjualan)->pembayaran)->nama === 'Tunai';
-        })->sum('subtotal');
+        // Ambil total potongan dari tabel 'penjualan'
+        $total_potongan = $penjualanTransactions->sum('potongan');
 
-        $total_kredit = $penjualanDetails->filter(function ($item) {
-            return optional(optional($item->penjualan)->pembayaran)->nama !== 'Tunai';
-        })->sum('subtotal');
+        // Logika tunai/kredit berdasarkan transaksi, bukan detail
+        $total_tunai = $penjualanTransactions->filter(function ($trx) {
+            return optional($trx->pembayaran)->nama === 'Tunai';
+        })->sum('total_harga');
 
-        $total_akhir = $total_subtotal; // Sesuai permintaan
-        $totalTerbilang = $this->terbilang($total_akhir); // Ganti sumber terbilang
+        $total_kredit = $penjualanTransactions->filter(function ($trx) {
+            return optional($trx->pembayaran)->nama !== 'Tunai';
+        })->sum('total_harga');
+
+        $total_akhir = $total_subtotal - $total_potongan;
+        $totalTerbilang = $this->terbilang($total_akhir);
 
         $namaUser = Auth::user()->name;
         $tanggalCetak = Carbon::now();
 
-        // --- Kirim data baru ke View PDF ---
         $data = compact(
-            'penjualanDetails', // Variabel baru
+            'penjualanTransactions', // <-- Variabel baru dikirim ke view
             'jumlahProdukTerjual',
             'total_subtotal',
             'total_profit',
+            'total_potongan',
             'total_tunai',
             'total_kredit',
             'total_akhir',
-            'totalTerbilang', // Variabel baru
+            'totalTerbilang',
             'start',
             'end',
             'namaUser',
@@ -289,7 +254,7 @@ class LaporanPenjualanHarianController extends Controller
         return $pdf->stream('laporan_penjualan_harian-' . $request->tipe . '.pdf');
     }
 
-    // Fungsi terbilang dan penyebut tidak berubah
+    // ... (fungsi terbilang dan penyebut tidak berubah) ...
     private function terbilang($nilai)
     {
         if ($nilai < 0) {

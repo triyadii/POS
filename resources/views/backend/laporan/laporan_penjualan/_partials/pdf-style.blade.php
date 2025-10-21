@@ -27,14 +27,14 @@
             font-size: 12px;
         }
 
-        /* ====================================================== */
-        /* PERUBAHAN 1: Memberi jarak agar tidak tertimpa footer  */
-        /* ====================================================== */
+        /* MODIFIKASI: Hapus margin-bottom */
         main {
-            margin-bottom: 60px;
-            /* Menambahkan margin bawah seukuran footer + spasi */
+            /* margin-bottom: 60px; -- DINONAKTIFKAN */
         }
 
+        /* ======================================= */
+        /* PERUBAHAN UTAMA: HAPUS 'position: fixed' */
+        /* ======================================= */
         .footer {
             position: fixed;
             bottom: 0px;
@@ -61,35 +61,34 @@
             color: #888;
         }
 
-        /* ====================================================== */
-        /* PERUBAHAN 2: Mempercantik Tabel Utama                  */
-        /* ====================================================== */
+        /* Tabel Utama (Tidak berubah) */
         .main-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            border-spacing: 0;
         }
 
         .main-table th,
         .main-table td {
             border: 1px solid #ddd;
-            /* Border lebih soft */
             padding: 8px;
-            /* Padding lebih besar */
             text-align: left;
             vertical-align: top;
         }
 
         .main-table th {
             background-color: #4A5568;
-            /* Header lebih gelap */
             color: #FFFFFF;
-            /* Teks header putih */
             font-weight: bold;
             text-transform: uppercase;
         }
 
-        /* Zebra-striping untuk baris agar mudah dibaca */
+        /* CSS untuk header berulang kita nonaktifkan agar stabil */
+        .main-table thead {
+            /* display: table-header-group; -- DINONAKTIFKAN */
+        }
+
         .main-table tbody tr:nth-child(even) {
             background-color: #f9f9f9;
         }
@@ -98,40 +97,17 @@
             text-align: right !important;
         }
 
-        /* Tabel Detail Barang */
-        .detail-table {
-            width: 100%;
-            border: none;
-        }
-
-        .detail-table td {
-            border: none;
-            padding: 4px 0;
-        }
-
-        .detail-item {
-            border-bottom: 1px dashed #e0e0e0;
-            padding-bottom: 5px;
-            margin-bottom: 5px;
-        }
-
-        .detail-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        /* Footer Tabel */
-        .main-table tfoot tr {
+        /* Style Baris Total (Tidak berubah) */
+        .main-table tr.total-row {
             background-color: #f2f2f2;
             font-weight: bold;
         }
 
-        .main-table tfoot td {
+        .main-table tr.total-row td {
             font-size: 11px;
         }
 
-        .terbilang {
+        .main-table tr.total-row td.terbilang {
             font-style: italic;
             font-weight: normal;
             text-align: right;

@@ -166,9 +166,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/PencarianBarang', [BarangController::class, 'pencarianBarang'])->name('barang.pencarian');
     Route::get('/PencarianBarangList', [BarangController::class, 'pencarianBarangList'])->name('pencarianList.barang');
     Route::get('/barang/{id}/history', [BarangController::class, 'historyPenjualanPage'])
-    ->name('barang.history.page');
+        ->name('barang.history.page');
     Route::get('/barang/{id}/history/data', [BarangController::class, 'historyPenjualanData'])
-    ->name('barang.history.data');
+        ->name('barang.history.data');
 
 
 
@@ -290,6 +290,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('laporan-penjualan', LaporanPenjualanController::class);
 
     Route::get('laporan-penjualan-harian-data', [LaporanPenjualanHarianController::class, 'getLaporanData'])->name('laporan.penjualan-harian.data');
+    Route::get('laporan-penjualan-harian-detail-items', [LaporanPenjualanHarianController::class, 'getDetailItems'])->name('laporan.penjualan-harian.detail-items');
     Route::get('/laporan/penjualan-harian/export', [LaporanPenjualanHarianController::class, 'export'])->name('laporan.penjualan-harian.export');
     Route::resource('laporan-penjualan-harian', LaporanPenjualanHarianController::class);
 

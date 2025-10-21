@@ -100,7 +100,7 @@
                                     <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                                         <th class="min-w-150px">Tanggal</th>
                                         <th class="min-w-125px">No. Transaksi</th>
-                                        <th class="min-w-125px">Customer</th>
+                                        <th class="min-w-125px">Kategori Penjualan</th>
                                         <th class="min-w-125px">Kasir</th>
                                         <th class="min-w-150px">Jenis Pembayaran</th> {{-- KOLOM BARU --}}
                                         <th class="min-w-125px text-end">Total</th>
@@ -227,8 +227,8 @@
                             name: 'kode_transaksi'
                         },
                         {
-                            data: 'customer',
-                            name: 'customer_nama'
+                            data: 'kategori_penjualan',
+                            name: 'kategori_penjualan'
                         },
                         {
                             data: 'user',
