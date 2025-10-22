@@ -76,7 +76,7 @@
                     <tr class="fw-bold text-muted fs-7 text-uppercase gs-0">
                         <th>No Transaksi</th>
                         <th>Tanggal</th>
-                        <th>Customer</th>
+                        <th>Kategori Penjualan</th>
                         <th>Item Barang</th>
                         <th>Metode Pembayaran</th>
                         <th>Total Item</th>
@@ -253,8 +253,9 @@
                     }
                 },
                 {
-                    data: 'customer_nama',
-                    defaultContent: '-'
+                    data: 'kategori_penjualan',
+                    defaultContent: '-',
+                    render: d => d || '-'
                 },
                 {
                     data: 'nama_barang',
