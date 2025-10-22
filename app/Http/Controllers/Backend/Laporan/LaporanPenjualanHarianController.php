@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
 use App\Models\JenisPembayaran;
+use App\Models\Pengeluaran;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -63,6 +64,8 @@ class LaporanPenjualanHarianController extends Controller
         $total_subtotal = 0;
         $jumlahProdukTerjual = 0;
         $total_profit = 0;
+        $total_biaya_lain = 0;
+        $total_harga_beli = 0;
 
         if ($dateRangeExists) {
             $penjualanIds = (clone $statsQuery)->pluck('id');
@@ -70,16 +73,26 @@ class LaporanPenjualanHarianController extends Controller
 
             $jumlahProdukTerjual = $details->sum('qty');
             $total_subtotal = $details->sum('subtotal');
-            $total_profit = $details->sum(function ($item) {
-                return $item->subtotal - ($item->harga_beli * $item->qty);
+            $total_harga_beli = $details->sum(function ($item) {
+                return $item->harga_beli * $item->qty;
             });
+
+            // Profit kotor = Subtotal Penjualan - Subtotal Harga Beli
+            $total_profit = $total_subtotal - $total_harga_beli;
+            $total_biaya_lain = Pengeluaran::whereBetween('tanggal', [$startDate, $endDate])->sum('total');
         }
 
-        $total_akhir = $total_subtotal - $total_potongan;
+        // $total_profit = $total_profit - $total_biaya_lain;
+        $$total_profit = $total_profit - $total_biaya_lain; // Profit Bersih
+
+        // ===================================
+        // PERUBAHAN: Kalkulasi Total Akhir
+        // ===================================
+        $total_akhir = $total_subtotal - $total_potongan - $total_biaya_lain;
 
         // (Logika tunai/kredit perlu disesuaikan)
-        $total_tunai = $dateRangeExists ? (clone $statsQuery)->whereHas('pembayaran', fn($q) => $q->where('nama', 'Tunai'))->sum('total_harga') : 0;
-        $total_kredit = $dateRangeExists ? (clone $statsQuery)->whereHas('pembayaran', fn($q) => $q->where('nama', '!=', 'Tunai'))->sum('total_harga') : 0;
+        $total_tunai = $dateRangeExists ? (clone $statsQuery)->whereHas('jenis_pembayaran', fn($q) => $q->whereRaw('LOWER(nama) = ?', ['tunai']))->sum('total_harga') : 0;
+        $total_kredit = $dateRangeExists ? (clone $statsQuery)->whereHas('jenis_pembayaran', fn($q) => $q->whereRaw('LOWER(nama) != ?', ['tunai']))->sum('total_harga') : 0;
 
 
         // --- Query utama untuk DataTables ---
@@ -127,10 +140,11 @@ class LaporanPenjualanHarianController extends Controller
                 // Data Footer
                 'footer_total_item' => $jumlahProdukTerjual,
                 'footer_subtotal' => $total_subtotal,
+                'footer_total_harga_beli' => $total_harga_beli,
                 'footer_profit' => $total_profit, // Profit masih bisa dihitung
                 'footer_potongan' => $total_potongan,
                 'footer_pajak' => 0,
-                'footer_biaya_lain' => 0,
+                'footer_biaya_lain' => $total_biaya_lain,
                 'footer_total_akhir' => $total_akhir,
                 'footer_bayar_tunai' => $total_tunai,
                 'footer_bayar_kredit' => $total_kredit,
@@ -219,24 +233,32 @@ class LaporanPenjualanHarianController extends Controller
         $penjualanDetails = $penjualanTransactions->pluck('detail')->flatten();
 
         $total_subtotal = $penjualanDetails->sum('subtotal');
-        $total_profit = $penjualanDetails->sum(function ($item) {
-            return $item->subtotal - ($item->harga_beli * $item->qty);
+        $total_harga_beli = $penjualanDetails->sum(function ($item) {
+            return $item->harga_beli * $item->qty;
         });
+        $total_profit_kotor = $total_subtotal - $total_harga_beli;
         $jumlahProdukTerjual = $penjualanDetails->sum('qty');
 
         // Ambil total potongan dari tabel 'penjualan'
         $total_potongan = $penjualanTransactions->sum('potongan');
 
+        $total_biaya_lain = Pengeluaran::whereBetween('tanggal', [$start, $end])->sum('total');
+
+        // <-- PERUBAHAN 7: Kalkulasi ulang profit bersih
+        $total_profit = $total_profit_kotor - $total_biaya_lain;
+
         // Logika tunai/kredit berdasarkan transaksi, bukan detail
         $total_tunai = $penjualanTransactions->filter(function ($trx) {
-            return optional($trx->pembayaran)->nama === 'Tunai';
+            // Ubah nama menjadi huruf kecil sebelum membandingkan
+            return strtolower(optional($trx->jenis_pembayaran)->nama) === 'tunai';
         })->sum('total_harga');
 
         $total_kredit = $penjualanTransactions->filter(function ($trx) {
-            return optional($trx->pembayaran)->nama !== 'Tunai';
+            // Ubah nama menjadi huruf kecil sebelum membandingkan
+            return strtolower(optional($trx->jenis_pembayaran)->nama) !== 'tunai';
         })->sum('total_harga');
 
-        $total_akhir = $total_subtotal - $total_potongan;
+        $total_akhir = $total_subtotal - $total_potongan - $total_biaya_lain;
         $totalTerbilang = $this->terbilang($total_akhir);
 
         $namaUser = Auth::user()->name;
@@ -246,8 +268,10 @@ class LaporanPenjualanHarianController extends Controller
             'penjualanTransactions', // <-- Variabel baru dikirim ke view
             'jumlahProdukTerjual',
             'total_subtotal',
+            'total_harga_beli',
             'total_profit',
             'total_potongan',
+            'total_biaya_lain',
             'total_tunai',
             'total_kredit',
             'total_akhir',

@@ -145,6 +145,10 @@
                                     <div class="fw-semibold text-gray-600">Potongan :</div>
                                     <div class="fw-bold text-gray-800" id="summary-potongan">Rp 0</div>
                                 </div>
+                                <div class="d-flex flex-stack fs-6 mt-1">
+                                    <div class="fw-semibold text-gray-600">Biaya Lain :</div>
+                                    <div class="fw-bold text-gray-800" id="summary-biaya-lain">Rp 0</div>
+                                </div>
                                 {{-- Pajak & Biaya Lain bisa disembunyikan jika selalu 0 --}}
                                 <div class="separator separator-dashed my-3"></div>
                                 <div class="d-flex flex-stack fs-5">
@@ -153,18 +157,28 @@
                                 </div>
                                 <div class="separator separator-dashed my-3"></div>
                                 <div class="d-flex flex-stack fs-6">
-                                    <div class="fw-semibold text-info">Bayar Tunai :</div>
+                                    <div class="fw-semibold text-info">Total Bayar Tunai :</div>
                                     <div class="fw-bold text-info" id="summary-bayar-tunai">Rp 0</div>
                                 </div>
                                 <div class="d-flex flex-stack fs-6 mt-1">
-                                    <div class="fw-semibold text-danger">Bayar Kredit :</div>
+                                    <div class="fw-semibold text-danger">Total Bayar Kredit :</div>
                                     <div class="fw-bold text-danger" id="summary-bayar-kredit">Rp 0</div>
                                 </div>
+                                {{-- Separator untuk grup profit --}}
                                 <div class="separator separator-dashed my-3"></div>
-                                <div class="d-flex flex-stack fs-6">
+
+                                {{-- =================================== --}}
+                                {{-- PERUBAHAN 1: TAMBAH SUBTOTAL HARGA BELI --}}
+                                {{-- =================================== --}}
+                                {{-- <div class="d-flex flex-stack fs-6">
+                                    <div class="fw-semibold text-danger">Subtotal Harga Beli :</div>
+                                    <div class="fw-bold text-danger" id="summary-total-harga-beli">- Rp 0</div>
+                                </div>
+                                <div class="separator separator-dashed my-3"></div>
+                                <div class="d-flex flex-stack fs-6 mt-1">
                                     <div class="fw-semibold text-success">Total Profit :</div>
                                     <div class="fw-bold text-success" id="summary-profit">Rp 0</div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
 
@@ -280,12 +294,15 @@
                             $('#summary-total-item').text(json.footer_total_item ?? 0);
                             $('#summary-subtotal').text(formatRupiah(json.footer_subtotal));
                             $('#summary-potongan').text(formatRupiah(json.footer_potongan));
+                            $('#summary-biaya-lain').text(formatRupiah(json.footer_biaya_lain));
                             $('#summary-pajak').text(formatRupiah(json.footer_pajak));
                             $('#summary-biaya-lain').text(formatRupiah(json.footer_biaya_lain));
                             $('#summary-total-akhir').text(formatRupiah(json.footer_total_akhir));
                             $('#summary-bayar-tunai').text(formatRupiah(json.footer_bayar_tunai));
                             $('#summary-bayar-kredit').text(formatRupiah(json.footer_bayar_kredit));
-                            $('#summary-profit').text(formatRupiah(json.footer_profit));
+                            // $('#summary-total-harga-beli').text('- ' + formatRupiah(json
+                            //     .footer_total_harga_beli));
+                            // $('#summary-profit').text(formatRupiah(json.footer_profit));
 
                             return json.data;
                         }
