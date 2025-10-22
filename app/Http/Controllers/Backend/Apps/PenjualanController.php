@@ -294,11 +294,13 @@ class PenjualanController extends Controller
 
         // Filter tanggal
         if (!empty($request->start_date) && !empty($request->end_date)) {
-            $query->whereBetween('tanggal_penjualan', [$request->start_date, $request->end_date]);
+            $start = Carbon::parse($request->start_date)->startOfDay();
+            $end   = Carbon::parse($request->end_date)->endOfDay();
+            $query->whereBetween('tanggal_penjualan', [$start, $end]);
         } elseif (!empty($request->start_date)) {
-            $query->whereDate('tanggal_penjualan', '>=', $request->start_date);
+            $query->where('tanggal_penjualan', '>=', Carbon::parse($request->start_date)->startOfDay());
         } elseif (!empty($request->end_date)) {
-            $query->whereDate('tanggal_penjualan', '<=', $request->end_date);
+            $query->where('tanggal_penjualan', '<=', Carbon::parse($request->end_date)->endOfDay());
         }
 
         // Pencarian global (bisa berdiri sendiri)
