@@ -24,7 +24,7 @@ class PenjualanController extends Controller
     }
     public function index(Request $request)
     {
-        $produk = Barang::all();
+        $produk = Barang::with(['kategori:id,nama', 'brand:id,nama'])->get(); 
         $pembayaran = JenisPembayaran::all();
         return view('backend.apps.penjualan.index', [
             'no_penjualan' => $this->generateNoPenjualan(),
@@ -34,7 +34,7 @@ class PenjualanController extends Controller
     }
     public function kasirEdit(Request $request)
     {
-        $produk = Barang::all();
+        $produk = Barang::with(['kategori:id,nama', 'brand:id,nama'])->get(); 
         $pembayaran = JenisPembayaran::all();
         return view('backend.apps.penjualan.kasirEdit', [
             'no_penjualan' => $this->generateNoPenjualan(),
@@ -141,11 +141,19 @@ class PenjualanController extends Controller
                 'jenis_pembayaran_id', // ✅ tambahkan kolom ini!
                 'total_item',
                 'total_harga',
+                'potongan',
+                'kategori_penjualan',
                 'catatan'
             )
             ->whereDate('tanggal_penjualan', $today)
             ->orderBy('tanggal_penjualan', 'desc')
             ->get();
+        
+        $penjualan->transform(function ($p) {
+        $p->potongan = $p->potongan ?? 0;
+        $p->kategori_penjualan = $p->kategori_penjualan ?? 'Offline';
+        return $p;
+    });
 
         return response()->json($penjualan);
     }
@@ -244,8 +252,8 @@ class PenjualanController extends Controller
     }
     public function produkData()
     {
-        $produk = Barang::with('kategori:id,nama')
-            ->select('id', 'nama', 'kode_barang', 'stok', 'harga_jual', 'harga_beli', 'kategori_id')
+        $produk = Barang::with('kategori:id,nama','brand:id,nama')
+            ->select('id', 'nama', 'kode_barang', 'stok', 'harga_jual', 'harga_beli', 'kategori_id','brand_id','size')
             ->get()
             ->map(function ($p) {
                 return [
@@ -255,6 +263,10 @@ class PenjualanController extends Controller
                     'stok' => $p->stok,
                     'harga_jual' => $p->harga_jual,
                     'harga_beli' => $p->harga_beli,
+                    'brand' => [
+                        'nama' => $p->brand->nama ?? '-', // ✅ ambil dari relasi
+                    ],
+                    'size' => $p->size ?? '-',
                     'kategori' => [
                         'nama' => $p->kategori->nama ?? '-'
                     ],
@@ -323,8 +335,11 @@ class PenjualanController extends Controller
                 ->map(fn($d) => $d->barang->nama ?? $d->barang->kode_barang ?? '-')
                 ->unique()
                 ->join(', ');
+            $p->potongan = $p->potongan ?? 0;
+            $p->kategori_penjualan = $p->kategori_penjualan ?? 'Offline';
             return $p;
         });
+
 
         return response()->json(['data' => $data]);
     }
