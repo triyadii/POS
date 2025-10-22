@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
 use App\Models\JenisPembayaran;
+use App\Models\Pengeluaran;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -63,6 +64,7 @@ class LaporanPenjualanHarianController extends Controller
         $total_subtotal = 0;
         $jumlahProdukTerjual = 0;
         $total_profit = 0;
+        $total_biaya_lain = 0;
 
         if ($dateRangeExists) {
             $penjualanIds = (clone $statsQuery)->pluck('id');
@@ -73,13 +75,15 @@ class LaporanPenjualanHarianController extends Controller
             $total_profit = $details->sum(function ($item) {
                 return $item->subtotal - ($item->harga_beli * $item->qty);
             });
+            $total_biaya_lain = Pengeluaran::whereBetween('tanggal', [$startDate, $endDate])->sum('total');
         }
 
+        $total_profit = $total_profit - $total_biaya_lain;
         $total_akhir = $total_subtotal - $total_potongan;
 
         // (Logika tunai/kredit perlu disesuaikan)
-        $total_tunai = $dateRangeExists ? (clone $statsQuery)->whereHas('pembayaran', fn($q) => $q->where('nama', 'Tunai'))->sum('total_harga') : 0;
-        $total_kredit = $dateRangeExists ? (clone $statsQuery)->whereHas('pembayaran', fn($q) => $q->where('nama', '!=', 'Tunai'))->sum('total_harga') : 0;
+        $total_tunai = $dateRangeExists ? (clone $statsQuery)->whereHas('jenis_pembayaran', fn($q) => $q->where('nama', 'Tunai'))->sum('total_harga') : 0;
+        $total_kredit = $dateRangeExists ? (clone $statsQuery)->whereHas('jenis_pembayaran', fn($q) => $q->where('nama', '!=', 'Tunai'))->sum('total_harga') : 0;
 
 
         // --- Query utama untuk DataTables ---
@@ -130,7 +134,7 @@ class LaporanPenjualanHarianController extends Controller
                 'footer_profit' => $total_profit, // Profit masih bisa dihitung
                 'footer_potongan' => $total_potongan,
                 'footer_pajak' => 0,
-                'footer_biaya_lain' => 0,
+                'footer_biaya_lain' => $total_biaya_lain,
                 'footer_total_akhir' => $total_akhir,
                 'footer_bayar_tunai' => $total_tunai,
                 'footer_bayar_kredit' => $total_kredit,
@@ -219,7 +223,7 @@ class LaporanPenjualanHarianController extends Controller
         $penjualanDetails = $penjualanTransactions->pluck('detail')->flatten();
 
         $total_subtotal = $penjualanDetails->sum('subtotal');
-        $total_profit = $penjualanDetails->sum(function ($item) {
+        $total_profit_kotor = $penjualanDetails->sum(function ($item) { // <-- Profit kotor
             return $item->subtotal - ($item->harga_beli * $item->qty);
         });
         $jumlahProdukTerjual = $penjualanDetails->sum('qty');
@@ -227,13 +231,18 @@ class LaporanPenjualanHarianController extends Controller
         // Ambil total potongan dari tabel 'penjualan'
         $total_potongan = $penjualanTransactions->sum('potongan');
 
+        $total_biaya_lain = Pengeluaran::whereBetween('tanggal', [$start, $end])->sum('total');
+
+        // <-- PERUBAHAN 7: Kalkulasi ulang profit bersih
+        $total_profit = $total_profit_kotor - $total_biaya_lain;
+
         // Logika tunai/kredit berdasarkan transaksi, bukan detail
         $total_tunai = $penjualanTransactions->filter(function ($trx) {
-            return optional($trx->pembayaran)->nama === 'Tunai';
+            return optional($trx->jenis_pembayaran)->nama === 'Tunai';
         })->sum('total_harga');
 
         $total_kredit = $penjualanTransactions->filter(function ($trx) {
-            return optional($trx->pembayaran)->nama !== 'Tunai';
+            return optional($trx->jenis_pembayaran)->nama !== 'Tunai';
         })->sum('total_harga');
 
         $total_akhir = $total_subtotal - $total_potongan;
@@ -248,6 +257,7 @@ class LaporanPenjualanHarianController extends Controller
             'total_subtotal',
             'total_profit',
             'total_potongan',
+            'total_biaya_lain',
             'total_tunai',
             'total_kredit',
             'total_akhir',
