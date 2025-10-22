@@ -164,11 +164,21 @@
                                     <div class="fw-semibold text-danger">Total Bayar Kredit :</div>
                                     <div class="fw-bold text-danger" id="summary-bayar-kredit">Rp 0</div>
                                 </div>
+                                {{-- Separator untuk grup profit --}}
                                 <div class="separator separator-dashed my-3"></div>
-                                <div class="d-flex flex-stack fs-6">
+
+                                {{-- =================================== --}}
+                                {{-- PERUBAHAN 1: TAMBAH SUBTOTAL HARGA BELI --}}
+                                {{-- =================================== --}}
+                                {{-- <div class="d-flex flex-stack fs-6">
+                                    <div class="fw-semibold text-danger">Subtotal Harga Beli :</div>
+                                    <div class="fw-bold text-danger" id="summary-total-harga-beli">- Rp 0</div>
+                                </div>
+                                <div class="separator separator-dashed my-3"></div>
+                                <div class="d-flex flex-stack fs-6 mt-1">
                                     <div class="fw-semibold text-success">Total Profit :</div>
                                     <div class="fw-bold text-success" id="summary-profit">Rp 0</div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
 
@@ -290,7 +300,9 @@
                             $('#summary-total-akhir').text(formatRupiah(json.footer_total_akhir));
                             $('#summary-bayar-tunai').text(formatRupiah(json.footer_bayar_tunai));
                             $('#summary-bayar-kredit').text(formatRupiah(json.footer_bayar_kredit));
-                            $('#summary-profit').text(formatRupiah(json.footer_profit));
+                            // $('#summary-total-harga-beli').text('- ' + formatRupiah(json
+                            //     .footer_total_harga_beli));
+                            // $('#summary-profit').text(formatRupiah(json.footer_profit));
 
                             return json.data;
                         }

@@ -96,10 +96,16 @@
             <td style="padding: 5px; text-align: right; font-weight: bold; color: #dc3545;">
                 {{ number_format($total_kredit, 0, ',', '.') }}</td>
         </tr>
-        <tr style="border-top: 1px dashed #999;">
+        {{-- <tr style="border-top: 1px dashed #999;">
+            <td style="padding: 5px; color: #dc3545;">Subtotal Harga Beli :</td>
+            <td style="padding: 5px; text-align: right; font-weight: bold; color: #dc3545;">
+                -{{ number_format($total_harga_beli, 0, ',', '.') }}
+            </td>
+        </tr>
+        <tr>
             <td style="padding: 5px; color: #28a745;">Total Profit :</td>
             <td style="padding: 5px; text-align: right; font-weight: bold; color: #28a745;">
                 {{ number_format($total_profit, 0, ',', '.') }}</td>
-        </tr>
+        </tr> --}}
     </table>
 </div>
