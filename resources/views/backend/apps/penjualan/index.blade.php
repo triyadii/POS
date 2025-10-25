@@ -303,50 +303,50 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-/* =========================
+    /* =========================
    VARIABEL GLOBAL & UTIL
    ========================= */
-window.produkData = @json($produk); // sumber data awal dari server
-window.transaksiTerakhir = null; // untuk cetak struk
+    window.produkData = @json($produk); // sumber data awal dari server
+    window.transaksiTerakhir = null; // untuk cetak struk
 
-// Format angka Rp 1.234
-function numToId(n) {
-    return (parseInt(n) || 0).toLocaleString('id-ID');
-}
-// Ambil integer dari "Rp 1.234"
-function parseId(str) {
-    return parseInt(String(str || '').replace(/[^\d]/g, '')) || 0;
-}
+    // Format angka Rp 1.234
+    function numToId(n) {
+        return (parseInt(n) || 0).toLocaleString('id-ID');
+    }
+    // Ambil integer dari "Rp 1.234"
+    function parseId(str) {
+        return parseInt(String(str || '').replace(/[^\d]/g, '')) || 0;
+    }
 
-/* =========================
-   RENDER PRODUK (SATU-SATU)
-   ========================= */
-window.renderProduk = function(data = window.produkData) {
-    const container = document.querySelector('.daftar-produk');
-    if (!container) return;
+    /* =========================
+       RENDER PRODUK (SATU-SATU)
+       ========================= */
+    window.renderProduk = function(data = window.produkData) {
+        const container = document.querySelector('.daftar-produk');
+        if (!container) return;
 
-    container.innerHTML = '';
-    if (!data || data.length === 0) {
-        container.innerHTML = `
+        container.innerHTML = '';
+        if (!data || data.length === 0) {
+            container.innerHTML = `
             <div class="text-center text-muted py-10">
                 <i class="fas fa-box-open fs-2hx mb-3 d-block text-gray-400"></i>
                 <div class="fw-semibold fs-5">Tidak ada produk ditemukan</div>
             </div>`;
-        return;
-    }
+            return;
+        }
 
-    const frag = document.createDocumentFragment();
-    data.forEach(p => {
-        const stok = parseInt(p.stok ?? 0);
-        const habis = stok <= 0;
+        const frag = document.createDocumentFragment();
+        data.forEach(p => {
+            const stok = parseInt(p.stok ?? 0);
+            const habis = stok <= 0;
 
-        // ✅ Fallback aman
-        const kategoriNama = p.kategori?.nama ?? p.kategori_nama ?? '-';
-        const kodeBarang = p.kode_barang ?? '-';
+            // ✅ Fallback aman
+            const kategoriNama = p.kategori?.nama ?? p.kategori_nama ?? '-';
+            const kodeBarang = p.kode_barang ?? '-';
 
-        const col = document.createElement('div');
-        col.className = 'col-xl-3 col-lg-4 col-md-6 mb-4';
-        col.innerHTML = `
+            const col = document.createElement('div');
+            col.className = 'col-xl-3 col-lg-4 col-md-6 mb-4';
+            col.innerHTML = `
           <div class="card shadow-sm produk-item border-0 h-100 ${habis ? 'bg-light-secondary' : ''}"
                data-id="${p.id}"
                style="cursor:${habis ? 'not-allowed' : 'pointer'};opacity:${habis ? 0.6 : 1};transition:.2s;">
@@ -368,45 +368,45 @@ window.renderProduk = function(data = window.produkData) {
                 </div>
             </div>
           </div>`;
-        frag.appendChild(col);
-    });
-    container.appendChild(frag);
-
-    container.querySelectorAll('.produk-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const id = this.dataset.id;
-            const produk = window.produkData.find(x => String(x.id) === String(id));
-            if (!produk) return;
-            const stok = parseInt(produk.stok ?? 0);
-            if (stok <= 0) {
-                Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
-                return;
-            }
-            tambahKeTabel(produk);
+            frag.appendChild(col);
         });
-    });
-};
+        container.appendChild(frag);
+
+        container.querySelectorAll('.produk-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const produk = window.produkData.find(x => String(x.id) === String(id));
+                if (!produk) return;
+                const stok = parseInt(produk.stok ?? 0);
+                if (stok <= 0) {
+                    Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
+                    return;
+                }
+                tambahKeTabel(produk);
+            });
+        });
+    };
 
 
 
-/* =========================
-   KERANJANG & PERHITUNGAN
-   ========================= */
-function tambahKeTabel(produk) {
-    const tbody = document.getElementById('purchase_cart_list');
-    const id = `row-${produk.id}`;
-    const exists = document.getElementById(id);
+    /* =========================
+       KERANJANG & PERHITUNGAN
+       ========================= */
+    function tambahKeTabel(produk) {
+        const tbody = document.getElementById('purchase_cart_list');
+        const id = `row-${produk.id}`;
+        const exists = document.getElementById(id);
 
-    if (exists) {
-        const qtyInput = exists.querySelector('input.qty');
-        qtyInput.value = (parseInt(qtyInput.value) || 0) + 1;
-        updateSubtotal(qtyInput);
-        return;
-    }
+        if (exists) {
+            const qtyInput = exists.querySelector('input.qty');
+            qtyInput.value = (parseInt(qtyInput.value) || 0) + 1;
+            updateSubtotal(qtyInput);
+            return;
+        }
 
-    const tr = document.createElement('tr');
-    tr.id = id;
-    tr.innerHTML = `
+        const tr = document.createElement('tr');
+        tr.id = id;
+        tr.innerHTML = `
       <td>
         <div class="fw-semibold">${produk.nama}</div>
         <small class="text-muted d-block">Brand: ${produk.brand?.nama ?? '-'}</small>
@@ -422,156 +422,156 @@ function tambahKeTabel(produk) {
       <td class="text-end">
         <button class="btn btn-sm text-danger hapus-item"><i class="fas fa-trash"></i></button>
       </td>`;
-    tbody.appendChild(tr);
+        tbody.appendChild(tr);
 
-    tr.querySelector('.qty').addEventListener('input', function() {
-        updateSubtotal(this);
-    });
-    tr.querySelector('.hapus-item').addEventListener('click', function() {
-        tr.remove();
+        tr.querySelector('.qty').addEventListener('input', function() {
+            updateSubtotal(this);
+        });
+        tr.querySelector('.hapus-item').addEventListener('click', function() {
+            tr.remove();
+            updateTotal();
+        });
         updateTotal();
-    });
-    updateTotal();
-}
-
-function updateSubtotal(input) {
-    const tr = input.closest('tr');
-    const produkId = tr.id.replace('row-', '');
-    const produk = window.produkData.find(p => String(p.id) === String(produkId));
-    const stok = parseInt(produk?.stok ?? 0);
-    let qty = parseInt(input.value) || 1;
-
-    if (qty > stok) {
-        qty = stok;
-        input.value = stok;
-        Swal.fire('⚠️ Stok Tidak Cukup', `Stok ${produk?.nama ?? ''} hanya ${stok}`, 'warning');
     }
 
-    const harga = parseId(tr.children[2].textContent);
-    const subtotal = harga * qty;
-    tr.querySelector('.subtotal').textContent = `Rp ${numToId(subtotal)}`;
-    updateTotal();
-}
+    function updateSubtotal(input) {
+        const tr = input.closest('tr');
+        const produkId = tr.id.replace('row-', '');
+        const produk = window.produkData.find(p => String(p.id) === String(produkId));
+        const stok = parseInt(produk?.stok ?? 0);
+        let qty = parseInt(input.value) || 1;
 
-function updateTotal() {
-    // Hitung total semua item
-    const subtotalEls = document.querySelectorAll('#purchase_cart_list .subtotal');
-    let total = 0;
-    subtotalEls.forEach(el => total += parseId(el.textContent));
-
-    // Ambil potongan (kosong = 0)
-    const potongan = parseId($('#potongan-penjualan').val()) || 0;
-    const totalAkhir = Math.max(total - potongan, 0);
-
-    // Update input total
-    $('#total-penjualan').val(`Rp ${numToId(totalAkhir)}`);
-
-    // Hitung ulang kembalian
-    updateKembalian();
-}
-
-function updateKembalian() {
-    const total = parseId($('#total-penjualan').val());
-    const uang = parseId($('#uang-diterima-penjualan').val());
-    const kembalian = uang - total;
-
-    // Ganti warna otomatis jika uang kurang
-    const kembalianEl = $('#kembalian-penjualan');
-    if (kembalian < 0) {
-        kembalianEl.removeClass('text-success').addClass('text-danger');
-        kembalianEl.text(`Rp ${numToId(Math.abs(kembalian))} (Kurang)`);
-    } else {
-        kembalianEl.removeClass('text-danger').addClass('text-success');
-        kembalianEl.text(`Rp ${numToId(kembalian)}`);
-    }
-}
-/* =========================
-   TANGGAL REALTIME
-   ========================= */
-function updateTanggalRealtime() {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, '0');
-    const d = String(now.getDate()).padStart(2, '0');
-    const h = String(now.getHours()).padStart(2, '0');
-    const i = String(now.getMinutes()).padStart(2, '0');
-    const s = String(now.getSeconds()).padStart(2, '0');
-    const tampil = `${d}-${m}-${y} ${h}:${i}:${s}`;
-    const raw = `${y}-${m}-${d} ${h}:${i}:${s}`;
-    $('#tanggal').val(tampil).data('raw', raw);
-}
-setInterval(updateTanggalRealtime, 1000);
-updateTanggalRealtime();
-
-/* =========================
-   SUBMIT / SIMPAN / CETAK
-   ========================= */
-function kumpulkanItems() {
-    const rows = $('#purchase_cart_list tr');
-    const items = [];
-    rows.each(function() {
-        const id = $(this).attr('id').replace('row-', '');
-        const nama = $(this).find('td:nth-child(1)').text();
-        const qty = parseInt($(this).find('.qty').val());
-        const harga = parseId($(this).find('td:nth-child(3)').text());
-        const hargaBeli = parseInt($(this).find('.harga-beli').val()) || 0;
-        const subtotal = harga * qty;
-        items.push({
-            barang_id: id,
-            barang_nama: nama,
-            qty,
-            harga_beli: hargaBeli,
-            harga_jual: harga,
-            subtotal
-        });
-    });
-    return items;
-}
-
-function optimisticKurangiStok(items) {
-    // Kurangi stok di window.produkData agar UI langsung berubah
-    items.forEach(i => {
-        const p = window.produkData.find(x => String(x.id) === String(i.barang_id));
-        if (p) {
-            p.stok = Math.max(0, (parseInt(p.stok) || 0) - (parseInt(i.qty) || 0));
+        if (qty > stok) {
+            qty = stok;
+            input.value = stok;
+            Swal.fire('⚠️ Stok Tidak Cukup', `Stok ${produk?.nama ?? ''} hanya ${stok}`, 'warning');
         }
-    });
-    window.renderProduk(window.produkData);
-}
 
-function refetchProduk() {
-    // Sync ulang dari server
-    $.get(`{{ route('penjualan.produk.data') }}?t=${Date.now()}`, function(newProduk) {
-        window.produkData = newProduk;
-        window.renderProduk(newProduk);
-    }).fail(() => console.warn('⚠️ Gagal refresh stok produk'));
-}
+        const harga = parseId(tr.children[2].textContent);
+        const subtotal = harga * qty;
+        tr.querySelector('.subtotal').textContent = `Rp ${numToId(subtotal)}`;
+        updateTotal();
+    }
 
-function generateStrukHTML(payload) {
-    const numToId = (v) => {
-        if (v === null || v === undefined) return '0';
-        const clean = String(v).replace(/[^\d]/g, '');
-        const num = parseInt(clean || '0', 10);
-        return num.toLocaleString('id-ID');
-    };
-    const tanggalCetak = new Date(payload.tanggal_raw || payload.tanggal_penjualan || payload.tanggal).toLocaleString(
-        'id-ID', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
+    function updateTotal() {
+        // Hitung total semua item
+        const subtotalEls = document.querySelectorAll('#purchase_cart_list .subtotal');
+        let total = 0;
+        subtotalEls.forEach(el => total += parseId(el.textContent));
+
+        // Ambil potongan (kosong = 0)
+        const potongan = parseId($('#potongan-penjualan').val()) || 0;
+        const totalAkhir = Math.max(total - potongan, 0);
+
+        // Update input total
+        $('#total-penjualan').val(`Rp ${numToId(totalAkhir)}`);
+
+        // Hitung ulang kembalian
+        updateKembalian();
+    }
+
+    function updateKembalian() {
+        const total = parseId($('#total-penjualan').val());
+        const uang = parseId($('#uang-diterima-penjualan').val());
+        const kembalian = uang - total;
+
+        // Ganti warna otomatis jika uang kurang
+        const kembalianEl = $('#kembalian-penjualan');
+        if (kembalian < 0) {
+            kembalianEl.removeClass('text-success').addClass('text-danger');
+            kembalianEl.text(`Rp ${numToId(Math.abs(kembalian))} (Kurang)`);
+        } else {
+            kembalianEl.removeClass('text-danger').addClass('text-success');
+            kembalianEl.text(`Rp ${numToId(kembalian)}`);
+        }
+    }
+    /* =========================
+       TANGGAL REALTIME
+       ========================= */
+    function updateTanggalRealtime() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        const h = String(now.getHours()).padStart(2, '0');
+        const i = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        const tampil = `${d}-${m}-${y} ${h}:${i}:${s}`;
+        const raw = `${y}-${m}-${d} ${h}:${i}:${s}`;
+        $('#tanggal').val(tampil).data('raw', raw);
+    }
+    setInterval(updateTanggalRealtime, 1000);
+    updateTanggalRealtime();
+
+    /* =========================
+       SUBMIT / SIMPAN / CETAK
+       ========================= */
+    function kumpulkanItems() {
+        const rows = $('#purchase_cart_list tr');
+        const items = [];
+        rows.each(function() {
+            const id = $(this).attr('id').replace('row-', '');
+            const nama = $(this).find('td:nth-child(1)').text();
+            const qty = parseInt($(this).find('.qty').val());
+            const harga = parseId($(this).find('td:nth-child(3)').text());
+            const hargaBeli = parseInt($(this).find('.harga-beli').val()) || 0;
+            const subtotal = harga * qty;
+            items.push({
+                barang_id: id,
+                barang_nama: nama,
+                qty,
+                harga_beli: hargaBeli,
+                harga_jual: harga,
+                subtotal
+            });
         });
+        return items;
+    }
 
-    const items = payload.items || payload.detail || [];
-    let itemRows = '';
-    items.forEach(i => {
-        const nama = i.barang_nama ?? i.barang?.nama ?? '-';
-        const harga = numToId(i.harga_jual ?? 0);
-        const subtotal = numToId(i.subtotal ?? 0);
-        const qty = i.qty ?? 1;
-        itemRows += `
+    function optimisticKurangiStok(items) {
+        // Kurangi stok di window.produkData agar UI langsung berubah
+        items.forEach(i => {
+            const p = window.produkData.find(x => String(x.id) === String(i.barang_id));
+            if (p) {
+                p.stok = Math.max(0, (parseInt(p.stok) || 0) - (parseInt(i.qty) || 0));
+            }
+        });
+        window.renderProduk(window.produkData);
+    }
+
+    function refetchProduk() {
+        // Sync ulang dari server
+        $.get(`{{ route('penjualan.produk.data') }}?t=${Date.now()}`, function(newProduk) {
+            window.produkData = newProduk;
+            window.renderProduk(newProduk);
+        }).fail(() => console.warn('⚠️ Gagal refresh stok produk'));
+    }
+
+    function generateStrukHTML(payload) {
+        const numToId = (v) => {
+            if (v === null || v === undefined) return '0';
+            const clean = String(v).replace(/[^\d]/g, '');
+            const num = parseInt(clean || '0', 10);
+            return num.toLocaleString('id-ID');
+        };
+        const tanggalCetak = new Date(payload.tanggal_raw || payload.tanggal_penjualan || payload.tanggal).toLocaleString(
+            'id-ID', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+        const items = payload.items || payload.detail || [];
+        let itemRows = '';
+        items.forEach(i => {
+            const nama = i.barang_nama ?? i.barang?.nama ?? '-';
+            const harga = numToId(i.harga_jual ?? 0);
+            const subtotal = numToId(i.subtotal ?? 0);
+            const qty = i.qty ?? 1;
+            itemRows += `
         <tr>
             <td colspan="2">${nama}</td>
             <td style="text-align:right;">Rp ${harga}</td>
@@ -581,16 +581,16 @@ function generateStrukHTML(payload) {
             <td>${qty} x Rp ${harga}</td>
             <td style="text-align:right;">Rp ${subtotal}</td>
         </tr>`;
-    });
+        });
 
-    const namaToko = document.title || 'TOKO MAJU JAYA';
-    const potongan = payload.potongan ?? 0;
-    const potonganStr = potongan > 0 ? `- Rp ${numToId(potongan)}` : `Rp ${numToId(0)}`;
+        const namaToko = document.title || 'TOKO MAJU JAYA';
+        const potongan = payload.potongan ?? 0;
+        const potonganStr = potongan > 0 ? `- Rp ${numToId(potongan)}` : `Rp ${numToId(0)}`;
 
-    // Ambil logo dinamis dari backend Laravel
-    const logoUrl = "{{ asset('storage/' . ($appSetting->logo_black ?? 'settings/logo_black_1761010416.svg')) }}";
+        // Ambil logo dinamis dari backend Laravel
+        const logoUrl = "{{ asset('storage/' . ($appSetting->logo_black ?? 'settings/logo_black_1761010416.svg')) }}";
 
-    return `
+        return `
     <div style="font-family: monospace; font-size: 13px; width: 58mm; margin: 0 auto;">
         <div style="text-align:center;">
             <img src="${logoUrl}" alt="Logo"
@@ -641,13 +641,13 @@ function generateStrukHTML(payload) {
             --- Struk Non Pajak ---
         </div>
     </div>`;
-}
+    }
 
-function cetakStruk(payload) {
-    const strukHTML = generateStrukHTML(payload);
+    function cetakStruk(payload) {
+        const strukHTML = generateStrukHTML(payload);
 
-    const printWindow = window.open('', '', 'width=400,height=800');
-    printWindow.document.write(`
+        const printWindow = window.open('', '', 'width=400,height=800');
+        printWindow.document.write(`
       <html>
       <head>
         <title>Struk Penjualan</title>
@@ -676,308 +676,308 @@ function cetakStruk(payload) {
       </body>
       </html>
     `);
-    printWindow.document.close();
-}
+        printWindow.document.close();
+    }
 
 
-function cetakStrukHistory(id) {
-    $.get("{{ route('penjualan.history.data') }}", function(res) {
-        const trx = res.find(x => String(x.id) === String(id));
-        if (!trx) {
-            Swal.fire('⚠️', 'Data transaksi tidak ditemukan', 'warning');
+    function cetakStrukHistory(id) {
+        $.get("{{ route('penjualan.history.data') }}", function(res) {
+            const trx = res.find(x => String(x.id) === String(id));
+            if (!trx) {
+                Swal.fire('⚠️', 'Data transaksi tidak ditemukan', 'warning');
+                return;
+            }
+
+            const detail = Array.isArray(trx.detail) ? trx.detail : [];
+
+            // Hitung total harga dari detail
+            const total_harga = detail.reduce((sum, d) => {
+                const subtotal = parseInt(d.subtotal ?? (d.harga_jual * d.qty) ?? 0);
+                return sum + (isNaN(subtotal) ? 0 : subtotal);
+            }, 0);
+
+            // Ambil nilai sesuai database
+            const potongan = parseInt(trx.potongan ?? trx.diskon ?? 0);
+            const pembayaran = parseInt(trx.pembayaran ?? trx.uang_diterima ?? 0);
+
+            // Perhitungan akhir
+            const total = total_harga - potongan; // total bayar setelah potongan
+            const kembalian = pembayaran - total; // uang kembalian
+
+            // Payload untuk cetak struk
+            const payload = {
+                ...trx,
+                detail,
+                total_harga,
+                potongan,
+                total,
+                pembayaran,
+                kembalian
+            };
+
+            // Cetak struk
+            cetakStruk(payload);
+        });
+    }
+
+
+
+
+
+    function prosesTransaksi({
+        cetak = false
+    } = {}) {
+        const rows = $('#purchase_cart_list tr');
+        const btnSimpan = $('#btn-simpan-penjualan');
+        const btnBayar = $('#btn-bayar-penjualan');
+
+        if (rows.length === 0) {
+            Swal.fire('Oops!', 'Belum ada produk yang dipilih', 'warning');
             return;
         }
 
-        const detail = Array.isArray(trx.detail) ? trx.detail : [];
+        const total = parseId($('#total-penjualan').val());
+        const uangDiterima = parseId($('#uang-diterima-penjualan').val());
+        const kembalian = uangDiterima - total;
 
-        // Hitung total harga dari detail
-        const total_harga = detail.reduce((sum, d) => {
-            const subtotal = parseInt(d.subtotal ?? (d.harga_jual * d.qty) ?? 0);
-            return sum + (isNaN(subtotal) ? 0 : subtotal);
-        }, 0);
+        const pembayaran = $('#pembayaran-penjualan').val();
+        if (!pembayaran) {
+            Swal.fire('Oops!', 'Silakan pilih jenis pembayaran terlebih dahulu.', 'warning');
+            return;
+        }
+        if (cetak && kembalian < 0) {
+            Swal.fire('⚠️', 'Nominal uang diterima belum cukup.', 'warning');
+            return;
+        }
 
-        // Ambil nilai sesuai database
-        const potongan = parseInt(trx.potongan ?? trx.diskon ?? 0);
-        const pembayaran = parseInt(trx.pembayaran ?? trx.uang_diterima ?? 0);
+        const items = kumpulkanItems();
 
-        // Perhitungan akhir
-        const total = total_harga - potongan; // total bayar setelah potongan
-        const kembalian = pembayaran - total; // uang kembalian
-
-        // Payload untuk cetak struk
         const payload = {
-            ...trx,
-            detail,
-            total_harga,
-            potongan,
-            total,
-            pembayaran,
-            kembalian
+            _token: $('input[name="_token"]').val(),
+            no_penjualan: $('#no_penjualan').val(),
+            tanggal: $('#tanggal').val(),
+            tanggal_raw: $('#tanggal').data('raw'),
+            potongan: parseId($('#potongan-penjualan').val()) || 0,
+            customer: $('#customer_id option:selected').text(),
+            total_item: items.length,
+            total: total, // angka murni
+            uang: uangDiterima, // angka murni
+            kembalian: kembalian, // angka murni
+            catatan: $('#catatan').val(),
+            jumlahPembayaran: parseId($('#uang-diterima-penjualan').val()) || 0,
+            pembayaran: pembayaran,
+            pembayaran_nama: $('#pembayaran-penjualan option:selected').text(),
+            items
         };
 
-        // Cetak struk
-        cetakStruk(payload);
-    });
-}
+        const btnTarget = cetak ? btnBayar : btnSimpan;
+        btnTarget.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...');
 
+        $.ajax({
+            url: "{{ route('penjualan.store') }}",
+            method: "POST",
+            data: payload,
+            success: function(res) {
+                btnTarget.prop('disabled', false).html(cetak ?
+                    '<i class="fas fa-cash-register me-1"></i> Bayar & Cetak' :
+                    '<i class="fas fa-save me-1"></i> Simpan');
 
+                if (res.status === 'success') {
+                    // 1) Optimistic update stok -> UI langsung turun
+                    optimisticKurangiStok(items);
 
+                    // 2) Simpan transaksi terakhir (buat cetak)
+                    window.transaksiTerakhir = payload;
 
+                    // 3) Isi modal sukses
+                    $('#modal-total').text(`Rp ${numToId(total)}`);
+                    $('#modal-uang-diterima').text(`Rp ${numToId(uangDiterima)}`);
+                    $('#modal-kembalian').text(`Rp ${numToId(kembalian)}`);
 
-function prosesTransaksi({
-    cetak = false
-} = {}) {
-    const rows = $('#purchase_cart_list tr');
-    const btnSimpan = $('#btn-simpan-penjualan');
-    const btnBayar = $('#btn-bayar-penjualan');
+                    const modalSukses = new bootstrap.Modal('#modalPenjualanSelesai');
+                    modalSukses.show();
 
-    if (rows.length === 0) {
-        Swal.fire('Oops!', 'Belum ada produk yang dipilih', 'warning');
-        return;
-    }
+                    // 4) Saat klik Selesai -> reset, ambil no transaksi baru, refetch stok
+                    $('#modalPenjualanSelesai .btn-secondary').off('click').one('click', function() {
+                        modalSukses.hide();
 
-    const total = parseId($('#total-penjualan').val());
-    const uangDiterima = parseId($('#uang-diterima-penjualan').val());
-    const kembalian = uangDiterima - total;
+                        // reset form
+                        $('#form-penjualan')[0].reset();
+                        $('#purchase_cart_list').html('');
+                        updateTotal();
+                        $('#barcode').focus();
 
-    const pembayaran = $('#pembayaran-penjualan').val();
-    if (!pembayaran) {
-        Swal.fire('Oops!', 'Silakan pilih jenis pembayaran terlebih dahulu.', 'warning');
-        return;
-    }
-    if (cetak && kembalian < 0) {
-        Swal.fire('⚠️', 'Nominal uang diterima belum cukup.', 'warning');
-        return;
-    }
+                        // nomor transaksi baru
+                        $.get("{{ route('penjualan.no_otomatis') }}", function(r) {
+                            if (r.no_penjualan) $('#no_penjualan').val(r.no_penjualan);
+                        });
 
-    const items = kumpulkanItems();
-
-    const payload = {
-        _token: $('input[name="_token"]').val(),
-        no_penjualan: $('#no_penjualan').val(),
-        tanggal: $('#tanggal').val(),
-        tanggal_raw: $('#tanggal').data('raw'),
-        potongan: parseId($('#potongan-penjualan').val()) || 0,
-        customer: $('#customer_id option:selected').text(),
-        total_item: items.length,
-        total: total, // angka murni
-        uang: uangDiterima, // angka murni
-        kembalian: kembalian, // angka murni
-        catatan: $('#catatan').val(),
-        jumlahPembayaran: parseId($('#uang-diterima-penjualan').val()) || 0,
-        pembayaran: pembayaran,
-        pembayaran_nama: $('#pembayaran-penjualan option:selected').text(),
-        items
-    };
-
-    const btnTarget = cetak ? btnBayar : btnSimpan;
-    btnTarget.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...');
-
-    $.ajax({
-        url: "{{ route('penjualan.store') }}",
-        method: "POST",
-        data: payload,
-        success: function(res) {
-            btnTarget.prop('disabled', false).html(cetak ?
-                '<i class="fas fa-cash-register me-1"></i> Bayar & Cetak' :
-                '<i class="fas fa-save me-1"></i> Simpan');
-
-            if (res.status === 'success') {
-                // 1) Optimistic update stok -> UI langsung turun
-                optimisticKurangiStok(items);
-
-                // 2) Simpan transaksi terakhir (buat cetak)
-                window.transaksiTerakhir = payload;
-
-                // 3) Isi modal sukses
-                $('#modal-total').text(`Rp ${numToId(total)}`);
-                $('#modal-uang-diterima').text(`Rp ${numToId(uangDiterima)}`);
-                $('#modal-kembalian').text(`Rp ${numToId(kembalian)}`);
-
-                const modalSukses = new bootstrap.Modal('#modalPenjualanSelesai');
-                modalSukses.show();
-
-                // 4) Saat klik Selesai -> reset, ambil no transaksi baru, refetch stok
-                $('#modalPenjualanSelesai .btn-secondary').off('click').one('click', function() {
-                    modalSukses.hide();
-
-                    // reset form
-                    $('#form-penjualan')[0].reset();
-                    $('#purchase_cart_list').html('');
-                    updateTotal();
-                    $('#barcode').focus();
-
-                    // nomor transaksi baru
-                    $.get("{{ route('penjualan.no_otomatis') }}", function(r) {
-                        if (r.no_penjualan) $('#no_penjualan').val(r.no_penjualan);
+                        // sinkron ulang stok ke server (jaga-jaga)
+                        setTimeout(refetchProduk, 350);
                     });
 
-                    // sinkron ulang stok ke server (jaga-jaga)
-                    setTimeout(refetchProduk, 350);
-                });
-
-                // 5) Kalau user pilih "Bayar & Cetak", langsung cetak
-                if (cetak) cetakStruk(payload);
-            } else {
-                Swal.fire('Gagal', res.message ?? 'Gagal menyimpan transaksi', 'error');
-                // fallback: refetch stok biar aman kalau backend update tapi UI gagal
-                refetchProduk();
-            }
-        },
-        error: function() {
-            btnTarget.prop('disabled', false).html(cetak ?
-                '<i class="fas fa-cash-register me-1"></i> Bayar & Cetak' :
-                '<i class="fas fa-save me-1"></i> Simpan');
-            Swal.fire('Error', 'Terjadi kesalahan di server', 'error');
-        }
-    });
-}
-
-/* =========================
-   EVENT BINDINGS
-   ========================= */
-$(document).ready(function() {
-
-    // Render awal
-    window.renderProduk(window.produkData);
-
-    // Input uang diterima → format & kembalian
-    $('#uang-diterima-penjualan').on('input', function(e) {
-        const onlyNum = this.value.replace(/[^\d]/g, '');
-        this.value = onlyNum.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        updateKembalian();
-    });
-    $('#potongan-penjualan').on('input', function() {
-        const onlyNum = this.value.replace(/[^\d]/g, '');
-        this.value = onlyNum.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        updateTotal();
-    });
-
-    // Filter cari produk
-    $('#filter-cari-daftar-produk').on('input', _.debounce(function() {
-        const search = this.value.toLowerCase();
-        const kategori = $('#filter-kategori-daftar-produk').val();
-        const hasil = window.produkData.filter(p => {
-            const namaMatch = p.nama?.toLowerCase().includes(search);
-            const kodeMatch = p.kode_barang?.toLowerCase().includes(search);
-            const kategoriMatch = kategori === '' || (p.kategori && p.kategori.nama ===
-                kategori);
-            return (namaMatch || kodeMatch) && kategoriMatch;
-        });
-        window.renderProduk(hasil);
-    }, 250));
-
-    // Filter kategori
-    $('#filter-kategori-daftar-produk').on('change', function() {
-        const kategori = $(this).val();
-        const search = $('#filter-cari-daftar-produk').val().toLowerCase();
-        const hasil = window.produkData.filter(p => {
-            const namaMatch = p.nama?.toLowerCase().includes(search);
-            const kodeMatch = p.kode_barang?.toLowerCase().includes(search);
-            const kategoriMatch = kategori === '' || (p.kategori && p.kategori.nama ===
-                kategori);
-            return (namaMatch || kodeMatch) && kategoriMatch;
-        });
-        window.renderProduk(hasil);
-    });
-
-    // Barcode enter
-    $('#barcode').on('keypress', function(e) {
-        if (e.which === 13) {
-            e.preventDefault();
-            const kode = $(this).val().trim().toLowerCase();
-            if (!kode) return;
-            const produk = window.produkData.find(p => (p.kode_barang && p.kode_barang.toLowerCase() ===
-                kode));
-            if (produk) {
-                const stok = parseInt(produk.stok ?? 0);
-                if (stok <= 0) {
-                    Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
-                    return;
+                    // 5) Kalau user pilih "Bayar & Cetak", langsung cetak
+                    if (cetak) cetakStruk(payload);
+                } else {
+                    Swal.fire('Gagal', res.message ?? 'Gagal menyimpan transaksi', 'error');
+                    // fallback: refetch stok biar aman kalau backend update tapi UI gagal
+                    refetchProduk();
                 }
-                tambahKeTabel(produk);
-                $(this).val('');
-            } else {
-                Swal.fire('😕 Tidak ditemukan', 'Kode barcode tidak cocok dengan produk manapun.',
-                    'info');
-            }
-        }
-    });
-
-    // Tombol simpan
-    $('#btn-simpan-penjualan').off('click').on('click', function() {
-        prosesTransaksi({
-            cetak: false
-        });
-    });
-    // Tombol bayar & cetak
-    $('#btn-bayar-penjualan').off('click').on('click', function() {
-        prosesTransaksi({
-            cetak: true
-        });
-    });
-
-    // Tombol batal
-    $('#btn-batal-penjualan').off('click').on('click', function() {
-        Swal.fire({
-            title: 'Batalkan Transaksi?',
-            text: 'Semua item akan dihapus dari keranjang!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Batalkan',
-            cancelButtonText: 'Tidak'
-        }).then(res => {
-            if (res.isConfirmed) {
-                $('#form-penjualan')[0].reset();
-                $('#purchase_cart_list').html('');
-                updateTotal();
-                Swal.fire('Dibatalkan', 'Transaksi telah dikosongkan.', 'success');
-                $('#barcode').focus();
-            }
-        });
-    });
-
-    // Fullscreen
-    const fullscreenBtn = document.getElementById('btnFullscreen');
-    if (fullscreenBtn) {
-        fullscreenBtn.addEventListener('click', function() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(console.error);
-                fullscreenBtn.innerHTML = '<i class="fas fa-compress text-white"></i>';
-            } else {
-                document.exitFullscreen().catch(console.error);
-                fullscreenBtn.innerHTML = '<i class="fas fa-expand text-white"></i>';
-            }
-        });
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                fullscreenBtn.innerHTML = '<i class="fas fa-expand text-white"></i>';
+            },
+            error: function() {
+                btnTarget.prop('disabled', false).html(cetak ?
+                    '<i class="fas fa-cash-register me-1"></i> Bayar & Cetak' :
+                    '<i class="fas fa-save me-1"></i> Simpan');
+                Swal.fire('Error', 'Terjadi kesalahan di server', 'error');
             }
         });
     }
 
     /* =========================
-       HISTORY & DETAIL & CETAK
+       EVENT BINDINGS
        ========================= */
-    $('.btn-light-info').off('click').on('click', function(e) {
-        e.preventDefault();
-        loadHistoryPenjualan();
-        new bootstrap.Modal('#modalHistoryPenjualan').show();
-    });
+    $(document).ready(function() {
 
-    window.loadHistoryPenjualan = function() {
-        const tbody = $('#table-history tbody');
-        tbody.html('<tr><td colspan="8" class="text-center">Memuat data...</td></tr>');
-        $.get("{{ route('penjualan.history.data') }}", function(res) {
-            if (!res.length) {
-                tbody.html(
-                    '<tr><td colspan="8" class="text-center text-muted">Belum ada transaksi</td></tr>'
-                );
-                return;
+        // Render awal
+        window.renderProduk(window.produkData);
+
+        // Input uang diterima → format & kembalian
+        $('#uang-diterima-penjualan').on('input', function(e) {
+            const onlyNum = this.value.replace(/[^\d]/g, '');
+            this.value = onlyNum.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            updateKembalian();
+        });
+        $('#potongan-penjualan').on('input', function() {
+            const onlyNum = this.value.replace(/[^\d]/g, '');
+            this.value = onlyNum.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            updateTotal();
+        });
+
+        // Filter cari produk
+        $('#filter-cari-daftar-produk').on('input', _.debounce(function() {
+            const search = this.value.toLowerCase();
+            const kategori = $('#filter-kategori-daftar-produk').val();
+            const hasil = window.produkData.filter(p => {
+                const namaMatch = p.nama?.toLowerCase().includes(search);
+                const kodeMatch = p.kode_barang?.toLowerCase().includes(search);
+                const kategoriMatch = kategori === '' || (p.kategori && p.kategori.nama ===
+                    kategori);
+                return (namaMatch || kodeMatch) && kategoriMatch;
+            });
+            window.renderProduk(hasil);
+        }, 250));
+
+        // Filter kategori
+        $('#filter-kategori-daftar-produk').on('change', function() {
+            const kategori = $(this).val();
+            const search = $('#filter-cari-daftar-produk').val().toLowerCase();
+            const hasil = window.produkData.filter(p => {
+                const namaMatch = p.nama?.toLowerCase().includes(search);
+                const kodeMatch = p.kode_barang?.toLowerCase().includes(search);
+                const kategoriMatch = kategori === '' || (p.kategori && p.kategori.nama ===
+                    kategori);
+                return (namaMatch || kodeMatch) && kategoriMatch;
+            });
+            window.renderProduk(hasil);
+        });
+
+        // Barcode enter
+        $('#barcode').on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                const kode = $(this).val().trim().toLowerCase();
+                if (!kode) return;
+                const produk = window.produkData.find(p => (p.kode_barang && p.kode_barang.toLowerCase() ===
+                    kode));
+                if (produk) {
+                    const stok = parseInt(produk.stok ?? 0);
+                    if (stok <= 0) {
+                        Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
+                        return;
+                    }
+                    tambahKeTabel(produk);
+                    $(this).val('');
+                } else {
+                    Swal.fire('😕 Tidak ditemukan', 'Kode barcode tidak cocok dengan produk manapun.',
+                        'info');
+                }
             }
-            tbody.html('');
-            res.forEach(p => {
-                tbody.append(`
+        });
+
+        // Tombol simpan
+        $('#btn-simpan-penjualan').off('click').on('click', function() {
+            prosesTransaksi({
+                cetak: false
+            });
+        });
+        // Tombol bayar & cetak
+        $('#btn-bayar-penjualan').off('click').on('click', function() {
+            prosesTransaksi({
+                cetak: true
+            });
+        });
+
+        // Tombol batal
+        $('#btn-batal-penjualan').off('click').on('click', function() {
+            Swal.fire({
+                title: 'Batalkan Transaksi?',
+                text: 'Semua item akan dihapus dari keranjang!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Batalkan',
+                cancelButtonText: 'Tidak'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    $('#form-penjualan')[0].reset();
+                    $('#purchase_cart_list').html('');
+                    updateTotal();
+                    Swal.fire('Dibatalkan', 'Transaksi telah dikosongkan.', 'success');
+                    $('#barcode').focus();
+                }
+            });
+        });
+
+        // Fullscreen
+        const fullscreenBtn = document.getElementById('btnFullscreen');
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener('click', function() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(console.error);
+                    fullscreenBtn.innerHTML = '<i class="fas fa-compress text-white"></i>';
+                } else {
+                    document.exitFullscreen().catch(console.error);
+                    fullscreenBtn.innerHTML = '<i class="fas fa-expand text-white"></i>';
+                }
+            });
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    fullscreenBtn.innerHTML = '<i class="fas fa-expand text-white"></i>';
+                }
+            });
+        }
+
+        /* =========================
+           HISTORY & DETAIL & CETAK
+           ========================= */
+        $('.btn-light-info').off('click').on('click', function(e) {
+            e.preventDefault();
+            loadHistoryPenjualan();
+            new bootstrap.Modal('#modalHistoryPenjualan').show();
+        });
+
+        window.loadHistoryPenjualan = function() {
+            const tbody = $('#table-history tbody');
+            tbody.html('<tr><td colspan="8" class="text-center">Memuat data...</td></tr>');
+            $.get("{{ route('penjualan.history.data') }}", function(res) {
+                if (!res.length) {
+                    tbody.html(
+                        '<tr><td colspan="8" class="text-center text-muted">Belum ada transaksi</td></tr>'
+                    );
+                    return;
+                }
+                tbody.html('');
+                res.forEach(p => {
+                    tbody.append(`
                 <tr>
                     <td>${p.kode_transaksi}</td>
                     <td>${new Date(p.tanggal_penjualan).toLocaleDateString('id-ID')}</td>
@@ -996,36 +996,36 @@ $(document).ready(function() {
                     </td>
                 </tr>
                 `);
-            });
-        }).fail(() => tbody.html(
-            '<tr><td colspan="8" class="text-center text-danger">Gagal memuat data</td></tr>'));
-    };
+                });
+            }).fail(() => tbody.html(
+                '<tr><td colspan="8" class="text-center text-danger">Gagal memuat data</td></tr>'));
+        };
 
-    window.lihatDetail = function(id) {
-        $('#detail-body').html('<tr><td colspan="4" class="text-center">Memuat...</td></tr>');
-        $.get("{{ route('penjualan.history.data') }}", function(res) {
-            const trx = res.find(x => String(x.id) === String(id));
-            if (!trx || !trx.detail || trx.detail.length === 0) {
-                $('#detail-body').html(
-                    '<tr><td colspan="4" class="text-center text-muted">Tidak ada detail</td></tr>'
-                );
-            } else {
-                const rows = trx.detail.map(d => `
+        window.lihatDetail = function(id) {
+            $('#detail-body').html('<tr><td colspan="4" class="text-center">Memuat...</td></tr>');
+            $.get("{{ route('penjualan.history.data') }}", function(res) {
+                const trx = res.find(x => String(x.id) === String(id));
+                if (!trx || !trx.detail || trx.detail.length === 0) {
+                    $('#detail-body').html(
+                        '<tr><td colspan="4" class="text-center text-muted">Tidak ada detail</td></tr>'
+                    );
+                } else {
+                    const rows = trx.detail.map(d => `
                   <tr>
                     <td>${d.barang?.nama ?? '-'}</td>
                     <td>${d.qty}</td>
                     <td>Rp ${numToId(d.harga_jual)}</td>
                     <td>Rp ${numToId(d.subtotal)}</td>
                   </tr>`);
-                $('#detail-body').html(rows.join(''));
-            }
-            new bootstrap.Modal('#modalDetailPenjualan').show();
-        });
-    };
+                    $('#detail-body').html(rows.join(''));
+                }
+                new bootstrap.Modal('#modalDetailPenjualan').show();
+            });
+        };
 
 
 
-});
+    });
 </script>
 @endpush
 
