@@ -265,13 +265,15 @@
             <div class="modal-content">
                 <div class="modal-header bg-secondary text-white">
                     <h5 class="modal-title">Detail Penjualan</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close " data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>Kode Barang</th>
                                 <th>Nama Barang</th>
+                                <th>Size</th>
                                 <th>Qty</th>
                                 <th>Harga</th>
                                 <th>Subtotal</th>
@@ -574,7 +576,7 @@ function generateStrukHTML(payload) {
         itemRows += `
         <tr>
             <td colspan="2">${nama}</td>
-            <td style="text-align:right;">Rp ${harga}</td>
+            <td style="text-align:right;"></td>
         </tr>
         <tr>
             <td></td>
@@ -1012,7 +1014,9 @@ $(document).ready(function() {
             } else {
                 const rows = trx.detail.map(d => `
                   <tr>
+                    <td>${d.barang?.kode_barang ?? '-'}</td>
                     <td>${d.barang?.nama ?? '-'}</td>
+                    <td>${d.barang?.size ?? '-'}</td>
                     <td>${d.qty}</td>
                     <td>Rp ${numToId(d.harga_jual)}</td>
                     <td>Rp ${numToId(d.subtotal)}</td>

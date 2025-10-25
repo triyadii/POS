@@ -128,7 +128,9 @@
                 <th>Size</th>
                 <th>Brand</th>
                 <th>Kategori</th>
+                <th class="text-right">Harga</th>
                 <th class="text-right">Stok</th>
+                
             </tr>
         </thead>
         <tbody>
@@ -140,7 +142,9 @@
                     <td>{{ $item->size ?? '-' }}</td>
                     <td>{{ $item->brand->nama ?? '-' }}</td>
                     <td>{{ $item->kategori->nama ?? '-' }}</td>
+<td class="text-right">Rp. {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
                     <td class="text-right">{{ $item->stok }}</td>
+                    
                 </tr>
             @empty
                 <tr>
@@ -150,7 +154,7 @@
         </tbody>
         <tfoot>
             <tr style="font-weight: bold; background-color: #f9f9f9;">
-                <td colspan="6">Total Stok Item</td>
+                <td colspan="7">Total Stok Item</td>
                 <td class="text-right">{{ $barang->sum('stok') }}</td>
             </tr>
         </tfoot>

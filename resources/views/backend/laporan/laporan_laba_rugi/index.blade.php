@@ -64,11 +64,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 d-none" id="statistik-laba-bersih-wrapper">
+                    {{-- Ubah Kartu Laba Kotor --}}
+                    <div class="col-xl-3 d-none" id="statistik-laba-kotor-wrapper"> {{-- Ubah ID --}}
                         <div class="card bg-light-primary hoverable card-xl-stretch">
                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                <div class="text-primary fw-bold fs-2 mb-3" id="stat-laba-bersih">-</div>
-                                <div class="fw-semibold text-primary">Profit / Laba Bersih</div>
+                                <div class="text-primary fw-bold fs-2 mb-3" id="stat-laba-kotor">-</div> {{-- Ubah ID --}}
+                                <div class="fw-semibold text-primary">Profit / Laba Kotor</div> {{-- Ubah Teks --}}
                             </div>
                         </div>
                     </div>
@@ -89,7 +90,8 @@
                                 <th class="text-end">Pendapatan</th>
                                 <th class="text-end">Pembelian Barang</th>
                                 <th class="text-end">Biaya Operasional</th>
-                                <th class="text-end">Laba Bersih</th>
+                                {{-- Ubah Header Laba Kotor --}}
+                                <th class="text-end">Laba Kotor</th> {{-- Ubah Teks --}}
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -99,7 +101,8 @@
                                 <th class="text-end" id="tfoot-total-pendapatan">Rp0</th>
                                 <th class="text-end" id="tfoot-total-pembelian">Rp0</th>
                                 <th class="text-end" id="tfoot-total-pengeluaran">Rp0</th>
-                                <th class="text-end" id="tfoot-total-laba">Rp0</th>
+                                {{-- Ubah Footer Laba Kotor --}}
+                                <th class="text-end" id="tfoot-total-laba-kotor">Rp0</th> {{-- Ubah ID --}}
                             </tr>
                         </tfoot>
                     </table>
@@ -107,6 +110,7 @@
             </div>
         </div>
 
+        {{-- Modal Export --}}
         <div class="modal fade" tabindex="-1" id="btn-export">
             <div class="modal-dialog modal-dialog-centered mw-650px">
                 <div class="modal-content">
@@ -143,7 +147,7 @@
             </div>
         </div>
 
-
+        {{-- Modal Detail --}}
         <div class="modal fade" tabindex="-1" id="modal_detail_laporan">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
@@ -176,6 +180,7 @@
 
                 const formatRupiah = (number) => 'Rp ' + (Number(number) || 0).toLocaleString('id-ID');
 
+                // Konfigurasi Daterangepicker
                 $('#filter_tanggal').daterangepicker({
                     ranges: {
                         'Hari Ini': [moment(), moment()],
@@ -201,6 +206,7 @@
                     fetchAndRenderData(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
                 });
 
+                // Fungsi untuk fetch dan render data
                 function fetchAndRenderData(startDate, endDate) {
                     $.ajax({
                         url: "{{ route('laporan.laba-rugi.chart') }}",
@@ -214,54 +220,41 @@
                     });
                 }
 
+                // Fungsi untuk merender data ke chart, tabel, dan statistik
                 function renderData(data) {
                     // Tampilkan semua wrapper
-                    $('#statistik-pendapatan-wrapper, #statistik-pembelian-wrapper, #statistik-pengeluaran-wrapper, #statistik-laba-bersih-wrapper')
+                    $('#statistik-pendapatan-wrapper, #statistik-pembelian-wrapper, #statistik-pengeluaran-wrapper, #statistik-laba-kotor-wrapper') // <-- Ubah ID
                         .removeClass('d-none');
                     $('#chart-wrapper, #table-wrapper').removeClass('d-none');
 
-                    // Kalkulasi total (pastikan nama properti sudah benar)
+                    // Kalkulasi total
                     let totalPendapatan = data.reduce((sum, item) => sum + Number(item.total_pendapatan), 0);
                     let totalPembelian = data.reduce((sum, item) => sum + Number(item.pembelian_barang), 0);
-                    let totalPengeluaran = data.reduce((sum, item) => sum + Number(item.pengeluaran_operasional),
-                        0); // Pastikan ini benar
-                    let totalLaba = data.reduce((sum, item) => sum + Number(item.laba_bersih), 0);
+                    let totalPengeluaran = data.reduce((sum, item) => sum + Number(item.pengeluaran_operasional), 0);
+                    let totalLabaKotor = data.reduce((sum, item) => sum + Number(item.laba_kotor), 0); // <-- Ubah nama properti
 
-                    // Update statistik & footer (pastikan ID elemen sudah benar)
+                    // Update statistik & footer
                     $('#tfoot-total-pendapatan, #stat-pendapatan').text(formatRupiah(totalPendapatan));
                     $('#tfoot-total-pembelian, #stat-pembelian').text(formatRupiah(totalPembelian));
                     $('#tfoot-total-pengeluaran, #stat-pengeluaran').text(formatRupiah(totalPengeluaran));
-                    $('#tfoot-total-laba, #stat-laba-bersih').text(formatRupiah(totalLaba));
+                    $('#tfoot-total-laba-kotor, #stat-laba-kotor').text(formatRupiah(totalLabaKotor)); // <-- Ubah ID & Variabel
 
-                    // Inisialisasi DataTables (tidak ada perubahan di sini)
+                    // Inisialisasi DataTables
                     if ($.fn.DataTable.isDataTable('#laba_rugi_datatable')) {
                         datatable.destroy();
                     }
                     datatable = $('#laba_rugi_datatable').DataTable({
                         data: data,
-                        columns: [{
-                                data: 'tanggal'
-                            }, {
-                                data: 'total_pendapatan'
-                            },
-                            {
-                                data: 'pembelian_barang'
-                            }, {
-                                data: 'pengeluaran_operasional'
-                            },
-                            {
-                                data: 'laba_bersih'
-                            }
+                        columns: [
+                            { data: 'tanggal' },
+                            { data: 'total_pendapatan' },
+                            { data: 'pembelian_barang' },
+                            { data: 'pengeluaran_operasional' },
+                            { data: 'laba_kotor' } // <-- Ubah nama properti
                         ],
-                        columnDefs: [{
-                                targets: 0,
-                                render: (data) => moment(data).format('DD MMMM YYYY')
-                            },
-                            {
-                                targets: [3, 4],
-                                className: 'text-end',
-                                render: (data) => formatRupiah(data)
-                            },
+                        columnDefs: [
+                            { targets: 0, render: (data) => moment(data).format('DD MMMM YYYY') },
+                            { targets: [3, 4], className: 'text-end', render: (data) => formatRupiah(data) }, // <-- Ubah target
                             {
                                 targets: 1,
                                 className: 'text-end',
@@ -280,260 +273,120 @@
                                     return formatRupiah(data);
                                 }
                             }
-                            // Anda bisa menambahkan render button untuk kolom pengeluaran jika perlu
                         ],
-                        searching: false,
-                        paging: false,
-                        info: false,
-                        ordering: true,
-                        order: [
-                            [0, 'asc']
-                        ]
+                        searching: false, paging: false, info: false, ordering: true, order: [[0, 'asc']]
                     });
 
-                    // Inisialisasi Chart (dengan perbaikan)
+                    // Inisialisasi Chart
                     const chartElement = document.getElementById('labaRugiChart');
                     if (chart) chart.destroy();
                     const options = {
-                        series: [{
-                                name: 'Pendapatan',
-                                type: 'column',
-                                data: data.map(item => item.total_pendapatan)
-                            },
-                            {
-                                name: 'Pengeluaran',
-                                type: 'column',
-                                data: data.map(item => item.pengeluaran_operasional) // <-- PERBAIKAN DI SINI
-                            },
-                            {
-                                name: 'Laba Bersih',
-                                type: 'line',
-                                data: data.map(item => item.laba_bersih)
-                            }
+                        series: [
+                            { name: 'Pendapatan', type: 'column', data: data.map(item => item.total_pendapatan) },
+                            { name: 'Pengeluaran', type: 'column', data: data.map(item => item.pengeluaran_operasional)},
+                            { name: 'Laba Kotor', type: 'line', data: data.map(item => item.laba_kotor) } // <-- Ubah nama & properti
                         ],
                         chart: {
                             fontFamily: 'inherit',
                             type: 'line',
                             height: 350,
-                            toolbar: {
-                                show: false
-                            }
+                            toolbar: { show: false }
                         },
                         plotOptions: {
-                            bar: {
-                                horizontal: false,
-                                columnWidth: '55%',
-                                borderRadius: 5
-                            }
+                            bar: { horizontal: false, columnWidth: '55%', borderRadius: 5 }
                         },
-                        legend: {
-                            position: 'top'
-                        },
-                        dataLabels: {
-                            enabled: false
-                        },
-                        stroke: {
-                            show: true,
-                            width: [0, 0, 2, 2],
-                            curve: 'smooth'
-                        },
+                        legend: { position: 'top' },
+                        dataLabels: { enabled: false },
+                        stroke: { show: true, width: [0, 0, 2], curve: 'smooth' }, // Lebar garis Laba Kotor
                         xaxis: {
                             categories: data.map(item => moment(item.tanggal).format('DD MMM')),
-                            axisBorder: {
-                                show: false
-                            },
-                            axisTicks: {
-                                show: false
-                            },
-                            labels: {
-                                style: {
-                                    colors: KTUtil.getCssVariableValue('--bs-gray-500'),
-                                    fontSize: '12px'
-                                }
-                            }
+                            axisBorder: { show: false },
+                            axisTicks: { show: false },
+                            labels: { style: { colors: KTUtil.getCssVariableValue('--bs-gray-500'), fontSize: '12px' }}
                         },
                         yaxis: {
                             labels: {
                                 formatter: (val) => formatRupiah(val),
-                                style: {
-                                    colors: KTUtil.getCssVariableValue('--bs-gray-500'),
-                                    fontSize: '12px'
-                                }
+                                style: { colors: KTUtil.getCssVariableValue('--bs-gray-500'), fontSize: '12px' }
                             }
                         },
-                        fill: {
-                            opacity: 1
-                        },
+                        fill: { opacity: 1 },
                         states: {
-                            normal: {
-                                filter: {
-                                    type: 'none',
-                                    value: 0
-                                }
-                            },
-                            hover: {
-                                filter: {
-                                    type: 'none',
-                                    value: 0
-                                }
-                            },
-                            active: {
-                                allowMultipleDataPointsSelection: false,
-                                filter: {
-                                    type: 'none',
-                                    value: 0
-                                }
-                            }
+                            normal: { filter: { type: 'none', value: 0 } },
+                            hover: { filter: { type: 'none', value: 0 } },
+                            active: { allowMultipleDataPointsSelection: false, filter: { type: 'none', value: 0 }}
                         },
                         tooltip: {
-                            style: {
-                                fontSize: '12px'
-                            },
-                            y: {
-                                formatter: (val) => formatRupiah(val)
-                            }
+                            style: { fontSize: '12px' },
+                            y: { formatter: (val) => formatRupiah(val) }
                         },
-                        colors: [KTUtil.getCssVariableValue('--bs-success'), KTUtil.getCssVariableValue(
-                            '--bs-danger'), KTUtil.getCssVariableValue('--bs-primary')],
+                        colors: [KTUtil.getCssVariableValue('--bs-success'), KTUtil.getCssVariableValue('--bs-danger'), KTUtil.getCssVariableValue('--bs-primary')],
                         grid: {
                             borderColor: KTUtil.getCssVariableValue('--bs-gray-200'),
                             strokeDashArray: 4,
-                            yaxis: {
-                                lines: {
-                                    show: true
-                                }
-                            }
+                            yaxis: { lines: { show: true } }
                         }
                     };
                     chart = new ApexCharts(chartElement, options);
                     chart.render();
                 }
 
+                // Event listener untuk tombol detail
                 $('#laba_rugi_datatable tbody').on('click', '.btn-show-detail', function() {
-                    // Mengambil data dari tombol yang diklik
                     const tipe = $(this).data('tipe');
                     const tanggal = $(this).data('tanggal');
                     const modal = $('#modal_detail_laporan');
 
-                    // Mengatur judul modal dan menampilkan spinner loading
-                    modal.find('.modal-title').text(
-                        `Detail ${tipe.charAt(0).toUpperCase() + tipe.slice(1)} - ${moment(tanggal).format('DD MMMM YYYY')}`
-                    );
-                    modal.find('#detail-content-container').html(
-                        '<div class="text-center py-10"><span class="spinner-border spinner-border-sm"></span> Loading...</div>'
-                    );
+                    modal.find('.modal-title').text(`Detail ${tipe.charAt(0).toUpperCase() + tipe.slice(1)} - ${moment(tanggal).format('DD MMMM YYYY')}`);
+                    modal.find('#detail-content-container').html('<div class="text-center py-10"><span class="spinner-border spinner-border-sm"></span> Loading...</div>');
                     modal.modal('show');
 
-                    // Mengambil data detail dari server via AJAX
                     $.ajax({
                         url: "{{ route('laporan.laba-rugi.detail') }}",
-                        data: {
-                            tanggal: tanggal,
-                            tipe: tipe
-                        },
+                        data: { tanggal: tanggal, tipe: tipe },
                         success: function(response) {
-                            let html =
-                                '<div class="alert alert-secondary text-center">Tidak ada data detail untuk tanggal ini.</div>';
-
+                            let html = '<div class="alert alert-secondary text-center">Tidak ada data detail untuk tanggal ini.</div>';
                             if (response && response.length > 0) {
-
-                                // ==========================================================
-                                //  LOGIKA UNTUK MENAMPILKAN DETAIL PENDAPATAN (PENJUALAN)
-                                // ==========================================================
+                                // Logika render detail Pendapatan
                                 if (tipe === 'pendapatan') {
-                                    html = `<div class="table-responsive">
-                                <table class="table table-sm table-row-dashed fs-6 gy-4">
-                                    <thead>
-                                        <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-                                            <th>Barang</th>
-                                            <th class="text-center">Qty</th>
-                                            <th class="text-end">Subtotal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>`;
+                                    html = `<div class="table-responsive"><table class="table table-sm table-row-dashed fs-6 gy-4"><thead><tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0"><th>Barang</th><th class="text-center">Qty</th><th class="text-end">Subtotal</th></tr></thead><tbody>`;
                                     response.forEach(d => {
-                                        html += `<tr>
-                                    <td>
-                                        <div class="d-flex flex-column">
-                                            <span class="text-gray-800 fw-bold">${d.barang?.nama ?? 'N/A'}</span>
-                                            <small class="text-muted">${d.barang?.kode_barang ?? ''}</small>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">${d.qty}</td>
-                                    <td class="text-end">${formatRupiah(d.subtotal)}</td>
-                                 </tr>`;
+                                        html += `<tr><td><div class="d-flex flex-column"><span class="text-gray-800 fw-bold">${d.barang?.nama ?? 'N/A'}</span><small class="text-muted">${d.barang?.kode_barang ?? ''}</small></div></td><td class="text-center">${d.qty}</td><td class="text-end">${formatRupiah(d.subtotal)}</td></tr>`;
                                     });
                                     html += '</tbody></table></div>';
                                 }
-
-                                // ==========================================================
-                                //  LOGIKA UNTUK MENAMPILKAN DETAIL PEMBELIAN (BARANG MASUK)
-                                // ==========================================================
+                                // Logika render detail Pembelian
                                 else if (tipe === 'pembelian') {
-                                    html = ''; // Reset html
+                                    html = '';
                                     response.forEach(trx => {
-                                        html += `<div class="mb-5">
-                                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
-                                        <span class="fw-bold fs-6 text-gray-800">${trx.kode_transaksi}</span>
-                                        <span class="text-muted fs-7">Supplier: ${trx.supplier?.nama ?? 'N/A'}</span>
-                                    </div>
-                                    <table class="table table-sm fs-6">
-                                        <tbody>`;
+                                        html += `<div class="mb-5"><div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom"><span class="fw-bold fs-6 text-gray-800">${trx.kode_transaksi}</span><span class="text-muted fs-7">Supplier: ${trx.supplier?.nama ?? 'N/A'}</span></div><table class="table table-sm fs-6"><tbody>`;
                                         trx.detail.forEach(item => {
-                                            html += `<tr>
-                                        <td>
-                                            <div class="d-flex flex-column">
-                                                <span class="text-gray-800">${item.barang?.nama ?? 'N/A'}</span>
-                                                <small class="text-muted">${item.qty} Pcs</small>
-                                            </div>
-                                        </td>
-                                        <td class="text-end">${formatRupiah(item.subtotal)}</td>
-                                     </tr>`;
+                                            html += `<tr><td><div class="d-flex flex-column"><span class="text-gray-800">${item.barang?.nama ?? 'N/A'}</span><small class="text-muted">${item.qty} Pcs</small></div></td><td class="text-end">${formatRupiah(item.subtotal)}</td></tr>`;
                                         });
                                         html += `</tbody></table></div>`;
                                     });
                                 }
-
-                                // ==========================================================
-                                //  LOGIKA UNTUK MENAMPILKAN DETAIL BIAYA OPERASIONAL
-                                // ==========================================================
+                                // Logika render detail Pengeluaran
                                 else if (tipe === 'pengeluaran') {
-                                    html = ''; // Reset html
+                                    html = '';
                                     response.forEach(trx => {
-                                        html += `<div class="mb-5">
-                                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
-                                        <span class="fw-bold fs-6 text-gray-800">${trx.kode_transaksi}</span>
-                                        <span class="text-muted fs-7">${trx.catatan ?? ''}</span>
-                                    </div>
-                                    <table class="table table-sm fs-6">
-                                        <tbody>`;
+                                        html += `<div class="mb-5"><div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom"><span class="fw-bold fs-6 text-gray-800">${trx.kode_transaksi}</span><span class="text-muted fs-7">${trx.catatan ?? ''}</span></div><table class="table table-sm fs-6"><tbody>`;
                                         trx.details.forEach(detail => {
-                                            html += `<tr>
-                                        <td>
-                                            <div class="d-flex flex-column">
-                                                <span class="text-gray-800">${detail.nama}</span>
-                                                <small class="text-muted">Kategori: ${detail.kategori?.nama ?? 'N/A'}</small>
-                                            </div>
-                                        </td>
-                                        <td class="text-end">${formatRupiah(detail.jumlah)}</td>
-                                     </tr>`;
+                                            html += `<tr><td><div class="d-flex flex-column"><span class="text-gray-800">${detail.nama}</span><small class="text-muted">Kategori: ${detail.kategori?.nama ?? 'N/A'}</small></div></td><td class="text-end">${formatRupiah(detail.jumlah)}</td></tr>`;
                                         });
                                         html += `</tbody></table></div>`;
                                     });
                                 }
                             }
-                            // Masukkan HTML yang sudah dibuat ke dalam modal
                             modal.find('#detail-content-container').html(html);
                         },
                         error: function() {
-                            // Tampilkan pesan error jika AJAX gagal
-                            modal.find('#detail-content-container').html(
-                                '<div class="alert alert-danger text-center">Gagal memuat data detail.</div>'
-                            );
+                            modal.find('#detail-content-container').html('<div class="alert alert-danger text-center">Gagal memuat data detail.</div>');
                         }
                     });
                 });
 
+                // Event listener untuk tombol print
                 $('#btn-print-laporan').on('click', function() {
                     const ukuran = $('#ukuran_kertas').val();
                     const orientasi = $('#orientasi_kertas').val();

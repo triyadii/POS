@@ -4,11 +4,25 @@
     <!-- HEADER -->
     <div class="border rounded p-5 mb-5 bg-light-subtle">
         <div class="row g-5 mb-4">
-            <div class="col-md-4">
+            {{-- <div class="col-md-4">
                 <label class="form-label fw-semibold">Kode Transaksi</label>
                 <input type="text" class="form-control form-control-sm"
                     name="kode_transaksi" value="{{ $data->kode_transaksi }}" readonly />
+            </div> --}}
+
+            @php
+            // Ambil bagian kode setelah 'DB22-'
+            $kodeValue = \Illuminate\Support\Str::after($data->kode_transaksi, 'DB22-');
+        @endphp
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Kode Transaksi</label>
+            <div class="input-group input-group-sm">
+                <span class="input-group-text">DB22-</span>
+                <input type="text" name="kode_transaksi" class="form-control"
+                       value="{{ $kodeValue }}" placeholder="Input Kode...">
             </div>
+            <span class="text-danger error-text kode_transaksi_error_edit"></span>
+        </div>
 
             <div class="col-md-4">
                 <label class="form-label fw-semibold">Tanggal Penjualan</label>
@@ -56,10 +70,10 @@
         <div class="col-md-6">
             <label class="form-label fw-semibold">Barang</label>
             <select name="barang_id"
-                class="form-select form-select-sm edit-barang-select"
+                class="form-select form-select-sm edit-barang-select" data-dropdown-parent="#Modal_Edit_Data" data-dropdown-parent="body"
                 data-placeholder="Cari barang...">
                 <option value="{{ $detail->barang_id }}" selected>
-                    {{ $detail->barang->kode_barang }} — {{ $detail->barang->nama }}
+                    {{ $detail->barang->kode_barang }} — {{ $detail->barang->nama }} • Size: {{ $detail->barang->size }}
                 </option>
             </select>
             <span class="text-danger error-text barang_list_{{ $loop->index }}_barang_id_error_edit"></span>

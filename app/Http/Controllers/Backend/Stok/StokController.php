@@ -54,7 +54,18 @@ class StokController extends Controller
                 $badgeClass = $data->stok <= 10 ? 'badge-light-danger' : 'badge-light-primary';
                 return '<span class="badge ' . $badgeClass . '">' . $data->stok . '</span>';
             })
-            ->rawColumns(['stok'])
+            ->addColumn('harga_jual', function ($data) {
+                return '
+                    <div class="text-end">
+
+                    <span class="fw-semibold text-gray-800">Rp. '
+                             . number_format($data->harga_jual ?? 0, 0, ',', '.') .
+                        '</span>
+                        
+                    </div>
+                ';
+            })
+            ->rawColumns(['stok','harga_jual'])
             ->with(['total_stok' => $totalStok, 'total_jenis_barang' => $totalJenisBarang, 'stok_kritis' => $stokKritis,])
             ->make(true);
     }
