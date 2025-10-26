@@ -27,11 +27,9 @@
         {{-- BAGIAN KARTU STATISTIK --}}
         {{-- =================================== --}}
         <div class="row g-5 g-xl-8">
-            {{-- Card 1: Total Penjualan Kotor --}}
             <div class="col-xl-3 col-md-6">
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
-                        {{-- PERUBAHAN: Tambah (Kotor) --}}
                         <span class="text-muted fw-bold fs-7">Total Penjualan Hari ini (Kotor)</span>
                         <span class="fw-bold fs-2x text-success">
                             <span class="fs-7 text-gray-600 mb-3">Rp. </span>
@@ -42,23 +40,19 @@
                 </div>
             </div>
 
-            {{-- Card 2: Total Modal (HPP) --}}
             <div class="col-xl-3 col-md-6">
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
-                        {{-- PERUBAHAN: Ubah Label --}}
-                        <span class="text-muted fw-bold fs-7">Total Modal Berdasarkan Barang Yang Terjual</span>
+                        <span class="text-muted fw-bold fs-7">Total Pembelian Hari Ini</span>
                         <span class="fw-bold fs-2x text-warning">
                             <span class="fs-7 text-gray-600 mb-3">Rp. </span>
-                            {{-- PERUBAHAN: Ubah Variabel --}}
-                            {{ number_format($totalHppHariIni, 0, ',', '.') }}
+                            {{ number_format($totalPembelianHariIni, 0, ',', '.') }}
                         </span>
-                        {{-- <span class="fs-7 text-gray-600 mb-3">{{ $tanggalHariIni }}</span> --}}
+                        <span class="fs-7 text-gray-600 mb-3">{{ $tanggalHariIni }}</span>
                     </div>
                 </div>
             </div>
 
-            {{-- Card 3: Total Pengeluaran --}}
             <div class="col-xl-3 col-md-6">
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
@@ -72,12 +66,10 @@
                 </div>
             </div>
 
-            {{-- Card 4: Laba / Rugi Kotor --}}
             <div class="col-xl-3 col-md-6">
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
-                        {{-- PERUBAHAN: Tambah (Kotor) --}}
-                        <span class="text-muted fw-bold fs-7">Profit Hari Ini (Kotor)</span>
+                        <span class="text-muted fw-bold fs-7">Laba / Rugi Hari Ini (Kotor)</span>
                         <span class="fw-bold fs-2x {{ $labaRugiHariIni >= 0 ? 'text-primary' : 'text-danger' }}">
                             <span class="fs-7 text-gray-600 mb-3">Rp. </span>
                             {{ number_format($labaRugiHariIni, 0, ',', '.') }}
