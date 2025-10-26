@@ -330,13 +330,24 @@ class PenjualanController extends Controller
         $data = $query->latest()->get();
 
         // Tambahkan nama barang
-        $data->transform(function ($p) {
-            $p->nama_barang = $p->detail
-                ->map(fn($d) => $d->barang->nama ?? $d->barang->kode_barang ?? '-')
+       $data->transform(function ($p) {
+        // Gabungkan semua kode barang unik
+            $p->kode_barang = $p->detail
+                ->map(fn($d) => $d->barang->kode_barang ?? '-')
+                ->filter() // hapus null
                 ->unique()
                 ->join(', ');
+
+            // Gabungkan semua nama barang unik
+            $p->nama_barang = $p->detail
+                ->map(fn($d) => $d->barang->nama ?? '-')
+                ->filter()
+                ->unique()
+                ->join(', ');
+
             $p->potongan = $p->potongan ?? 0;
             $p->kategori_penjualan = $p->kategori_penjualan ?? 'Offline';
+
             return $p;
         });
 
@@ -346,10 +357,43 @@ class PenjualanController extends Controller
 
 
     // Detail penjualan by ID
+    // public function getDetail(Request $request)
+    // {
+    //     $penjualan = Penjualan::with(['detail.barang'])->find($request->id);
+    //     return response()->json($penjualan);
+    // }
     public function getDetail(Request $request)
     {
-        $penjualan = Penjualan::with(['detail.barang'])->find($request->id);
-        return response()->json($penjualan);
+        $penjualan = Penjualan::with(['detail.barang:id,nama,kode_barang'])
+            ->select('id', 'kode_transaksi', 'customer_nama', 'total_item', 'total_harga', 'catatan', 'jenis_pembayaran_id')
+            ->find($request->id);
+
+        if (!$penjualan) {
+            return response()->json(['status' => 'error', 'message' => 'Data penjualan tidak ditemukan'], 404);
+        }
+
+        $data = [
+            'id' => $penjualan->id,
+            'kode_transaksi' => $penjualan->kode_transaksi,
+            'customer_nama' => $penjualan->customer_nama,
+            'total_item' => $penjualan->total_item,
+            'total_harga' => $penjualan->total_harga,
+            'catatan' => $penjualan->catatan,
+            'jenis_pembayaran_id' => $penjualan->jenis_pembayaran_id,
+            'detail' => $penjualan->detail->map(function ($d) {
+                return [
+                    'id' => $d->id,
+                    'barang_id' => $d->barang_id,
+                    'kode_barang' => $d->barang->kode_barang ?? '-',
+                    'nama_barang' => $d->barang->nama ?? '-',
+                    'qty' => $d->qty,
+                    'harga_jual' => $d->harga_jual,
+                    'subtotal' => $d->subtotal,
+                ];
+            }),
+        ];
+
+        return response()->json($data);
     }
     public function update(Request $request)
     {
@@ -615,4 +659,28 @@ class PenjualanController extends Controller
             ], 500);
         }
     }
+    public function updateHargaBarang(Request $request)
+    {
+        $request->validate([
+            'barang_id' => 'required|uuid|exists:barang,id',
+            'harga_jual' => 'required|numeric|min:0'
+        ]);
+
+        try {
+            $barang = Barang::findOrFail($request->barang_id);
+            $barang->harga_jual = $request->harga_jual;
+            $barang->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Harga barang berhasil diperbarui di master.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui harga: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
