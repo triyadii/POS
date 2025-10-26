@@ -37,22 +37,44 @@ class DashboardController extends Controller
       // ===================================
       
       // 1. Total Penjualan (Gross Sales / Omzet) - Sesuai Laba Rugi
-      $totalPenjualanHariIni = PenjualanDetail::whereHas('penjualan', function ($query) use ($today) {
-          $query->whereDate('tanggal_penjualan', $today);
-      })->sum('subtotal');
+    //   $totalPenjualanHariIni = PenjualanDetail::whereHas('penjualan', function ($query) use ($today) {
+    //       $query->whereDate('tanggal_penjualan', $today);
+    //   })->sum('subtotal');
+
+    $detailPenjualanHariIni = PenjualanDetail::whereHas('penjualan', function ($query) use ($today) {
+        $query->whereDate('tanggal_penjualan', $today);
+    })->with('barang:id,harga_beli')->get(); // Eager load harga beli barang
+    
+    $totalPenjualanHariIni = $detailPenjualanHariIni->sum('subtotal');
       
       // 2. Total Pembelian (Stok Masuk) - Sesuai Laba Rugi
-      $totalPembelianHariIni = BarangMasukDetail::whereHas('barangMasuk', function ($q) use ($today) {
-          $q->whereDate('tanggal_masuk', $today);
-      })->sum('subtotal');
+    //   $totalPembelianHariIni = BarangMasukDetail::whereHas('barangMasuk', function ($q) use ($today) {
+    //       $q->whereDate('tanggal_masuk', $today);
+    //   })->sum('subtotal');
 
-      // 3. Total Pengeluaran (Biaya Operasional) - Sesuai Laba Rugi
-      $totalPengeluaranHariIni = PengeluaranDetail::whereHas('pengeluaran', function ($q) use ($today) {
-          $q->whereDate('tanggal', $today);
-      })->sum('jumlah');
+    $totalHppHariIni = $detailPenjualanHariIni->sum(function ($detail) {
+        return $detail->qty * (optional($detail->barang)->harga_beli ?? 0);
+    });
+
+    //   // 3. Total Pengeluaran (Biaya Operasional) - Sesuai Laba Rugi
+    //   $totalPengeluaranHariIni = PengeluaranDetail::whereHas('pengeluaran', function ($q) use ($today) {
+    //       $q->whereDate('tanggal', $today);
+    //   })->sum('jumlah');
       
-      // 4. Laba / Rugi - Sesuai Laba Rugi
-      $labaRugiHariIni = $totalPenjualanHariIni - $totalPembelianHariIni - $totalPengeluaranHariIni;
+    //   // 4. Laba / Rugi - Sesuai Laba Rugi
+    //   $labaRugiHariIni = $totalPenjualanHariIni - $totalPembelianHariIni - $totalPengeluaranHariIni;
+
+    $totalPengeluaranHariIni = PengeluaranDetail::whereHas('pengeluaran', function ($q) use ($today) {
+        $q->whereDate('tanggal', $today);
+    })->sum('jumlah');
+    
+    // 4. Laba / Rugi - Tetap Penjualan Kotor - Pembelian Stok - Pengeluaran (Sesuai Laporan Laba Rugi)
+    //    Jika Anda ingin Laba Kotor (Penjualan - HPP), gunakan: $labaRugiHariIni = $totalPenjualanHariIni - $totalHppHariIni;
+    //    Tapi kita ikuti Laporan Laba Rugi untuk konsistensi kartu "Laba/Rugi":
+    $totalPembelianStokHariIni = BarangMasukDetail::whereHas('barangMasuk', function ($q) use ($today) {
+        $q->whereDate('tanggal_masuk', $today);
+    })->sum('subtotal'); // Ini masih dibutuhkan untuk kalkulasi Laba/Rugi Harian
+    $labaRugiHariIni = $totalPenjualanHariIni - $totalHppHariIni - $totalPengeluaranHariIni;
       
       // ===================================
       // AKHIR LOGIKA KARTU STATISTIK
@@ -105,7 +127,8 @@ class DashboardController extends Controller
         // Kirim semua data ke view
         return view('backend.dashboard.index', compact(
             'totalPenjualanHariIni',
-            'totalPembelianHariIni',
+            // 'totalPembelianHariIni',
+            'totalHppHariIni',
             'totalPengeluaranHariIni',
             'labaRugiHariIni',
             'tanggalHariIni',
