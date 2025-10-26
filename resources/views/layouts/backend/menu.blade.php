@@ -22,7 +22,7 @@
 
         @canany(['barang-list', 'barang-keluar-list', 'barang-masuk-list', 'daftar-penjualan-list', 'stok-list',
             'cari-barang-list', 'laporan-global-list', 'laporan-pembelian-supplier-list', 'laporan-penjualan-kategori-list',
-            'laporan-penjualan-brand-list', 'laporan-penjualan-brand-list', 'pengeluaran-list','penjualan-online-list'])
+            'laporan-penjualan-brand-list', 'laporan-penjualan-brand-list', 'pengeluaran-list', 'penjualan-online-list'])
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
                 class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
@@ -43,7 +43,7 @@
                         'laporan-penjualan-brand.index',
                         'laporan-laba-rugi.index',
                         'pengeluaran.index',
-                        'penjualan-online.index'
+                        'penjualan-online.index',
                     )
                         ? 'active '
                         : '' }}">
@@ -277,17 +277,15 @@
                                     <!--end:Menu item-->
                                 @endcan
                                 <!--begin:Menu item-->
-                                <!--<div-->
-                                <!--    class="menu-item {{ request()->routeIs('laporan-laba-rugi-harian.index') ? 'here show ' : '' }}">-->
-                                    <!--begin:Menu link-->
-                                <!--    <a class="menu-link py-3" href="{{ route('laporan-laba-rugi-harian.index') }}">-->
-                                <!--        <span class="menu-bullet">-->
-                                <!--            <span class="bullet bullet-dot"></span>-->
-                                <!--        </span>-->
-                                <!--        <span class="menu-title">Laba Rugi Harian</span>-->
-                                <!--    </a>-->
+                                <div class="menu-item {{ request()->routeIs('laporan-laba-rugi-harian.index') ? 'here show ' : '' }}">
+                                  <a class="menu-link py-3" href="{{ route('laporan-laba-rugi-harian.index') }}">
+                                 <span class="menu-bullet">
+                                 <span class="bullet bullet-dot"></span>
+                                 </span>
+                                 <span class="menu-title">Laba Rugi Harian</span>
+                                </a>
                                     <!--end:Menu link-->
-                                <!--</div>-->
+                                </div>
                                 <!--end:Menu item-->
                             </div>
                             <!--end:Menu sub-->

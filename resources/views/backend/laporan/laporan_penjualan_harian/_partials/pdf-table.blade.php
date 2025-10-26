@@ -77,12 +77,9 @@
                 {{ number_format($total_potongan, 0, ',', '.') }}</td>
         </tr>
         <tr>
-            <td style="padding: 5px;">Pajak :</td>
-            <td style="padding: 5px; text-align: right; font-weight: bold;">0</td>
-        </tr>
-        <tr>
             <td style="padding: 5px;">Biaya Lain :</td>
-            <td style="padding: 5px; text-align: right; font-weight: bold;">0</td>
+            <td style="padding: 5px; text-align: right; font-weight: bold;">
+                {{ number_format($total_biaya_lain, 0, ',', '.') }}</td>
         </tr>
         <tr style="border-top: 1px dashed #999; border-bottom: 1px dashed #999;">
             <td style="padding: 8px; font-weight: bold; font-size: 12px;">Total Akhir :</td>
@@ -90,19 +87,25 @@
                 {{ number_format($total_akhir, 0, ',', '.') }}</td>
         </tr>
         <tr>
-            <td style="padding: 5px; color: #007bff;">Bayar Tunai :</td>
+            <td style="padding: 5px; color: #007bff;">Total Bayar Tunai :</td>
             <td style="padding: 5px; text-align: right; font-weight: bold; color: #007bff;">
                 {{ number_format($total_tunai, 0, ',', '.') }}</td>
         </tr>
         <tr>
-            <td style="padding: 5px; color: #dc3545;">Bayar Kredit :</td>
+            <td style="padding: 5px; color: #dc3545;">Total Bayar Kredit :</td>
             <td style="padding: 5px; text-align: right; font-weight: bold; color: #dc3545;">
                 {{ number_format($total_kredit, 0, ',', '.') }}</td>
         </tr>
-        <tr style="border-top: 1px dashed #999;">
+        {{-- <tr style="border-top: 1px dashed #999;">
+            <td style="padding: 5px; color: #dc3545;">Subtotal Harga Beli :</td>
+            <td style="padding: 5px; text-align: right; font-weight: bold; color: #dc3545;">
+                -{{ number_format($total_harga_beli, 0, ',', '.') }}
+            </td>
+        </tr>
+        <tr>
             <td style="padding: 5px; color: #28a745;">Total Profit :</td>
             <td style="padding: 5px; text-align: right; font-weight: bold; color: #28a745;">
                 {{ number_format($total_profit, 0, ',', '.') }}</td>
-        </tr>
+        </tr> --}}
     </table>
 </div>

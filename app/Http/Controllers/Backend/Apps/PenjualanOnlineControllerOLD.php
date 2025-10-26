@@ -50,7 +50,7 @@ class PenjualanOnlineController extends Controller
 
     public function getData(Request $request)
     {
-        $postsQuery = Penjualan::where('kategori_penjualan','=','online')->orderBy('tanggal_penjualan', 'desc');
+        $postsQuery = Penjualan::where('kategori_penjualan','=','online')->orderBy('created_at', 'desc');
         if (!empty($request->search['value'])) {
             $searchValue = $request->search['value'];
             $postsQuery->where(function ($query) use ($searchValue) {
@@ -310,7 +310,6 @@ public function store(Request $request)
     // 🧩 Validasi input nested repeater
     $validator = Validator::make($request->all(), [
         'penjualan_list' => 'required|array|min:1',
-        'penjualan_list.*.kode_transaksi' => 'required|string',
         'penjualan_list.*.jenis_pembayaran_id' => 'required|string|exists:jenis_pembayaran,id',
         'penjualan_list.*.barang_list' => 'required|array|min:1',
         'penjualan_list.*.barang_list.*.barang_id'  => 'required|string|exists:barang,id',
@@ -318,7 +317,6 @@ public function store(Request $request)
         'penjualan_list.*.barang_list.*.qty'        => 'required|numeric|min:1',
         'penjualan_list.*.barang_list.*.subtotal'   => 'required|string',
     ], [
-        'penjualan_list.*.kode_transaksi.required' => 'Kode Transaksi wajib diisi.',
         'penjualan_list.*.jenis_pembayaran_id.required' => 'Jenis pembayaran wajib dipilih.',
         'penjualan_list.*.jenis_pembayaran_id.exists'   => 'Jenis pembayaran tidak valid.',
         'penjualan_list.*.barang_list.*.barang_id.required' => 'Barang wajib dipilih.',
@@ -337,14 +335,6 @@ public function store(Request $request)
         // 🔁 Loop setiap transaksi penjualan
         foreach ($request->penjualan_list as $trx) {
 
-            $fullKodeTransaksi = 'DB22-' . $trx['kode_transaksi'];
-                
-                // Cek keunikan
-                $exists = \App\Models\Penjualan::where('kode_transaksi', $fullKodeTransaksi)->exists();
-                if ($exists) {
-                    throw new \Exception("Kode Transaksi '{$fullKodeTransaksi}' sudah digunakan.");
-                }
-
             $total_harga = $this->cleanRupiah($trx['total_harga'] ?? 0);
             $potongan    = $this->cleanRupiah($trx['potongan'] ?? 0);
             $grand_total = $this->cleanRupiah($trx['grand_total'] ?? 0);
@@ -352,8 +342,7 @@ public function store(Request $request)
             // 🧠 Simpan header penjualan
             $penjualan = \App\Models\Penjualan::create([
                 'id'                 => \Str::uuid(),
-                // 'kode_transaksi'     => $this->generateKodeTransaksi(),
-                'kode_transaksi'     => $fullKodeTransaksi,
+                'kode_transaksi'     => $this->generateKodeTransaksi(),
                 'tanggal_penjualan'  => now(),
                 'user_id'            => \Auth::id(),
                 'jenis_pembayaran_id'=> $trx['jenis_pembayaran_id'],
@@ -436,39 +425,39 @@ private function cleanRupiah($value)
 }
 
 // 🔹 Helper: generate kode transaksi otomatis
-// private function generateKodeTransaksi()
-// {
-//     $kasirId = 'DB22';
-//     $tanggal = \Carbon\Carbon::now()->format('Ymd');
-//     $today   = \Carbon\Carbon::now()->toDateString();
+private function generateKodeTransaksi()
+{
+    $kasirId = 'DB22';
+    $tanggal = \Carbon\Carbon::now()->format('Ymd');
+    $today   = \Carbon\Carbon::now()->toDateString();
 
-//     // Jalankan dalam transaksi agar aman dari duplikasi
-//     return \DB::transaction(function () use ($kasirId, $tanggal, $today) {
+    // Jalankan dalam transaksi agar aman dari duplikasi
+    return \DB::transaction(function () use ($kasirId, $tanggal, $today) {
 
-//         // 🔒 Kunci baris transaksi terakhir (hindari race condition)
-//         $lastPenjualan = \DB::table('penjualan')
-//             ->whereDate('created_at', $today)
-//             ->where('kode_transaksi', 'like', "{$kasirId}-ONLINE-{$tanggal}-%")
-//             ->orderByDesc('kode_transaksi')
-//             ->lockForUpdate()
-//             ->value('kode_transaksi');
+        // 🔒 Kunci baris transaksi terakhir (hindari race condition)
+        $lastPenjualan = \DB::table('penjualan')
+            ->whereDate('created_at', $today)
+            ->where('kode_transaksi', 'like', "{$kasirId}-ONLINE-{$tanggal}-%")
+            ->orderByDesc('kode_transaksi')
+            ->lockForUpdate()
+            ->value('kode_transaksi');
 
-//         // Tentukan nomor urut berikutnya
-//         if ($lastPenjualan) {
-//             // Ambil 6 digit terakhir
-//             $lastNumber = (int) substr($lastPenjualan, -6);
-//             $nextNumber = $lastNumber + 1;
-//         } else {
-//             $nextNumber = 1;
-//         }
+        // Tentukan nomor urut berikutnya
+        if ($lastPenjualan) {
+            // Ambil 6 digit terakhir
+            $lastNumber = (int) substr($lastPenjualan, -6);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
 
-//         // Format 6 digit angka
-//         $urutan = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+        // Format 6 digit angka
+        $urutan = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
-//         // Contoh hasil: DB22-ONLINE-20251021-000123
-//         return "{$kasirId}-ONLINE-{$tanggal}-{$urutan}";
-//     });
-// }
+        // Contoh hasil: DB22-ONLINE-20251021-000123
+        return "{$kasirId}-ONLINE-{$tanggal}-{$urutan}";
+    });
+}
 
 
 
@@ -602,7 +591,6 @@ public function update(Request $request, $id)
     $formattedTime = \Carbon\Carbon::now()->diffForHumans();
 
     $validator = \Validator::make($request->all(), [
-        'kode_transaksi' => 'required|string',
         'jenis_pembayaran_id' => 'required|uuid|exists:jenis_pembayaran,id',
         'barang_list' => 'required|array|min:1',
         'barang_list.*.detail_id'  => 'nullable|uuid',
@@ -620,16 +608,6 @@ public function update(Request $request, $id)
     try {
         \DB::beginTransaction();
 
-        $fullKodeTransaksi = 'DB22-' . $request->input('kode_transaksi');
-            
-            // Cek keunikan (kecuali ID ini sendiri)
-            $exists = \App\Models\Penjualan::where('kode_transaksi', $fullKodeTransaksi)
-                                        ->where('id', '!=', $id)
-                                        ->exists();
-            if ($exists) {
-                throw new \Exception("Kode Transaksi '{$fullKodeTransaksi}' sudah digunakan.");
-            }
-
         $penjualan = \App\Models\Penjualan::with('detail')->findOrFail($id);
 
         $total_harga = $this->cleanRupiah($request->input('total_harga'));
@@ -638,7 +616,6 @@ public function update(Request $request, $id)
 
         // 🧾 Update header penjualan
         $penjualan->update([
-            'kode_transaksi'      => $fullKodeTransaksi,
             'jenis_pembayaran_id' => $request->jenis_pembayaran_id,
             'total_harga'         => $total_harga,
             'potongan'            => $potongan,

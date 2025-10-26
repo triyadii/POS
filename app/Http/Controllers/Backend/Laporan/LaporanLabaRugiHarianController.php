@@ -112,11 +112,19 @@ class LaporanLabaRugiHarianController extends Controller
 
         // 4. Hitung Total
         $total_penjualan = $detail_penjualan->sum('subtotal');
+
+        // ===================================
+        // PERBAIKAN: Baris yang hilang ditambahkan kembali
+        // ===================================
         $total_hpp_penjualan = $detail_penjualan->sum(function ($item) {
             // Pastikan harga_beli ada untuk menghindari error
             return ($item->harga_beli ?? 0) * $item->qty;
         });
         $total_profit_kotor = $total_penjualan - $total_hpp_penjualan;
+        // ===================================
+        // AKHIR PERBAIKAN
+        // ===================================
+
         $total_pembelian = $detail_pembelian->sum('subtotal');
         $total_pengeluaran = $detail_pengeluaran->sum('jumlah');
         $laba_rugi = $total_penjualan - $total_pembelian - $total_pengeluaran;
@@ -128,6 +136,7 @@ class LaporanLabaRugiHarianController extends Controller
             'total_pembelian' => $total_pembelian,
             'total_pengeluaran' => $total_pengeluaran,
             'laba_rugi' => $laba_rugi,
+            'total_hpp_penjualan' => $total_hpp_penjualan, // <-- PERBAIKAN: Tambahkan ini
             'total_profit_kotor' => $total_profit_kotor,
             'detail_penjualan' => $detail_penjualan,
             'detail_pembelian' => $detail_pembelian,
