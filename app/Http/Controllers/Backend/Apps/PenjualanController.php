@@ -130,7 +130,7 @@ class PenjualanController extends Controller
     {
         $today = Carbon::today()->toDateString();
         $penjualan = Penjualan::with([
-            'detail.barang:id,nama',
+            'detail.barang:id,nama,size,kode_barang',
             'pembayaran:id,nama' // ✅ relasi jenis_pembayaran
         ])
             ->select(

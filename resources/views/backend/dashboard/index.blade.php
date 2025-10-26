@@ -6,44 +6,31 @@
 
 
         <div id="kt_app_toolbar" class="app-toolbar d-flex flex-stack py-4 mb-xl-10 mb-5">
-            <!--begin::Toolbar wrapper-->
             <div class="d-flex flex-grow-1 flex-stack flex-wrap gap-2 mb-n10" id="kt_toolbar">
-                <!--begin::Page title-->
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-                    <!--begin::Title-->
                     <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
                         Dashboards</h1>
-                    <!--end::Title-->
-                    <!--begin::Breadcrumb-->
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-                        <!--begin::Item-->
                         <li class="breadcrumb-item text-muted">
                             <a class="text-muted text-hover-primary">Home</a>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-500 w-5px h-2px"></span>
                         </li>
-                        <!--end::Item-->
-                        <!--begin::Item-->
                         <li class="breadcrumb-item text-gray-900">Dashboards</li>
-                        <!--end::Item-->
-
-                    </ul>
-                    <!--end::Breadcrumb-->
+                        </ul>
+                    </div>
                 </div>
-                <!--end::Page title-->
-
             </div>
-            <!--end::Toolbar wrapper-->
-        </div>
 
+        {{-- =================================== --}}
+        {{-- BAGIAN KARTU STATISTIK --}}
+        {{-- =================================== --}}
         <div class="row g-5 g-xl-8">
             <div class="col-xl-3 col-md-6">
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
-                        <span class="text-muted fw-bold fs-7">Total Penjualan Hari ini</span>
+                        <span class="text-muted fw-bold fs-7">Total Penjualan Hari ini (Kotor)</span>
                         <span class="fw-bold fs-2x text-success">
                             <span class="fs-7 text-gray-600 mb-3">Rp. </span>
                             {{ number_format($totalPenjualanHariIni, 0, ',', '.') }}
@@ -53,13 +40,23 @@
                 </div>
             </div>
 
-
-
-            <!-- Card 2 -->
             <div class="col-xl-3 col-md-6">
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
-                        <span class="text-muted fw-bold fs-7">Total Pengeluaran Hari ini</span>
+                        <span class="text-muted fw-bold fs-7">Total Pembelian Hari Ini</span>
+                        <span class="fw-bold fs-2x text-warning">
+                            <span class="fs-7 text-gray-600 mb-3">Rp. </span>
+                            {{ number_format($totalPembelianHariIni, 0, ',', '.') }}
+                        </span>
+                        <span class="fs-7 text-gray-600 mb-3">{{ $tanggalHariIni }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="card card-stretch mb-xl-8">
+                    <div class="card-body d-flex flex-column">
+                        <span class="text-muted fw-bold fs-7">Total Pengeluaran Hari Ini</span>
                         <span class="fw-bold fs-2x text-danger">
                             <span class="fs-7 text-gray-600 mb-3">Rp. </span>
                             {{ number_format($totalPengeluaranHariIni, 0, ',', '.') }}
@@ -69,33 +66,23 @@
                 </div>
             </div>
 
-            <!-- Card 3 -->
             <div class="col-xl-3 col-md-6">
                 <div class="card card-stretch mb-xl-8">
                     <div class="card-body d-flex flex-column">
-                        <span class="text-muted fw-bold fs-7">Produk Terjual</span>
-                        <span class="fw-bold fs-2x text-dark">
-                            {{ number_format($produkTerjualHariIni, 0, ',', '.') }}
-                        </span>
-                        <span class="fs-7 text-gray-600 mb-3">{{ $tanggalHariIni }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="col-xl-3 col-md-6">
-                <div class="card card-stretch mb-xl-8">
-                    <div class="card-body d-flex flex-column">
-                        <span class="text-muted fw-bold fs-7">Laba Bersih</span>
-                        <span class="fw-bold fs-2x text-dark">
+                        <span class="text-muted fw-bold fs-7">Laba / Rugi Hari Ini (Kotor)</span>
+                        <span class="fw-bold fs-2x {{ $labaRugiHariIni >= 0 ? 'text-primary' : 'text-danger' }}">
                             <span class="fs-7 text-gray-600 mb-3">Rp. </span>
-                            {{ number_format($labaBersihHariIni, 0, ',', '.') }}
+                            {{ number_format($labaRugiHariIni, 0, ',', '.') }}
                         </span>
                         <span class="fs-7 text-gray-600 mb-3">{{ $tanggalHariIni }}</span>
                     </div>
                 </div>
             </div>
         </div>
+        {{-- =================================== --}}
+        {{-- AKHIR DARI BAGIAN KARTU --}}
+        {{-- =================================== --}}
+
 
         <div class="row g-5 g-xl-8">
             <div class="col-xl-8">
@@ -146,9 +133,7 @@
             </div>
 
             <div class="col-xl-12">
-                <!--begin::List Widget 5-->
                 <div class="card card-xl-stretch mb-xl-8">
-                    <!--begin::Header-->
                     <div class="card-header align-items-center border-0 mt-4">
                         <h3 class="card-title align-items-start flex-column">
                             <span class="fw-bold mb-2 text-gray-900">Activities</span>
@@ -158,18 +143,13 @@
                             <a href="{{ route('log-activity.index') }}" class="btn btn-sm btn-light">View All</a>
                         </div>
                     </div>
-                    <!--end::Header-->
-                    <!--begin::Body-->
                     <div class="card-body px-9 hover-scroll-overlay-y pe-7 me-3 mb-2 h-400px">
                         <div class="timeline-label" id="log-activities">
-                            <!-- Data log aktivitas akan dimuat di sini -->
-                        </div>
+                            </div>
                     </div>
 
-                    <!--end: Card Body-->
+                    </div>
                 </div>
-                <!--end: List Widget 5-->
-            </div>
         </div>
 
 

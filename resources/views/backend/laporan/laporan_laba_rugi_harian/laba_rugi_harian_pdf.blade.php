@@ -138,26 +138,46 @@
 
     <main>
         <h3>Ringkasan Keuangan</h3>
-        <table class="summary-table">
-            <tr>
-                <td class="label">Total Penjualan (Omzet)</td>
-                <td class="value">Rp {{ number_format($total_penjualan, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="label">Total Pembelian Barang</td>
-                <td class="value">Rp {{ number_format($total_pembelian, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="label">Total Pengeluaran (Biaya)</td>
-                <td class="value">Rp {{ number_format($total_pengeluaran, 0, ',', '.') }}</td>
-            </tr>
-            <tr class="total-row">
-                <td class="label" style="font-size: 13px;">Laba / Rugi Bersih</td>
-                <td class="value {{ $laba_rugi >= 0 ? 'profit' : 'loss' }}" style="font-size: 13px;">
-                    Rp {{ number_format($laba_rugi, 0, ',', '.') }}
-                </td>
-            </tr>
-        </table>
+       <div class="row">
+        <div class="col-xl-6">
+            <table class="summary-table">
+                <tr>
+                    <td class="label">Total Penjualan Hari Ini(Kotor)</td>
+                    <td class="value">Rp {{ number_format($total_penjualan, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Total Pembelian Barang Hari Ini</td>
+                    <td class="value">Rp {{ number_format($total_pembelian, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Total Pengeluaran Hari Ini(Biaya)</td>
+                    <td class="value">Rp {{ number_format($total_pengeluaran, 0, ',', '.') }}</td>
+                </tr>
+                <tr class="total-row">
+                    <td class="label" style="font-size: 13px;">Laba / Rugi Kotor</td>
+                    <td class="value {{ $laba_rugi >= 0 ? 'profit' : 'loss' }}" style="font-size: 13px;">
+                        Rp {{ number_format($laba_rugi, 0, ',', '.') }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-xl-6">
+            <table class="summary-table">
+                <tr>
+                    <td class="label" style="padding-left: 20px; font-style: italic;">Total Modal Pembelian Barang Berdasarkan Item Yang Dijual  (HPP)</td>
+                    <td class="value" style="font-style: italic;">
+                        - Rp {{ number_format($total_hpp_penjualan, 0, ',', '.') }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label" style="padding-left: 20px; font-weight: bold;">Total Profit Kotor (Margin Berdasarkan Penjualan Dengan Modal)</td>
+                    <td class="value" style="font-weight: bold;">
+                        Rp {{ number_format($total_profit_kotor, 0, ',', '.') }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+       </div>
 
         <hr style="border: 0; border-top: 1px dashed #ccc;">
 

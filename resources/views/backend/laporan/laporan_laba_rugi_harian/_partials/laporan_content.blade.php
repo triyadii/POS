@@ -4,7 +4,7 @@
         <div class="card bg-light-success hoverable card-xl-stretch">
             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                 <div class="text-success fw-bold fs-2 mb-3">Rp {{ number_format($total_penjualan, 0, ',', '.') }}</div>
-                <div class="fw-semibold text-success">Total Penjualan</div>
+                <div class="fw-semibold text-success">Total Penjualan Hari Ini (Kotor)</div>
             </div>
         </div>
     </div>
@@ -12,7 +12,7 @@
         <div class="card bg-light-warning hoverable card-xl-stretch">
             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                 <div class="text-warning fw-bold fs-2 mb-3">Rp {{ number_format($total_pembelian, 0, ',', '.') }}</div>
-                <div class="fw-semibold text-warning">Total Pembelian</div>
+                <div class="fw-semibold text-warning">Total Pembelian Hari Ini</div>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
         <div class="card bg-light-danger hoverable card-xl-stretch">
             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                 <div class="text-danger fw-bold fs-2 mb-3">Rp {{ number_format($total_pengeluaran, 0, ',', '.') }}</div>
-                <div class="fw-semibold text-danger">Total Pengeluaran</div>
+                <div class="fw-semibold text-danger">Total Pengeluaran Hari Ini</div>
             </div>
         </div>
     </div>
@@ -28,12 +28,33 @@
         <div class="card bg-light-primary hoverable card-xl-stretch">
             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                 <div class="text-primary fw-bold fs-2 mb-3">Rp {{ number_format($laba_rugi, 0, ',', '.') }}</div>
-                <div class="fw-semibold text-primary">Laba / Rugi</div>
+                <div class="fw-semibold text-primary">Laba / Rugi (Kotor)</div>
             </div>
         </div>
     </div>
 </div>
 {{-- End Statistik Box --}}
+
+<div class="row g-5 g-xl-8 mb-10">
+    <div class="col-xl-6">
+        <div class="card bg-light-secondary hoverable card-xl-stretch">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <div class="text-dark fw-bold fs-2 mb-3">Rp {{ number_format($total_hpp_penjualan, 0, ',', '.') }}</div>
+                <div class="fw-semibold text-dark">Total Modal Pembelian Barang Berdasarkan Item Yang Dijual (HPP)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card bg-light-info hoverable card-xl-stretch">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                <div class="text-info fw-bold fs-2 mb-3">Rp {{ number_format($total_profit_kotor, 0, ',', '.') }}</div>
+                <div class="fw-semibold text-info">Total Profit Kotor (Margin Berdasarkan Penjualan Dengan Modal)</div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
 
 
 {{-- BARIS 1: Detail Penjualan --}}

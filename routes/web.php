@@ -171,6 +171,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/barang/{id}/history/data', [BarangController::class, 'historyPenjualanData'])
         ->name('barang.history.data');
 
+    // 🔍 Route untuk scanner barcode
+    Route::get('/cek-barang/by-kode', [BarangController::class, 'findByKode'])
+        ->name('barang.by.kode');
 
 
     // Route::resource('barang-masuk', BarangMasukController::class);

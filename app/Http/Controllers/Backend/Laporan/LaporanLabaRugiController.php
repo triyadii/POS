@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Penjualan;
-use App\Models\PenjualanDetail;
+use App\Models\PenjualanDetail; // <-- Pastikan ini di-import
 use App\Models\BarangMasuk;
 use App\Models\Pengeluaran;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +33,7 @@ class LaporanLabaRugiController extends Controller
     {
         $start = Carbon::parse($request->filter_tanggal_start)->startOfDay();
         $end = Carbon::parse($request->filter_tanggal_end)->endOfDay();
-        $periode = $this->_calculateProfitLossData($start, $end);
+        $periode = $this->_calculateProfitLossData($start, $end); // Data sudah diubah di sini
         $paperSize = $request->ukuran_kertas ?? 'A4';
         $orientation = $request->orientasi_kertas ?? 'portrait';
 
@@ -63,17 +63,20 @@ class LaporanLabaRugiController extends Controller
 
         switch ($tipe) {
             case 'pendapatan':
+                // Mengambil detail penjualan (sesuai Gross Sales)
                 $data = PenjualanDetail::with('barang:id,nama,kode_barang')
                     ->whereHas('penjualan', function ($q) use ($tanggal) {
                         $q->whereDate('tanggal_penjualan', $tanggal);
                     })->get();
                 break;
             case 'pembelian':
+                // Mengambil detail barang masuk
                 $data = BarangMasuk::with('detail.barang:id,nama,kode_barang', 'supplier:id,nama')
                     ->whereDate('tanggal_masuk', $tanggal)
                     ->get();
                 break;
             case 'pengeluaran':
+                // Mengambil detail pengeluaran
                 $data = Pengeluaran::with('details.kategori:id,nama')
                     ->whereDate('tanggal', $tanggal)
                     ->get();
@@ -87,17 +90,22 @@ class LaporanLabaRugiController extends Controller
      */
     private function _calculateProfitLossData(Carbon $start, Carbon $end)
     {
-        // 1. Ambil PENDAPATAN dari tabel penjualan
-        $pendapatan = Penjualan::select(DB::raw('DATE(tanggal_penjualan) as tanggal'), DB::raw('SUM(total_harga) as total'))
-            ->whereBetween('tanggal_penjualan', [$start, $end])
-            ->groupBy('tanggal')->pluck('total', 'tanggal');
+        // 1. Ambil PENDAPATAN KOTOR dari PenjualanDetail
+        $pendapatan = PenjualanDetail::select(
+            DB::raw('DATE(penjualan_detail.created_at) as tanggal'), // Asumsi tanggal detail = tanggal penjualan
+            DB::raw('SUM(penjualan_detail.subtotal) as total')
+        )
+            ->join('penjualan', 'penjualan_detail.penjualan_id', '=', 'penjualan.id') // Join ke tabel penjualan
+            ->whereBetween('penjualan.tanggal_penjualan', [$start, $end]) // Filter berdasarkan tanggal penjualan
+            ->groupBy('tanggal')
+            ->pluck('total', 'tanggal');
 
-        // 2. Ambil PEMBELIAN BARANG (HPP dari barang masuk)
+        // 2. Ambil PEMBELIAN BARANG (HPP dari barang masuk) - Tidak Berubah
         $pembelianBarang = BarangMasuk::select(DB::raw('DATE(tanggal_masuk) as tanggal'), DB::raw('SUM(total_harga) as total'))
             ->whereBetween('tanggal_masuk', [$start, $end])
             ->groupBy('tanggal')->pluck('total', 'tanggal');
 
-        // 3. Ambil PENGELUARAN OPERASIONAL dari tabel pengeluaran
+        // 3. Ambil PENGELUARAN OPERASIONAL dari tabel pengeluaran - Tidak Berubah
         $pengeluaranOperasional = Pengeluaran::select(DB::raw('DATE(tanggal) as tanggal'), DB::raw('SUM(total) as total'))
             ->whereBetween('tanggal', [$start, $end])
             ->groupBy('tanggal')->pluck('total', 'tanggal');
@@ -110,17 +118,19 @@ class LaporanLabaRugiController extends Controller
             $totalPembelian = $pembelianBarang[$tanggalStr] ?? 0;
             $totalPengeluaran = $pengeluaranOperasional[$tanggalStr] ?? 0;
 
+            // Ganti nama 'laba_bersih' menjadi 'laba_kotor'
             $periode[] = [
                 'tanggal' => $tanggalStr,
                 'total_pendapatan' => $totalPendapatan,
                 'pembelian_barang' => $totalPembelian,
                 'pengeluaran_operasional' => $totalPengeluaran,
-                'laba_bersih' => $totalPendapatan - $totalPembelian - $totalPengeluaran
+                'laba_kotor' => $totalPendapatan - $totalPembelian - $totalPengeluaran // <-- Ubah nama key
             ];
         }
         return $periode;
     }
 
+    // Fungsi terbilang dan penyebut tidak perlu diubah
     private function terbilang($nilai)
     {
         if ($nilai < 0) {

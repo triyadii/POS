@@ -98,6 +98,7 @@
                                     <th>Stok</th>
                                     <th>Brand</th>
                                     <th>Kategori</th>
+                                    <th class="text-end">Harga</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -194,6 +195,10 @@
                             {
                                 data: 'kategori',
                                 name: 'kategori.nama'
+                            },
+                            {
+                                data: 'harga_jual',
+                                name: 'harga_jual'
                             },
                         ],
                         order: [

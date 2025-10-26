@@ -66,6 +66,7 @@
                             <th class="min-w-100px">Brand</th>
                             <th class="min-w-50px">Size</th>
                             <th class="min-w-100px">Stok</th>
+                            <th class="text-end min-w-100px">Harga</th>
                             <th class="text-end min-w-100px">Action</th>
                            
                         </tr>
@@ -159,6 +160,7 @@ $(document).ready(function () {
             { data: 'brand_id', name: 'brand_id' , orderable: false, searchable: false},
             { data: 'size', name: 'size', orderable: false, searchable: false },
             { data: 'stok', name: 'stok' , orderable: false, searchable: false},
+            { data: 'harga_jual', name: 'harga_jual' , orderable: false, searchable: false},
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ]
     });

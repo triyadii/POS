@@ -700,6 +700,29 @@ $validator->after(function ($validator) use ($request) {
         }
     }
 
+public function findByKode(Request $request)
+{
+    $kode = trim($request->get('kode'));
+
+    if (!$kode) {
+        return response()->json(['error' => 'Kode barang kosong.'], 422);
+    }
+
+    $barang = \App\Models\Barang::where('kode_barang', $kode)->first();
+
+    if (!$barang) {
+        return response()->json(['error' => 'Barang tidak ditemukan.'], 404);
+    }
+
+    return response()->json([
+        'id'          => $barang->id,
+        'kode_barang' => $barang->kode_barang,
+        'nama'        => $barang->nama,
+        'harga_jual'  => $barang->harga_jual,
+        'size'        => $barang->size ?? '-',
+        'stok'        => $barang->stok,
+    ]);
+}
 
 
     public function select(Request $request)
@@ -708,7 +731,7 @@ $validator->after(function ($validator) use ($request) {
 
         if ($request->has('q')) {
             $search = $request->q;
-            $barang = Barang::select("id", "nama", "kode_barang","harga_jual","harga_beli","stok")
+            $barang = Barang::select("id", "nama", "kode_barang","harga_jual","harga_beli","stok","size")
                 ->where(function ($query) use ($search) {
                     $query->where('kode_barang', 'LIKE', "%{$search}%")
                         ->orWhere('nama', 'LIKE', "%{$search}%");
@@ -860,7 +883,19 @@ $validator->after(function ($validator) use ($request) {
                 ';
             })
 
-            ->rawColumns(['action', 'nama', 'kategori_id', 'brand_id', 'stok', 'size','kode'])
+            ->addColumn('harga_jual', function ($row) {
+                return '
+                    <div class="text-end">
+
+                    <span class="fw-semibold text-gray-800">Rp. '
+                             . number_format($row->harga_jual ?? 0, 0, ',', '.') .
+                        '</span>
+                        
+                    </div>
+                ';
+            })
+
+            ->rawColumns(['action', 'nama', 'kategori_id', 'brand_id', 'stok', 'size','kode','harga_jual'])
             ->make(true);
     }
 
