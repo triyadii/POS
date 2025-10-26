@@ -295,6 +295,8 @@ Route::group(['middleware' => ['auth']], function () {
     // Route::post('/penjualan/update', [PenjualanController::class, 'update'])->name('penjualan.updateBarang');
     Route::post('/penjualan/hapus', [PenjualanController::class, 'hapus'])->name('penjualan.hapus');
     Route::post('penjualan/update', [PenjualanController::class, 'updateBarang'])->name('penjualan.updateBarang');
+    Route::post('/penjualan/update-harga', [PenjualanController::class, 'updateHargaBarang'])
+    ->name('penjualan.updateHargaBarang');
 
 
     Route::get('laporan-penjualan-data', [LaporanPenjualanController::class, 'getLaporanData'])->name('laporan.penjualan.data');

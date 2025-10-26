@@ -188,6 +188,11 @@
 
                     <div class="card-body p-9 pt-3">
                         <div class="row daftar-produk"></div>
+                        <div class="d-flex justify-content-center mt-4">
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0" id="pagination-produk"></ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -323,7 +328,7 @@ function parseId(str) {
 /* =========================
    RENDER PRODUK (SATU-SATU)
    ========================= */
-window.renderProduk = function(data = window.produkData) {
+filterProduk = function(data = window.produkData) {
     const container = document.querySelector('.daftar-produk');
     if (!container) return;
 
@@ -334,15 +339,17 @@ window.renderProduk = function(data = window.produkData) {
                 <i class="fas fa-box-open fs-2hx mb-3 d-block text-gray-400"></i>
                 <div class="fw-semibold fs-5">Tidak ada produk ditemukan</div>
             </div>`;
+        document.getElementById('pagination-produk').innerHTML = '';
         return;
     }
 
+    // ambil data sesuai halaman
+    const paginated = paginateProduk(data, currentPage);
     const frag = document.createDocumentFragment();
-    data.forEach(p => {
+
+    paginated.forEach(p => {
         const stok = parseInt(p.stok ?? 0);
         const habis = stok <= 0;
-
-        // ✅ Fallback aman
         const kategoriNama = p.kategori?.nama ?? p.kategori_nama ?? '-';
         const kodeBarang = p.kode_barang ?? '-';
 
@@ -372,8 +379,11 @@ window.renderProduk = function(data = window.produkData) {
           </div>`;
         frag.appendChild(col);
     });
-    container.appendChild(frag);
 
+    container.appendChild(frag);
+    renderPagination(data.length, currentPage);
+
+    // event click produk
     container.querySelectorAll('.produk-item').forEach(item => {
         item.addEventListener('click', function() {
             const id = this.dataset.id;
@@ -389,6 +399,153 @@ window.renderProduk = function(data = window.produkData) {
     });
 };
 
+
+/* =========================
+   RENDER PRODUK + PAGINATION
+   ========================= */
+let currentPage = 1;
+const itemsPerPage = 12; // jumlah produk per halaman
+
+function paginateProduk(data, page = 1) {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return data.slice(start, end);
+}
+
+function renderPagination(totalItems) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const paginationEl = document.getElementById('pagination-produk');
+    if (!paginationEl) return;
+
+    paginationEl.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const frag = document.createDocumentFragment();
+
+    // Tombol Prev
+    const prev = document.createElement('li');
+    prev.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+    prev.innerHTML = `<a class="page-link" href="#">‹</a>`;
+    prev.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage > 1) {
+            currentPage--;
+            renderProduk(window.filteredProduk || window.produkData);
+        }
+    });
+    frag.appendChild(prev);
+
+    // Nomor halaman
+    for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentPage = i;
+            renderProduk(window.filteredProduk || window.produkData);
+        });
+        frag.appendChild(li);
+    }
+
+    // Tombol Next
+    const next = document.createElement('li');
+    next.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+    next.innerHTML = `<a class="page-link" href="#">›</a>`;
+    next.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderProduk(window.filteredProduk || window.produkData);
+        }
+    });
+    frag.appendChild(next);
+
+    paginationEl.appendChild(frag);
+}
+
+function renderProduk(data = window.produkData) {
+    const container = document.querySelector('.daftar-produk');
+    if (!container) return;
+
+    container.innerHTML = '';
+    if (!data || data.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-10">
+                <i class="fas fa-box-open fs-2hx mb-3 d-block text-gray-400"></i>
+                <div class="fw-semibold fs-5">Tidak ada produk ditemukan</div>
+            </div>`;
+        document.getElementById('pagination-produk').innerHTML = '';
+        return;
+    }
+
+    const paginated = paginateProduk(data, currentPage);
+    const frag = document.createDocumentFragment();
+
+    paginated.forEach(p => {
+        const stok = parseInt(p.stok ?? 0);
+        const habis = stok <= 0;
+        const kategoriNama = p.kategori?.nama ?? p.kategori_nama ?? '-';
+        const kodeBarang = p.kode_barang ?? '-';
+
+        const col = document.createElement('div');
+        col.className = 'col-xl-3 col-lg-4 col-md-6 mb-4';
+        col.innerHTML = `
+          <div class="card shadow-sm produk-item border-0 h-100 ${habis ? 'bg-light-secondary' : ''}"
+               data-id="${p.id}"
+               style="cursor:${habis ? 'not-allowed' : 'pointer'};opacity:${habis ? 0.6 : 1};transition:.2s;">
+            <div class="card-body p-3 d-flex flex-column align-items-center justify-content-between">
+                <div class="text-center">
+                    <div class="fw-bold fs-6 text-dark mb-1">${p.nama ?? '-'}</div>
+                    <div class="text-muted small mb-1">${kategoriNama}</div>
+                    <div class="text-muted small mb-1">Brand: <span class="fw-semibold text-dark">${p.brand?.nama ?? '-'}</span></div>
+                    <div class="text-muted small mb-1">Size: <span class="fw-semibold text-dark">${p.size ?? '-'}</span></div>
+                    <div class="badge badge-light-primary fw-semibold mb-2 px-3 py-1">
+                        <i class="fas fa-barcode me-1"></i> ${kodeBarang}
+                    </div>
+                </div>
+                <div class="mt-2 text-center">
+                    <div class="fw-bold text-success fs-6">Rp ${numToId(p.harga_jual ?? 0)}</div>
+                    <div class="small mt-1 ${habis ? 'text-danger fw-bold' : 'text-muted'}">
+                        ${habis ? 'Stok Habis' : 'Stok: ' + stok}
+                    </div>
+                </div>
+            </div>
+          </div>`;
+        frag.appendChild(col);
+    });
+
+    container.appendChild(frag);
+    renderPagination(data.length);
+
+    container.querySelectorAll('.produk-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const produk = window.produkData.find(x => String(x.id) === String(id));
+            if (!produk) return;
+            if ((produk.stok ?? 0) <= 0) {
+                Swal.fire('⚠️ Stok Habis', 'Produk ini sudah tidak tersedia', 'warning');
+                return;
+            }
+            tambahKeTabel(produk);
+        });
+    });
+}
+
+function filterProduk() {
+    const search = $('#filter-cari-daftar-produk').val().toLowerCase();
+    const kategori = $('#filter-kategori-daftar-produk').val();
+    const hasil = window.produkData.filter(p => {
+        const namaMatch = p.nama?.toLowerCase().includes(search);
+        const kodeMatch = p.kode_barang?.toLowerCase().includes(search);
+        const kategoriMatch = kategori === '' || (p.kategori && p.kategori.nama === kategori);
+        return (namaMatch || kodeMatch) && kategoriMatch;
+    });
+
+    window.filteredProduk = hasil;
+    currentPage = 1; // reset ke halaman pertama
+    renderProduk(hasil);
+}
 
 
 /* =========================
@@ -415,10 +572,14 @@ function tambahKeTabel(produk) {
         <small class="text-muted d-block">Size: ${produk.size ?? '-'}</small>
       </td>
       <td>${produk.kode_barang}</td>
-      <td>
-        Rp ${numToId(produk.harga_jual)}
-        <input type="hidden" class="harga-beli" value="${produk.harga_beli ?? 0}">
-      </td>
+    <td>
+    <input type="text" 
+            class="form-control form-control-sm text-end harga-jual" 
+            value="${numToId(produk.harga_jual)}" 
+            data-old="${produk.harga_jual}" 
+            style="width:100px">
+    <input type="hidden" class="harga-beli" value="${produk.harga_beli ?? 0}">
+    </td>
       <td><input type="number" class="form-control qty" value="1" min="1" style="width:80px"></td>
       <td class="subtotal">Rp ${numToId(produk.harga_jual)}</td>
       <td class="text-end">
@@ -432,6 +593,11 @@ function tambahKeTabel(produk) {
     tr.querySelector('.hapus-item').addEventListener('click', function() {
         tr.remove();
         updateTotal();
+    });
+    tr.querySelector('.harga-jual').addEventListener('input', function() {
+        const val = this.value.replace(/[^\d]/g, '');
+        this.value = val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        updateSubtotal(this.closest('tr').querySelector('.qty'));
     });
     updateTotal();
 }
@@ -449,7 +615,7 @@ function updateSubtotal(input) {
         Swal.fire('⚠️ Stok Tidak Cukup', `Stok ${produk?.nama ?? ''} hanya ${stok}`, 'warning');
     }
 
-    const harga = parseId(tr.children[2].textContent);
+    const harga = parseId(tr.querySelector('.harga-jual').value);
     const subtotal = harga * qty;
     tr.querySelector('.subtotal').textContent = `Rp ${numToId(subtotal)}`;
     updateTotal();
@@ -538,14 +704,14 @@ function optimisticKurangiStok(items) {
             p.stok = Math.max(0, (parseInt(p.stok) || 0) - (parseInt(i.qty) || 0));
         }
     });
-    window.renderProduk(window.produkData);
+    filterProduk(window.produkData);
 }
 
 function refetchProduk() {
     // Sync ulang dari server
     $.get(`{{ route('penjualan.produk.data') }}?t=${Date.now()}`, function(newProduk) {
         window.produkData = newProduk;
-        window.renderProduk(newProduk);
+        filterProduk(newProduk);
     }).fail(() => console.warn('⚠️ Gagal refresh stok produk'));
 }
 
@@ -839,9 +1005,47 @@ function prosesTransaksi({
    EVENT BINDINGS
    ========================= */
 $(document).ready(function() {
+    renderProduk(window.produkData);
+    // Saat kasir ubah harga jual → tawarkan update ke master
+    $(document).on('change', '.harga-jual', function() {
+        const tr = $(this).closest('tr');
+        const newHarga = parseId($(this).val());
+        const oldHarga = parseInt($(this).data('old')) || 0;
+        const barangId = tr.attr('id').replace('row-', '');
+
+        if (newHarga !== oldHarga) {
+            Swal.fire({
+                title: 'Perbarui Harga Barang?',
+                text: 'Harga jual berbeda dari master, apakah ingin menyimpannya ke master barang?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Update',
+                cancelButtonText: 'Tidak'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    $.post("{{ route('penjualan.updateHargaBarang') }}", {
+                        _token: '{{ csrf_token() }}',
+                        barang_id: barangId,
+                        harga_jual: newHarga
+                    }, function(resp) {
+                        if (resp.status === 'success') {
+                            Swal.fire('✅ Berhasil', resp.message, 'success');
+                            $(this).data('old', newHarga);
+                            refetchProduk(); // refresh produk di sisi kanan
+                        } else {
+                            Swal.fire('Gagal', resp.message, 'error');
+                        }
+                    }).fail(() => Swal.fire('Error', 'Tidak dapat mengupdate harga',
+                        'error'));
+                }
+            });
+        }
+    });
+
+
 
     // Render awal
-    window.renderProduk(window.produkData);
+    filterProduk(window.produkData);
 
     // Input uang diterima → format & kembalian
     $('#uang-diterima-penjualan').on('input', function(e) {
@@ -866,7 +1070,7 @@ $(document).ready(function() {
                 kategori);
             return (namaMatch || kodeMatch) && kategoriMatch;
         });
-        window.renderProduk(hasil);
+        filterProduk(hasil);
     }, 250));
 
     // Filter kategori
@@ -880,7 +1084,7 @@ $(document).ready(function() {
                 kategori);
             return (namaMatch || kodeMatch) && kategoriMatch;
         });
-        window.renderProduk(hasil);
+        filterProduk(hasil);
     });
 
     // Barcode enter
