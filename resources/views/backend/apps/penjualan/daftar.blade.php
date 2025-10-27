@@ -185,6 +185,13 @@
 
 
 @push('stylesheets')
+<style>
+#tabel-penjualan th:nth-child(2),
+#tabel-penjualan td:nth-child(2) {
+    min-width: 230px;
+    white-space: nowrap;
+}
+</style>
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 <link rel="stylesheet" href="{{ URL::to('assets/plugins/custom/datatables/datatables.bundle.css') }}" />
 <style>
@@ -252,7 +259,7 @@ $(function() {
                     const menit = String(d.getMinutes()).padStart(2, '0');
                     const detik = String(d.getSeconds()).padStart(2, '0');
 
-                    return `${hari}, ${tgl} ${bln} ${thn} ${jam}:${menit}:${detik} WIB`;
+                    return `${hari}, ${tgl} ${bln} ${thn}</br>${jam}:${menit}:${detik} WIB`;
                 }
 
             },
@@ -296,16 +303,27 @@ $(function() {
                 className: 'text-end',
                 render: function(data) {
                     return `
-                    <div class="d-flex justify-content-end gap-2">
-                        <button class="btn btn-sm btn-light-primary" onclick="lihatDetail('${data.id}')">
-                            <i class="fas fa-eye"></i> Lihat
+                    <div class="dropdown text-end">
+                        <button class="btn btn-sm btn-light btn-active-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ki-outline ki-setting-2 fs-5 me-1"></i> Aksi
                         </button>
-                        <button class="btn btn-sm btn-light-warning" onclick="lemparKeKasir('${data.id}')">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-sm btn-light-danger" onclick="hapusPenjualan('${data.id}')">
-                            <i class="fas fa-trash"></i> Hapus
-                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li>
+                                <a class="dropdown-item text-primary" href="javascript:void(0)" onclick="lihatDetail('${data.id}')">
+                                    <i class="ki-outline ki-eye fs-5 me-2"></i> Lihat
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-warning" href="javascript:void(0)" onclick="lemparKeKasir('${data.id}')">
+                                    <i class="ki-outline ki-pencil fs-5 me-2"></i> Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="hapusPenjualan('${data.id}')">
+                                    <i class="ki-outline ki-trash fs-5 me-2"></i> Hapus
+                                </a>
+                            </li>
+                        </ul>
                     </div>`;
                 }
             }
