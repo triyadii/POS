@@ -230,9 +230,11 @@ $(function() {
                 render: function(data) {
                     if (!data) return '-';
 
-                    // Hilangkan "Z" supaya tidak dikonversi ke UTC
-                    const cleanDate = data.replace('Z', '');
-                    const d = new Date(cleanDate);
+                    // Parsing ISO date (contoh: 2025-10-27T07:30:24.000000Z)
+                    const d = new Date(data);
+
+                    // Konversi dari UTC ke WIB (UTC+7)
+                    d.setHours(d.getHours() + 0);
 
                     const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat',
                         'Sabtu'
@@ -246,13 +248,13 @@ $(function() {
                     const tgl = d.getDate();
                     const bln = namaBulan[d.getMonth()];
                     const thn = d.getFullYear();
-
                     const jam = String(d.getHours()).padStart(2, '0');
                     const menit = String(d.getMinutes()).padStart(2, '0');
                     const detik = String(d.getSeconds()).padStart(2, '0');
 
                     return `${hari}, ${tgl} ${bln} ${thn} ${jam}:${menit}:${detik} WIB`;
                 }
+
             },
             {
                 data: 'kode_barang',
