@@ -82,7 +82,7 @@ class PenjualanController extends Controller
             $penjualan = Penjualan::create([
                 'id' => $penjualanId,
                 'kode_transaksi' => $request->no_penjualan,
-                'tanggal_penjualan' => $request->tanggal,
+                'tanggal_penjualan' => now(),
                 'jenis_pembayaran_id' => $request->pembayaran,
                 'user_id' => auth()->id() ?? 'dummy-user',
                 'total_item' => $request->total_item,
