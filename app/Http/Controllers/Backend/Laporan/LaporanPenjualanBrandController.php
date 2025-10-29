@@ -91,6 +91,10 @@ class LaporanPenjualanBrandController extends Controller
                             <small class='text-muted'>{$rekening}</small>
                         </div>";
             })
+            ->addColumn('catatan', function ($data) {
+                // Tampilkan '-' jika catatan kosong atau null
+                return $data->catatan ?? '-';
+            })
             ->addColumn('total', function ($data) use ($brandId) {
                 // ... Logika addColumn('total') tidak berubah ...
                 $total = $brandId ? $data->detail->filter(fn($item) => $item->barang->brand_id == $brandId)->sum('subtotal') : $data->total_harga;

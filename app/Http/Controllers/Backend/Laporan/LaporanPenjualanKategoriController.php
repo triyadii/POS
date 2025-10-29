@@ -90,6 +90,10 @@ class LaporanPenjualanKategoriController extends Controller
                             <small class='text-muted'>{$rekening}</small>
                         </div>";
             })
+            ->addColumn('catatan', function ($data) {
+                // Tampilkan '-' jika catatan kosong atau null
+                return $data->catatan ?? '-';
+            })
             ->addColumn('total', function ($data) use ($kategoriId) {
                 $total = $kategoriId ? $data->detail->filter(fn($item) => $item->barang->kategori_id == $kategoriId)->sum('subtotal') : $data->total_harga;
                 return 'Rp ' . number_format($total, 0, ',', '.');

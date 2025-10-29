@@ -681,7 +681,7 @@ function kumpulkanItems() {
         const id = $(this).attr('id').replace('row-', '');
         const nama = $(this).find('td:nth-child(1)').text();
         const qty = parseInt($(this).find('.qty').val());
-        const harga = parseId($(this).find('td:nth-child(3)').text());
+        const harga = parseId($(this).find('.harga-jual').val());
         const hargaBeli = parseInt($(this).find('.harga-beli').val()) || 0;
         const subtotal = harga * qty;
         items.push({

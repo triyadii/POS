@@ -102,6 +102,7 @@
                                         <th class="min-w-125px">Kategori Penjualan</th>
                                         <th class="min-w-125px">Kasir</th>
                                         <th class="min-w-150px">Jenis Pembayaran</th>
+                                        <th class="min-w-100px">Catatan</th>
                                         <th class="min-w-125px text-end">Potongan</th>
                                         <th class="min-w-125px text-end">Total</th>
                                         <th class="min-w-100px text-center">Aksi</th>
@@ -260,6 +261,13 @@
                             name: 'jenis_pembayaran',
                             orderable: false,
                             searchable: false
+                        },
+                        {
+                            data: 'catatan',
+                            name: 'catatan',
+                            orderable: false,
+                            searchable: false,
+                            // className: 'text-muted fs-sm' // Opsional styling
                         },
                         {
                             data: 'potongan',

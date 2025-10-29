@@ -107,6 +107,7 @@
                                         <th class="min-w-125px">No. Transaksi</th>
                                         <th class="min-w-100px">Kategori Penjualan</th>
                                         <th class="min-w-100px">Jenis Pembayaran</th>
+                                        <th class="min-w-150px">Catatan</th>
                                         <th class="min-w-50px text-end">Total Item</th>
                                         <th class="min-w-100px text-end">Sub Total</th>
                                         <th class="min-w-100px text-end">Potongan</th>
@@ -119,7 +120,7 @@
                                 {{-- =================================== --}}
                                 <tfoot class="fw-bold fs-8">
                                     <tr class="table-light">
-                                        <th colspan="5" class="text-end">Total</th>
+                                        <th colspan="6" class="text-end">Total</th>
                                         <th class="text-end" id="footer-total-item">0</th>
                                         <th class="text-end" id="footer-subtotal">Rp 0</th>
                                         <th class="text-end" id="footer-potongan">Rp 0</th>
@@ -170,7 +171,7 @@
                                 {{-- =================================== --}}
                                 {{-- PERUBAHAN 1: TAMBAH SUBTOTAL HARGA BELI --}}
                                 {{-- =================================== --}}
-                                {{-- <div class="d-flex flex-stack fs-6">
+                                <div class="d-flex flex-stack fs-6">
                                     <div class="fw-semibold text-danger">Subtotal Harga Beli :</div>
                                     <div class="fw-bold text-danger" id="summary-total-harga-beli">- Rp 0</div>
                                 </div>
@@ -178,7 +179,7 @@
                                 <div class="d-flex flex-stack fs-6 mt-1">
                                     <div class="fw-semibold text-success">Total Profit :</div>
                                     <div class="fw-bold text-success" id="summary-profit">Rp 0</div>
-                                </div> --}}
+                                </div>
                             </div>
                         </div>
 
@@ -300,9 +301,9 @@
                             $('#summary-total-akhir').text(formatRupiah(json.footer_total_akhir));
                             $('#summary-bayar-tunai').text(formatRupiah(json.footer_bayar_tunai));
                             $('#summary-bayar-kredit').text(formatRupiah(json.footer_bayar_kredit));
-                            // $('#summary-total-harga-beli').text('- ' + formatRupiah(json
-                            //     .footer_total_harga_beli));
-                            // $('#summary-profit').text(formatRupiah(json.footer_profit));
+                            $('#summary-total-harga-beli').text(formatRupiah(json
+                                .footer_total_harga_beli));
+                            $('#summary-profit').text(formatRupiah(json.footer_profit));
 
                             return json.data;
                         }
@@ -334,6 +335,13 @@
                             name: 'pembayaran.nama',
                             orderable: true,
                             searchable: true
+                        },
+                        {
+                            data: 'catatan',
+                            name: 'catatan',
+                            orderable: false, // Biasanya catatan tidak diurutkan
+                            searchable: false, // Biasanya catatan tidak dicari
+                            // className: 'text-muted fs-sm' // Optional: styling
                         },
                         {
                             data: 'total_item',

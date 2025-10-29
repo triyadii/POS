@@ -141,6 +141,10 @@ class LaporanPenjualanController extends Controller
                            <small class='text-muted'>{$rekening}</small>
                        </div>";
             })
+            ->addColumn('catatan', function ($data) {
+                // Tampilkan '-' jika catatan kosong atau null
+                return $data->catatan ?? '-';
+            })
             ->addColumn('potongan', function ($data) {
                 return '<span class_exists="text-danger">Rp ' . number_format($data->potongan ?? 0, 0, ',', '.') . '</span>';
             })
@@ -190,25 +194,43 @@ class LaporanPenjualanController extends Controller
 
         $start = Carbon::parse($request->start)->startOfDay();
         $end = Carbon::parse($request->end)->endOfDay();
+        $kategoriPenjualan = $request->kategori_penjualan; // <-- TANGKAP FILERNYA
 
-        // Ambil data utama
-        $penjualan = Penjualan::with([
+        // ===================================
+        // PERBAIKAN QUERY UTAMA
+        // ===================================
+        $query = Penjualan::with([
             'user:id,name',
             'detail.barang:id,kode_barang,nama',
             'jenis_pembayaran'
         ])
             ->whereBetween('tanggal_penjualan', [$start, $end])
-            ->orderBy('tanggal_penjualan', 'asc')
-            ->get();
+            ->orderBy('tanggal_penjualan', 'asc');
+
+        // TAMBAHKAN KONDISI INI
+        if (!empty($kategoriPenjualan)) {
+            $query->where('kategori_penjualan', $kategoriPenjualan);
+        }
+
+        $penjualan = $query->get(); // Ambil datanya
 
         // Statistik
         $totalPenjualan = $penjualan->sum('total_harga');
         $totalTransaksi = $penjualan->count();
         $totalPendapatan = $penjualan->sum('total_harga');
-        $jumlahProdukTerjual = PenjualanDetail::whereHas('penjualan', function ($q) use ($start, $end) {
-            $q->whereBetween('tanggal_penjualan', [$start, $end]);
-        })->sum('qty');
-        $totalPenjualanTerbilang = $this->terbilang($totalPenjualan);
+// Query ini harus difilter juga
+$jumlahProdukQuery = PenjualanDetail::whereHas('penjualan', function ($q) use ($start, $end, $kategoriPenjualan) {
+    $q->whereBetween('tanggal_penjualan', [$start, $end]);
+
+    // TAMBAHKAN KONDISI INI
+    if (!empty($kategoriPenjualan)) {
+        $q->where('kategori_penjualan', $kategoriPenjualan);
+    }
+});
+$jumlahProdukTerjual = $jumlahProdukQuery->sum('qty');
+// ===================================
+
+$totalPenjualanTerbilang = $this->terbilang($totalPenjualan);
 
         $namaUser = Auth::user()->name; // Mengambil nama user yang login
         $tanggalCetak = Carbon::now();  // Mengambil waktu saat ini    $namaUser = Auth::user()->name; // Mengambil nama user yang login
