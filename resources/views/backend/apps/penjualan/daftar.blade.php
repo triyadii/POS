@@ -296,7 +296,11 @@ $(function() {
             },
             {
                 data: 'catatan',
-                defaultContent: '-'
+                render: function(data) {
+                    if (!data || data.trim() === '') return '-';
+                    const clean = $('<div>').text(data).html(); // mencegah XSS
+                    return `<span title="${clean}">${clean.length > 40 ? clean.substring(0, 40) + '...' : clean}</span>`;
+                }
             },
             {
                 data: null,
@@ -425,39 +429,73 @@ $(function() {
 
 // === 6️⃣ Detail Penjualan ===
 function lihatDetail(id) {
-    $('#detail-body').html('<tr><td colspan="4" class="text-center">Memuat...</td></tr>');
+    $('#detail-body').html('<tr><td colspan="5" class="text-center">Memuat...</td></tr>');
 
     $.ajax({
-        url: "{{ route('penjualan.detail') }}", // buat route baru untuk ambil detail by ID
+        url: "{{ route('penjualan.detail') }}",
         type: "GET",
         data: {
             id
         },
         success: function(res) {
+            const catatan = res?.catatan && res.catatan.trim() !== '' ? res.catatan : '-';
+
+            // 🔹 buat tampilan catatan di atas tabel
+            let catatanHTML = `
+                <div class="border rounded p-3 mb-4 bg-light">
+                    <div class="fw-semibold text-gray-800 mb-1">
+                       Catatan Penjualan:
+                    </div>
+                    <div class="text-dark">${catatan}</div>
+                </div>
+            `;
+
+            // 🔹 isi ulang konten modal body agar catatan tampil di atas tabel
+            $('#modalDetailPenjualan .modal-body').html(catatanHTML + `
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Kode Barang</th>
+                                <th>Nama Barang</th>
+                                <th>Qty</th>
+                                <th>Harga</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detail-body"></tbody>
+                    </table>
+                </div>
+            `);
+
+            // 🔹 tampilkan detail barang
             if (!res || !res.detail || !res.detail.length) {
                 $('#detail-body').html(
-                    '<tr><td colspan="4" class="text-center text-muted">Tidak ada detail barang</td></tr>'
+                    '<tr><td colspan="5" class="text-center text-muted">Tidak ada detail barang</td></tr>'
                 );
             } else {
-                let rows = res.detail.map(d => `
+                const rows = res.detail.map(d => `
                     <tr>
                         <td>${d.kode_barang ?? '-'}</td>
                         <td>${d.nama_barang ?? '-'}</td>
                         <td class="text-center">${d.qty}</td>
-                        <td class="text-end">Rp ${parseInt(d.harga_jual).toLocaleString('id-ID')}</td>
-                        <td class="text-end">Rp ${parseInt(d.subtotal).toLocaleString('id-ID')}</td>
+                        <td class="text-end">Rp ${parseInt(d.harga_jual || 0).toLocaleString('id-ID')}</td>
+                        <td class="text-end">Rp ${parseInt(d.subtotal || 0).toLocaleString('id-ID')}</td>
                     </tr>
                 `);
                 $('#detail-body').html(rows.join(''));
             }
+
             new bootstrap.Modal('#modalDetailPenjualan').show();
         },
         error: function() {
             $('#detail-body').html(
-                '<tr><td colspan="4" class="text-center text-danger">Gagal memuat data</td></tr>');
+                '<tr><td colspan="5" class="text-center text-danger">Gagal memuat data</td></tr>'
+            );
         }
     });
 }
+
 
 // === 6️⃣ Edit Penjualan ===
 function editPenjualan(id) {

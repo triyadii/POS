@@ -245,11 +245,12 @@
                                 <tr>
                                     <th>Kode Transaksi</th>
                                     <th>Tanggal</th>
-                                    <th>Kategori Penjualan</th> <!-- 🔹 ubah -->
+                                    <th>Kategori Penjualan</th>
                                     <th>Metode Pembayaran</th>
                                     <th>Total Item</th>
                                     <th>Total Harga</th>
-                                    <th>Potongan</th> <!-- 🔹 kolom baru -->
+                                    <th>Potongan</th>
+                                    <th>Catatan</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -1173,58 +1174,95 @@ $(document).ready(function() {
 
     window.loadHistoryPenjualan = function() {
         const tbody = $('#table-history tbody');
-        tbody.html('<tr><td colspan="8" class="text-center">Memuat data...</td></tr>');
+        tbody.html('<tr><td colspan="9" class="text-center">Memuat data...</td></tr>');
+
         $.get("{{ route('penjualan.history.data') }}", function(res) {
             if (!res.length) {
                 tbody.html(
-                    '<tr><td colspan="8" class="text-center text-muted">Belum ada transaksi</td></tr>'
+                    '<tr><td colspan="9" class="text-center text-muted">Belum ada transaksi</td></tr>'
                 );
                 return;
             }
             tbody.html('');
             res.forEach(p => {
+                const catatan = p.catatan && p.catatan.trim() !== '' ? p.catatan : '-';
                 tbody.append(`
                 <tr>
                     <td>${p.kode_transaksi}</td>
                     <td>${new Date(p.tanggal_penjualan).toLocaleDateString('id-ID')}</td>
-                    <td>${p.kategori_penjualan ?? 'Offline'}</td> <!-- 🔹 Ubah dari customer -->
+                    <td>${p.kategori_penjualan ?? 'Offline'}</td>
                     <td>${p.pembayaran ? p.pembayaran.nama : '-'}</td>
                     <td>${p.total_item}</td>
                     <td>Rp ${numToId(p.total_harga)}</td>
-                    <td>Rp ${numToId(p.potongan ?? 0)}</td> <!-- 🔹 Tambah kolom potongan -->
+                    <td>Rp ${numToId(p.potongan ?? 0)}</td>
+                    <td title="${catatan}">
+                        ${(catatan.length > 30) ? catatan.substring(0, 30) + '...' : catatan}
+                    </td>
                     <td class="text-center">
-                    <button class="btn btn-sm btn-light-primary" onclick="lihatDetail('${p.id}')">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn btn-sm btn-light-success" onclick="cetakStrukHistory('${p.id}')">
-                        <i class="fas fa-print"></i>
-                    </button>
+                        <button class="btn btn-sm btn-light-primary" onclick="lihatDetail('${p.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-light-success" onclick="cetakStrukHistory('${p.id}')">
+                            <i class="fas fa-print"></i>
+                        </button>
                     </td>
                 </tr>
-                `);
+            `);
             });
-        }).fail(() => tbody.html(
-            '<tr><td colspan="8" class="text-center text-danger">Gagal memuat data</td></tr>'));
+        }).fail(() => {
+            tbody.html(
+                '<tr><td colspan="9" class="text-center text-danger">Gagal memuat data</td></tr>'
+            );
+        });
     };
 
     window.lihatDetail = function(id) {
-        $('#detail-body').html('<tr><td colspan="4" class="text-center">Memuat...</td></tr>');
+        $('#detail-body').html('<tr><td colspan="6" class="text-center">Memuat...</td></tr>');
         $.get("{{ route('penjualan.history.data') }}", function(res) {
             const trx = res.find(x => String(x.id) === String(id));
+
+            const catatan = trx?.catatan && trx.catatan.trim() !== '' ? trx.catatan : '-';
+
+            // 🔹 tampilkan catatan di atas tabel
+            let catatanHTML = `
+                <div class="border rounded p-3 mb-4 bg-light">
+                    <div class="fw-semibold text-gray-800 mb-1">
+                        Catatan:
+                    </div>
+                    <div class="text-dark">${catatan}</div>
+                </div>
+            `;
+            $('#modalDetailPenjualan .modal-body').html(catatanHTML + `
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Kode Barang</th>
+                        <th>Nama Barang</th>
+                        <th>Size</th>
+                        <th>Qty</th>
+                        <th>Harga</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody id="detail-body"></tbody>
+            </table>
+        `);
+
             if (!trx || !trx.detail || trx.detail.length === 0) {
                 $('#detail-body').html(
-                    '<tr><td colspan="4" class="text-center text-muted">Tidak ada detail</td></tr>'
+                    '<tr><td colspan="6" class="text-center text-muted">Tidak ada detail</td></tr>'
                 );
             } else {
                 const rows = trx.detail.map(d => `
-                  <tr>
+                <tr>
                     <td>${d.barang?.kode_barang ?? '-'}</td>
                     <td>${d.barang?.nama ?? '-'}</td>
                     <td>${d.barang?.size ?? '-'}</td>
                     <td>${d.qty}</td>
                     <td>Rp ${numToId(d.harga_jual)}</td>
                     <td>Rp ${numToId(d.subtotal)}</td>
-                  </tr>`);
+                </tr>
+            `);
                 $('#detail-body').html(rows.join(''));
             }
             new bootstrap.Modal('#modalDetailPenjualan').show();
