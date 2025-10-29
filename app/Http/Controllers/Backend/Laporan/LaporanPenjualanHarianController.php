@@ -117,6 +117,10 @@ class LaporanPenjualanHarianController extends Controller
             ->addColumn('kategori_penjualan', function ($data) {
                 return ucwords($data->kategori_penjualan); // Format: 'offline' -> 'Offline'
             })
+            ->addColumn('catatan', function ($data) {
+                // Tampilkan '-' jika catatan kosong atau null
+                return $data->catatan ?? '-';
+            })
             ->addColumn('total_item', function ($data) {
                 return $data->total_item; // Asumsi ada kolom total_item di tabel 'penjualan'
             })

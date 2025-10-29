@@ -9,6 +9,7 @@
             <td><strong>No. Transaksi:</strong> {{ $trx->kode_transaksi }}</td>
             <td><strong>Pembayaran:</strong> {{ optional($trx->jenis_pembayaran)->nama ?? '-' }}</td>
             <td><strong>Kategori Penjualan:</strong> {{ ucwords($trx->kategori_penjualan) }}</td>
+            <td style="max-width: 150px;"><strong>Catatan:</strong> {{ $trx->catatan ?? '-' }}</td>
             <td class="text-right"><strong>Sub Total:</strong>
                 {{ number_format($trx->detail->sum('subtotal'), 0, ',', '.') }}</td>
             <td class="text-right"><strong>Potongan:</strong> {{ number_format($trx->potongan, 0, ',', '.') }}</td>
@@ -96,16 +97,16 @@
             <td style="padding: 5px; text-align: right; font-weight: bold; color: #dc3545;">
                 {{ number_format($total_kredit, 0, ',', '.') }}</td>
         </tr>
-        {{-- <tr style="border-top: 1px dashed #999;">
+        <tr style="border-top: 1px dashed #999;">
             <td style="padding: 5px; color: #dc3545;">Subtotal Harga Beli :</td>
             <td style="padding: 5px; text-align: right; font-weight: bold; color: #dc3545;">
-                -{{ number_format($total_harga_beli, 0, ',', '.') }}
+                {{ number_format($total_harga_beli, 0, ',', '.') }}
             </td>
         </tr>
         <tr>
             <td style="padding: 5px; color: #28a745;">Total Profit :</td>
             <td style="padding: 5px; text-align: right; font-weight: bold; color: #28a745;">
                 {{ number_format($total_profit, 0, ',', '.') }}</td>
-        </tr> --}}
+        </tr>
     </table>
 </div>

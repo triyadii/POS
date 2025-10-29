@@ -5,8 +5,8 @@
             <th style="width: 15%;">Tanggal</th>
             <th style="width: 15%;">No. Transaksi</th>
             <th style="width: 15%;">Kategori Penjualan</th>
-            <th style="width: 45%;">Detail Barang</th>
             <th style="width: 15%;">Jenis Pembayaran</th>
+            <th style="width: 10%;">Catatan</th>
             <th style="width: 15%;" class="text-right">Total</th>
         </tr>
     </thead>
@@ -28,32 +28,7 @@
                     <small style="color: #666;">Kasir: {{ $trx->user->name ?? 'N/A' }}</small>
                 </td>
                 <td>{{ $trx->kategori_penjualan ?? '-' }}</td>
-                <td>
-                    <table class="detail-table">
-                        @foreach ($trx->detail as $item)
-                            {{-- Filter item berdasarkan brandId (jika ada) --}}
-                            @if (!$brandId || $brandId == 'all' || optional($item->barang)->brand_id == $brandId)
-                                <tr class="detail-item">
-                                    <td>
-                                        {{-- ========================================================== --}}
-                                        {{-- PERBAIKAN UTAMA ADA DI SINI --}}
-                                        {{-- ========================================================== --}}
-                                        <strong>{{ optional($item->barang)->nama ?? '[-]' }}</strong> <br>
-                                        <small style="color: #555;">
-                                            {{-- Gunakan optional() berlapis untuk keamanan ekstra --}}
-                                            Brand: {{ optional(optional($item->barang)->brand)->nama ?? '-' }} | Tipe:
-                                            {{ optional(optional($item->barang)->tipe)->nama ?? '-' }}
-                                        </small> <br>
-                                        <span>
-                                            {{ $item->qty }} x Rp {{ number_format($item->harga_jual, 0, ',', '.') }}
-                                        </span>
-                                    </td>
-                                    <td class="text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
-                                </tr>
-                            @endif
-                        @endforeach
-                    </table>
-                </td>
+                
                 <td> {{-- DATA BARU - Kode ini sudah benar --}}
                     @if ($trx->jenis_pembayaran)
                         <span style="font-weight: bold;">{{ $trx->jenis_pembayaran->nama }}</span><br>
@@ -62,6 +37,7 @@
                         -
                     @endif
                 </td>
+                <td style="word-wrap: break-word; max-width: 10%;">{{ $trx->catatan ?? '-' }}</td>
                 <td class="text-right">Rp {{ number_format($rowTotal, 0, ',', '.') }}</td>
             </tr>
         @empty
