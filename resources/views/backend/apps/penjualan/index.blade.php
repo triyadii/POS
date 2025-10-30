@@ -1135,8 +1135,10 @@ $(document).ready(function() {
             cancelButtonText: 'Tidak'
         }).then(res => {
             if (res.isConfirmed) {
+                const noPenjualanSekarang = $('#no_penjualan').val();
                 $('#form-penjualan')[0].reset();
                 $('#purchase_cart_list').html('');
+                $('#no_penjualan').val(noPenjualanSekarang);
                 updateTotal();
                 Swal.fire('Dibatalkan', 'Transaksi telah dikosongkan.', 'success');
                 $('#barcode').focus();
